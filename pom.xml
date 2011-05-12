@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <parent>
+    <groupId>org.jboss.spec</groupId>
+    <artifactId>jboss-specs-parent</artifactId>
+    <version>1.0.0.Beta2</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.spec.javax.rmi</groupId>
+  <artifactId>jboss-rmi-api_1.0_spec</artifactId>
+  <version>1.0.0.Final</version>
+  <packaging>jar</packaging>
+  <name>JAVAX RMI API</name>
+  <description>The javax.rmi and javax.rmi.CORBA classes</description>
+  
+  <scm>
+    <connection>scm:svn:http://anonsvn.jboss.org/repos/jbossas/projects/specs/trunk/jboss-rmi-api_1.0_spec</connection>
+    <developerConnection>scm:svn:https://svn.jboss.org/repos/jbossas/projects/specs/trunk/jboss-rmi-api_1.0_spec</developerConnection>
+    <url>http://fisheye.jboss.org/browse/JBossAS/projects/specs/trunk/jboss-rmi-api_1.0_spec</url>
+  </scm>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <showDeprecation>false</showDeprecation>
+          <compilerArguments>
+            <endorseddirs>${project.build.directory}/endorsed</endorseddirs>
+          </compilerArguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>jacorb</groupId>
+                  <artifactId>jacorb</artifactId>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>jacorb</groupId>
+      <artifactId>jacorb</artifactId>
+      <version>2.3.1jboss.patch01-brew</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
+</project>
