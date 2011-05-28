@@ -40,19 +40,17 @@ import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
 
 /**
- * Supports delegation for method implementations in {@link Util}.  The
- * delegate is a singleton instance of a class that implements this
- * interface and provides a replacement implementation for all the
- * methods of <code>javax.rmi.CORBA.Util</code>.
- *
- * Delegation is enabled by providing the delegate's class name as the
- * value of the
- * <code>javax.rmi.CORBA.UtilClass</code>
- * system property.
- *
+ * Supports delegation for method implementations in {@link Util}. The delegate is a singleton instance of a class that
+ * implements this interface and provides a replacement implementation for all the methods of
+ * <code>javax.rmi.CORBA.Util</code>.
+ * 
+ * Delegation is enabled by providing the delegate's class name as the value of the
+ * <code>javax.rmi.CORBA.UtilClass</code> system property.
+ * 
  * @see Util
  */
-public interface UtilDelegate {
+public interface UtilDelegate
+{
 
     /**
      * Delegation call for {@link Util#mapSystemException}.
@@ -107,8 +105,7 @@ public interface UtilDelegate {
     /**
      * Delegation call for {@link Util#loadClass}.
      */
-    Class<?> loadClass(String className, String remoteCodebase, ClassLoader loader)
-        throws ClassNotFoundException;
+    Class<?> loadClass(String className, String remoteCodebase, ClassLoader loader) throws ClassNotFoundException;
 
     /**
      * Delegation call for {@link Util#isLocal}.

@@ -30,8 +30,7 @@ import java.io.ObjectInputStream;
 import java.util.Hashtable;
 
 /**
- * Implements legacy behavior from before Ladybird to maintain
- * backwards compatibility.
+ * Implements legacy behavior from before Ladybird to maintain backwards compatibility.
  */
 public class IIOPInputStream_1_3 extends org.jboss.com.sun.corba.se.impl.io.IIOPInputStream
 {
@@ -43,17 +42,17 @@ public class IIOPInputStream_1_3 extends org.jboss.com.sun.corba.se.impl.io.IIOP
     }
 
     /**
-     * Before JDK 1.3.1_01, the PutField/GetField implementation
-     * actually sent a Hashtable.
+     * Before JDK 1.3.1_01, the PutField/GetField implementation actually sent a Hashtable.
      */
-    public ObjectInputStream.GetField readFields()
-        throws IOException, ClassNotFoundException, NotActiveException {
-        Hashtable fields = (Hashtable)readObject();
+    @SuppressWarnings("unchecked")
+    public ObjectInputStream.GetField readFields() throws IOException, ClassNotFoundException, NotActiveException
+    {
+        Hashtable<String,Object> fields = (Hashtable<String,Object>) readObject();
         return new LegacyHookGetFields(fields);
     }
 
-    public IIOPInputStream_1_3()
-        throws java.io.IOException {
+    public IIOPInputStream_1_3() throws java.io.IOException
+    {
         super();
     }
 }

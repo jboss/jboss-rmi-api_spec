@@ -34,7 +34,6 @@
  *
  */
 
-
 package javax.rmi.CORBA;
 
 import java.io.File;
@@ -43,63 +42,70 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
 
-class GetORBPropertiesFileAction implements PrivilegedAction<Object> {
-    private boolean debug = false ;
+class GetORBPropertiesFileAction implements PrivilegedAction<Object>
+{
+    private boolean debug = false;
 
-    public GetORBPropertiesFileAction () {
+    public GetORBPropertiesFileAction()
+    {
     }
 
-    private String getSystemProperty(final String name) {
+    private String getSystemProperty(final String name)
+    {
         // This will not throw a SecurityException because this
         // class was loaded from rt.jar using the bootstrap classloader.
-        String propValue = (String) AccessController.doPrivileged(
-            new PrivilegedAction<String>() {
-                public java.lang.String run() {
-                    return System.getProperty(name);
-                }
+        String propValue = AccessController.doPrivileged(new PrivilegedAction<String>()
+        {
+            public java.lang.String run()
+            {
+                return System.getProperty(name);
             }
-        );
+        });
 
         return propValue;
     }
 
-    private void getPropertiesFromFile( Properties props, String fileName )
+    private void getPropertiesFromFile(Properties props, String fileName)
     {
-        try {
-            File file = new File( fileName ) ;
+        try
+        {
+            File file = new File(fileName);
             if (!file.exists())
-                return ;
+                return;
 
-            FileInputStream in = new FileInputStream( file ) ;
+            FileInputStream in = new FileInputStream(file);
 
-            try {
-                props.load( in ) ;
-            } finally {
-                in.close() ;
+            try
+            {
+                props.load(in);
             }
-        } catch (Exception exc) {
+            finally
+            {
+                in.close();
+            }
+        }
+        catch (Exception exc)
+        {
             if (debug)
-                System.out.println( "ORB properties file " + fileName +
-                    " not found: " + exc) ;
+                System.out.println("ORB properties file " + fileName + " not found: " + exc);
         }
     }
 
     public Object run()
     {
-        Properties defaults = new Properties() ;
+        Properties defaults = new Properties();
 
-        String javaHome = getSystemProperty( "java.home" ) ;
-        String fileName = javaHome + File.separator + "lib" + File.separator +
-            "orb.properties" ;
+        String javaHome = getSystemProperty("java.home");
+        String fileName = javaHome + File.separator + "lib" + File.separator + "orb.properties";
 
-        getPropertiesFromFile( defaults, fileName ) ;
+        getPropertiesFromFile(defaults, fileName);
 
-        Properties results = new Properties( defaults ) ;
+        Properties results = new Properties(defaults);
 
-        String userHome = getSystemProperty( "user.home" ) ;
-        fileName = userHome + File.separator + "orb.properties" ;
+        String userHome = getSystemProperty("user.home");
+        fileName = userHome + File.separator + "orb.properties";
 
-        getPropertiesFromFile( results, fileName ) ;
-        return results ;
+        getPropertiesFromFile(results, fileName);
+        return results;
     }
 }

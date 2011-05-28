@@ -23,20 +23,22 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.ior ;
+package org.jboss.com.sun.corba.se.spi.ior;
 
 import org.omg.CORBA_2_3.portable.InputStream;
 
-/** Factory interface for creating Identifiables.
+/**
+ * Factory interface for creating Identifiables.
  */
-public interface IdentifiableFactory {
-    /** Return the id of this factory, which is the id of the result
-     * of any create call.
+public interface IdentifiableFactory
+{
+    /**
+     * Return the id of this factory, which is the id of the result of any create call.
      */
-    public int getId() ;
+    public int getId();
 
-    /** Construct the appropriate Identifiable object with the
-     * given id from the InputStream is.
+    /**
+     * Construct the appropriate Identifiable object with the given id from the InputStream is.
      */
-    public Identifiable create( InputStream in ) ;
+    public Identifiable create(InputStream in);
 }

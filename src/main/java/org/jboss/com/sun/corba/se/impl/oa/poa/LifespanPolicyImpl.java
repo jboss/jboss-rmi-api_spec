@@ -30,27 +30,33 @@ import org.omg.PortableServer.LIFESPAN_POLICY_ID;
 import org.omg.PortableServer.LifespanPolicy;
 import org.omg.PortableServer.LifespanPolicyValue;
 
-final class LifespanPolicyImpl
-    extends org.omg.CORBA.LocalObject implements LifespanPolicy {
+final class LifespanPolicyImpl extends org.omg.CORBA.LocalObject implements LifespanPolicy
+{
 
-    public LifespanPolicyImpl(LifespanPolicyValue value) {
+    private static final long serialVersionUID = -7620425659409055717L;
+
+    public LifespanPolicyImpl(LifespanPolicyValue value)
+    {
         this.value = value;
     }
 
-    public LifespanPolicyValue value() {
+    public LifespanPolicyValue value()
+    {
         return value;
     }
 
     public int policy_type()
     {
-        return LIFESPAN_POLICY_ID.value ;
+        return LIFESPAN_POLICY_ID.value;
     }
 
-    public Policy copy() {
+    public Policy copy()
+    {
         return new LifespanPolicyImpl(value);
     }
 
-    public void destroy() {
+    public void destroy()
+    {
         value = null;
     }
 
@@ -58,8 +64,7 @@ final class LifespanPolicyImpl
 
     public String toString()
     {
-        return "LifespanPolicy[" +
-            ((value.value() == LifespanPolicyValue._TRANSIENT) ?
-                "TRANSIENT" : "PERSISTENT" + "]") ;
+        return "LifespanPolicy["
+                + ((value.value() == LifespanPolicyValue._TRANSIENT) ? "TRANSIENT" : "PERSISTENT" + "]");
     }
 }

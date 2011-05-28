@@ -33,8 +33,6 @@
 package org.jboss.com.sun.corba.se.impl.orbutil;
 
 import java.lang.reflect.Field;
-import java.lang.Comparable;
-import java.util.Hashtable;
 
 /**
  * This is duplicated here somewhat in haste since we can't
@@ -42,42 +40,63 @@ import java.util.Hashtable;
  * package for security reasons.
  */
 /**
- * A description of a field in a serializable class.
- * A array of these is used to declare the persistent fields of
- * a class.
- *
+ * A description of a field in a serializable class. A array of these is used to declare the persistent fields of a
+ * class.
+ * 
  */
-class ObjectStreamField implements Comparable<ObjectStreamField> {
+class ObjectStreamField implements Comparable<ObjectStreamField>
+{
     /**
      * Create a named field with the specified type.
      */
-    ObjectStreamField(String n, Class<?> clazz) {
+    ObjectStreamField(String n, Class<?> clazz)
+    {
         name = n;
         this.clazz = clazz;
 
         // Compute the typecode for easy switching
-        if (clazz.isPrimitive()) {
-            if (clazz == Integer.TYPE) {
+        if (clazz.isPrimitive())
+        {
+            if (clazz == Integer.TYPE)
+            {
                 type = 'I';
-            } else if (clazz == Byte.TYPE) {
+            }
+            else if (clazz == Byte.TYPE)
+            {
                 type = 'B';
-            } else if (clazz == Long.TYPE) {
+            }
+            else if (clazz == Long.TYPE)
+            {
                 type = 'J';
-            } else if (clazz == Float.TYPE) {
+            }
+            else if (clazz == Float.TYPE)
+            {
                 type = 'F';
-            } else if (clazz == Double.TYPE) {
+            }
+            else if (clazz == Double.TYPE)
+            {
                 type = 'D';
-            } else if (clazz == Short.TYPE) {
+            }
+            else if (clazz == Short.TYPE)
+            {
                 type = 'S';
-            } else if (clazz == Character.TYPE) {
+            }
+            else if (clazz == Character.TYPE)
+            {
                 type = 'C';
-            } else if (clazz == Boolean.TYPE) {
+            }
+            else if (clazz == Boolean.TYPE)
+            {
                 type = 'Z';
             }
-        } else if (clazz.isArray()) {
+        }
+        else if (clazz.isArray())
+        {
             type = '[';
             typeString = ObjectStreamClass_1_3_1.getSignature(clazz);
-        } else {
+        }
+        else
+        {
             type = 'L';
             typeString = ObjectStreamClass_1_3_1.getSignature(clazz);
         }
@@ -89,7 +108,8 @@ class ObjectStreamField implements Comparable<ObjectStreamField> {
 
     }
 
-    ObjectStreamField(Field field) {
+    ObjectStreamField(Field field)
+    {
         this(field.getName(), field.getType());
         this.field = field;
     }
@@ -114,95 +134,110 @@ class ObjectStreamField implements Comparable<ObjectStreamField> {
     /**
      * Get the name of this field.
      */
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
     /**
      * Get the type of the field.
      */
-    public Class<?> getType() {
+    public Class<?> getType()
+    {
         if (clazz != null)
             return clazz;
-        switch (type) {
-        case 'B': clazz = Byte.TYPE;
-            break;
-        case 'C': clazz = Character.TYPE;
-            break;
-        case 'S': clazz = Short.TYPE;
-            break;
-        case 'I': clazz = Integer.TYPE;
-            break;
-        case 'J': clazz = Long.TYPE;
-            break;
-        case 'F': clazz = Float.TYPE;
-            break;
-        case 'D': clazz = Double.TYPE;
-            break;
-        case 'Z': clazz = Boolean.TYPE;
-            break;
-        case '[':
-        case 'L':
-            clazz = Object.class;
-            break;
+        switch (type)
+        {
+            case 'B' :
+                clazz = Byte.TYPE;
+                break;
+            case 'C' :
+                clazz = Character.TYPE;
+                break;
+            case 'S' :
+                clazz = Short.TYPE;
+                break;
+            case 'I' :
+                clazz = Integer.TYPE;
+                break;
+            case 'J' :
+                clazz = Long.TYPE;
+                break;
+            case 'F' :
+                clazz = Float.TYPE;
+                break;
+            case 'D' :
+                clazz = Double.TYPE;
+                break;
+            case 'Z' :
+                clazz = Boolean.TYPE;
+                break;
+            case '[' :
+            case 'L' :
+                clazz = Object.class;
+                break;
         }
 
         return clazz;
     }
 
-    public char getTypeCode() {
+    public char getTypeCode()
+    {
         return type;
     }
 
-    public String getTypeString() {
+    public String getTypeString()
+    {
         return typeString;
     }
 
-    Field getField() {
+    Field getField()
+    {
         return field;
     }
 
-    void setField(Field field) {
+    void setField(Field field)
+    {
         this.field = field;
-        this.fieldID = -1;
     }
 
     /*
-     * Default constructor creates an empty field.
-     * Usually used just to get to the sort functions.
+     * Default constructor creates an empty field. Usually used just to get to the sort functions.
      */
-    ObjectStreamField() {
+    ObjectStreamField()
+    {
     }
 
     /**
      * test if this field is a primitive or not.
      */
-    public boolean isPrimitive() {
+    public boolean isPrimitive()
+    {
         return (type != '[' && type != 'L');
     }
 
     /**
-     * Compare this with another ObjectStreamField.
-     * return -1 if this is smaller, 0 if equal, 1 if greater
-     * types that are primitives are "smaller" than objects.
-     * if equal, the names are compared.
+     * Compare this with another ObjectStreamField. return -1 if this is smaller, 0 if equal, 1 if greater types that
+     * are primitives are "smaller" than objects. if equal, the names are compared.
      */
-    public int compareTo(ObjectStreamField o) {
+    public int compareTo(ObjectStreamField o)
+    {
         boolean thisprim = (this.typeString == null);
         boolean otherprim = (o.typeString == null);
 
-        if (thisprim != otherprim) {
+        if (thisprim != otherprim)
+        {
             return (thisprim ? -1 : 1);
         }
         return this.name.compareTo(o.name);
     }
 
     /**
-     * Compare the types of two class descriptors.
-     * The match if they have the same primitive types.
-     * or if they are both objects and the object types match.
+     * Compare the types of two class descriptors. The match if they have the same primitive types. or if they are both
+     * objects and the object types match.
      */
-    public boolean typeEquals(ObjectStreamField other) {
+    public boolean typeEquals(ObjectStreamField other)
+    {
         if (other == null || type != other.type)
             return false;
 
@@ -210,15 +245,14 @@ class ObjectStreamField implements Comparable<ObjectStreamField> {
         if (typeString == null && other.typeString == null)
             return true;
 
-        return ObjectStreamClass_1_3_1.compareClassNames(typeString,
-                                                         other.typeString,
-                                                         '/');
+        return ObjectStreamClass_1_3_1.compareClassNames(typeString, other.typeString, '/');
     }
 
-    /* Returns the signature of the Field.
-     *
+    /*
+     * Returns the signature of the Field.
      */
-    public String getSignature() {
+    public String getSignature()
+    {
 
         return signature;
 
@@ -227,43 +261,40 @@ class ObjectStreamField implements Comparable<ObjectStreamField> {
     /**
      * Return a string describing this field.
      */
-    public String toString() {
+    public String toString()
+    {
         if (typeString != null)
             return typeString + " " + name;
         else
             return type + " " + name;
     }
 
-    public Class<?> getClazz() {
+    public Class<?> getClazz()
+    {
         return clazz;
     }
 
-    /* Returns the Field ID
-     * NOT USED, since this class is used only in ObjectStreamClass_1_3_1,
-     * which is used only in RepositoryId_1_3_1.
-    public long getFieldID( Class cl ) {
-        if (fieldID == -1) {
-            if (typeString != null)
-                fieldID = getFieldIDNative( cl, getName(), typeString );
-            else
-                fieldID = getFieldIDNative( cl, getName(), getSignature() );
-        }
-        return fieldID;
-    }
+    /*
+     * Returns the Field ID NOT USED, since this class is used only in ObjectStreamClass_1_3_1, which is used only in
+     * RepositoryId_1_3_1. public long getFieldID( Class cl ) { if (fieldID == -1) { if (typeString != null) fieldID =
+     * getFieldIDNative( cl, getName(), typeString ); else fieldID = getFieldIDNative( cl, getName(), getSignature() );
+     * } return fieldID; }
      */
 
-    private String name;                // the name of the field
-    private char type;                  // type first byte of the type signature
-    private Field field;                // Reflected field
-    private String typeString;          // iff object, typename
-    private Class<?> clazz;                // the type of this field, if has been resolved
+    private String name; // the name of the field
 
-    // the next 3 things are RMI-IIOP specific, it can be easily
-    // removed, if we can figure out all place where there are dependencies
-    // to this.  Signature is esentially equal to typestring. Then
-    // essentially we can use the java.io.ObjectStreamField as such.
+    private char type; // type first byte of the type signature
 
-    private String signature;   // the signature of the field
-    private long fieldID = -1;
-    // private static native long getFieldIDNative(Class c, String fieldName, String fieldSig);
+    private Field field; // Reflected field
+
+    private String typeString; // iff object, typename
+
+    private Class<?> clazz; // the type of this field, if has been resolved
+
+    // the next 3 things are RMI-IIOP specific, it can be easily removed, if we can figure out all place where there are
+    // dependencies to this. Signature is esentially equal to typestring. Then essentially we can use the
+    // java.io.ObjectStreamField as such.
+
+    private String signature; // the signature of the field
+
 }

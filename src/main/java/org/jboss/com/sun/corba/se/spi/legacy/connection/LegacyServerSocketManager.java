@@ -31,7 +31,9 @@ package org.jboss.com.sun.corba.se.spi.legacy.connection;
 public interface LegacyServerSocketManager
 {
     public int legacyGetTransientServerPort(String type);
+
     public int legacyGetPersistentServerPort(String socketType);
+
     public int legacyGetTransientOrPersistentServerPort(String socketType);
 
     public LegacyServerSocketEndPointInfo legacyGetEndpoint(String name);

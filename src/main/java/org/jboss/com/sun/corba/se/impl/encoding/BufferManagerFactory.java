@@ -41,106 +41,108 @@ import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 
 /**
- * Creates read/write buffer managers to handle over/under flow
- * in CDR*putStream.
+ * Creates read/write buffer managers to handle over/under flow in CDR*putStream.
  */
 
 public class BufferManagerFactory
 {
-    public static final int GROW    = 0;
+    public static final int GROW = 0;
+
     public static final int COLLECT = 1;
-    public static final int STREAM  = 2;
+
+    public static final int STREAM = 2;
 
     // The next two methods allow creation of BufferManagers based on GIOP version.
     // We may want more criteria to be involved in this decision.
     // These are only used for sending messages (so could be fragmenting)
-    public static BufferManagerRead newBufferManagerRead(
-            GIOPVersion version, byte encodingVersion, ORB orb) {
+    public static BufferManagerRead newBufferManagerRead(GIOPVersion version, byte encodingVersion, ORB orb)
+    {
 
         // REVISIT - On the reading side, shouldn't we monitor the incoming
         // fragments on a given connection to determine what fragment size
         // they're using, then use that ourselves?
 
-        if (encodingVersion != Message.CDR_ENC_VERSION) {
+        if (encodingVersion != Message.CDR_ENC_VERSION)
+        {
             return new BufferManagerReadGrow(orb);
         }
 
         switch (version.intValue())
         {
-            case GIOPVersion.VERSION_1_0:
+            case GIOPVersion.VERSION_1_0 :
                 return new BufferManagerReadGrow(orb);
-            case GIOPVersion.VERSION_1_1:
-            case GIOPVersion.VERSION_1_2:
+            case GIOPVersion.VERSION_1_1 :
+            case GIOPVersion.VERSION_1_2 :
                 // The stream reader can handle fragmented and
                 // non fragmented messages
                 return new BufferManagerReadStream(orb);
-            default:
+            default :
                 // REVISIT - what is appropriate?
-                throw new INTERNAL("Unknown GIOP version: "
-                                   + version);
+                throw new INTERNAL("Unknown GIOP version: " + version);
         }
     }
 
-    public static BufferManagerRead newBufferManagerRead(
-            int strategy, byte encodingVersion, ORB orb) {
+    public static BufferManagerRead newBufferManagerRead(int strategy, byte encodingVersion, ORB orb)
+    {
 
-        if (encodingVersion != Message.CDR_ENC_VERSION) {
-            if (strategy != BufferManagerFactory.GROW) {
-                ORBUtilSystemException wrapper =
-                    ORBUtilSystemException.get((ORB)orb,
-                                               CORBALogDomains.RPC_ENCODING);
+        if (encodingVersion != Message.CDR_ENC_VERSION)
+        {
+            if (strategy != BufferManagerFactory.GROW)
+            {
+                ORBUtilSystemException wrapper = ORBUtilSystemException.get(orb, CORBALogDomains.RPC_ENCODING);
                 throw wrapper.invalidBuffMgrStrategy("newBufferManagerRead");
             }
             return new BufferManagerReadGrow(orb);
         }
-        switch (strategy) {
-            case BufferManagerFactory.GROW:
+        switch (strategy)
+        {
+            case BufferManagerFactory.GROW :
                 return new BufferManagerReadGrow(orb);
-            case BufferManagerFactory.COLLECT:
+            case BufferManagerFactory.COLLECT :
                 throw new INTERNAL("Collect strategy invalid for reading");
-            case BufferManagerFactory.STREAM:
+            case BufferManagerFactory.STREAM :
                 return new BufferManagerReadStream(orb);
-            default:
-                throw new INTERNAL("Unknown buffer manager read strategy: "
-                                   + strategy);
+            default :
+                throw new INTERNAL("Unknown buffer manager read strategy: " + strategy);
         }
     }
 
-    public static BufferManagerWrite newBufferManagerWrite(
-            int strategy, byte encodingVersion, ORB orb) {
-        if (encodingVersion != Message.CDR_ENC_VERSION) {
-            if (strategy != BufferManagerFactory.GROW) {
-                ORBUtilSystemException wrapper =
-                    ORBUtilSystemException.get((ORB)orb,
-                                               CORBALogDomains.RPC_ENCODING);
+    public static BufferManagerWrite newBufferManagerWrite(int strategy, byte encodingVersion, ORB orb)
+    {
+        if (encodingVersion != Message.CDR_ENC_VERSION)
+        {
+            if (strategy != BufferManagerFactory.GROW)
+            {
+                ORBUtilSystemException wrapper = ORBUtilSystemException.get(orb, CORBALogDomains.RPC_ENCODING);
                 throw wrapper.invalidBuffMgrStrategy("newBufferManagerWrite");
             }
             return new BufferManagerWriteGrow(orb);
         }
-        switch (strategy) {
-            case BufferManagerFactory.GROW:
+        switch (strategy)
+        {
+            case BufferManagerFactory.GROW :
                 return new BufferManagerWriteGrow(orb);
-            case BufferManagerFactory.COLLECT:
+            case BufferManagerFactory.COLLECT :
                 return new BufferManagerWriteCollect(orb);
-            case BufferManagerFactory.STREAM:
+            case BufferManagerFactory.STREAM :
                 return new BufferManagerWriteStream(orb);
-            default:
-                throw new INTERNAL("Unknown buffer manager write strategy: "
-                                   + strategy);
+            default :
+                throw new INTERNAL("Unknown buffer manager write strategy: " + strategy);
         }
     }
 
-    public static BufferManagerWrite newBufferManagerWrite(
-        GIOPVersion version, byte encodingVersion, ORB orb) {
-        if (encodingVersion != Message.CDR_ENC_VERSION) {
+    public static BufferManagerWrite newBufferManagerWrite(GIOPVersion version, byte encodingVersion, ORB orb)
+    {
+        if (encodingVersion != Message.CDR_ENC_VERSION)
+        {
             return new BufferManagerWriteGrow(orb);
         }
-        return BufferManagerFactory.newBufferManagerWrite(
-            orb.getORBData().getGIOPBuffMgrStrategy(version),
-            encodingVersion, orb);
+        return BufferManagerFactory.newBufferManagerWrite(orb.getORBData().getGIOPBuffMgrStrategy(version),
+                encodingVersion, orb);
     }
 
-    public static BufferManagerRead defaultBufferManagerRead(ORB orb) {
+    public static BufferManagerRead defaultBufferManagerRead(ORB orb)
+    {
         return new BufferManagerReadGrow(orb);
     }
 }

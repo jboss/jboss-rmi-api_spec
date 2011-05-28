@@ -34,49 +34,47 @@ import org.omg.IOP.TAG_ALTERNATE_IIOP_ADDRESS;
 /**
  * @author Ken Cavanaugh
  */
-public class AlternateIIOPAddressComponentImpl extends TaggedComponentBase
-    implements AlternateIIOPAddressComponent
+public class AlternateIIOPAddressComponentImpl extends TaggedComponentBase implements AlternateIIOPAddressComponent
 {
-    private IIOPAddress addr ;
+    private IIOPAddress addr;
 
-    public boolean equals( Object obj )
+    public boolean equals(Object obj)
     {
         if (!(obj instanceof AlternateIIOPAddressComponentImpl))
-            return false ;
+            return false;
 
-        AlternateIIOPAddressComponentImpl other =
-            (AlternateIIOPAddressComponentImpl)obj ;
+        AlternateIIOPAddressComponentImpl other = (AlternateIIOPAddressComponentImpl) obj;
 
-        return addr.equals( other.addr ) ;
+        return addr.equals(other.addr);
     }
 
     public int hashCode()
     {
-        return addr.hashCode() ;
+        return addr.hashCode();
     }
 
     public String toString()
     {
-        return "AlternateIIOPAddressComponentImpl[addr=" + addr + "]" ;
+        return "AlternateIIOPAddressComponentImpl[addr=" + addr + "]";
     }
 
-    public AlternateIIOPAddressComponentImpl( IIOPAddress addr )
+    public AlternateIIOPAddressComponentImpl(IIOPAddress addr)
     {
-        this.addr = addr ;
+        this.addr = addr;
     }
 
     public IIOPAddress getAddress()
     {
-        return addr ;
+        return addr;
     }
 
     public void writeContents(OutputStream os)
     {
-        addr.write( os ) ;
+        addr.write(os);
     }
 
     public int getId()
     {
-        return TAG_ALTERNATE_IIOP_ADDRESS.value ; // 3 in CORBA 2.3.1 13.6.3
+        return TAG_ALTERNATE_IIOP_ADDRESS.value; // 3 in CORBA 2.3.1 13.6.3
     }
 }

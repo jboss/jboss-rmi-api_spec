@@ -43,117 +43,114 @@ import org.omg.CORBA_2_3.portable.OutputStream;
 import org.omg.IOP.TAG_INTERNET_IOP;
 
 /**
- * @author
- * If getMinorVersion==0, this does not contain any tagged components
+ * @author If getMinorVersion==0, this does not contain any tagged components
  */
-public class IIOPProfileTemplateImpl extends TaggedProfileTemplateBase
-    implements IIOPProfileTemplate
+public class IIOPProfileTemplateImpl extends TaggedProfileTemplateBase implements IIOPProfileTemplate
 {
-    private ORB orb ;
-    private GIOPVersion giopVersion ;
-    private IIOPAddress primary ;
+    private ORB orb;
 
-    public boolean equals( Object obj )
+    private GIOPVersion giopVersion;
+
+    private IIOPAddress primary;
+
+    public boolean equals(Object obj)
     {
         if (!(obj instanceof IIOPProfileTemplateImpl))
-            return false ;
+            return false;
 
-        IIOPProfileTemplateImpl other = (IIOPProfileTemplateImpl)obj ;
+        IIOPProfileTemplateImpl other = (IIOPProfileTemplateImpl) obj;
 
-        return super.equals( obj ) && giopVersion.equals( other.giopVersion ) &&
-            primary.equals( other.primary ) ;
+        return super.equals(obj) && giopVersion.equals(other.giopVersion) && primary.equals(other.primary);
     }
 
     public int hashCode()
     {
-        return super.hashCode() ^ giopVersion.hashCode() ^ primary.hashCode() ;
+        return super.hashCode() ^ giopVersion.hashCode() ^ primary.hashCode();
     }
 
-    public TaggedProfile create( ObjectKeyTemplate oktemp, ObjectId id )
+    public TaggedProfile create(ObjectKeyTemplate oktemp, ObjectId id)
     {
-        return IIOPFactories.makeIIOPProfile( orb, oktemp, id, this ) ;
+        return IIOPFactories.makeIIOPProfile(orb, oktemp, id, this);
     }
 
     public GIOPVersion getGIOPVersion()
     {
-        return giopVersion ;
+        return giopVersion;
     }
 
     public IIOPAddress getPrimaryAddress()
     {
-        return primary ;
+        return primary;
     }
 
-    public IIOPProfileTemplateImpl( ORB orb, GIOPVersion version, IIOPAddress primary )
+    public IIOPProfileTemplateImpl(ORB orb, GIOPVersion version, IIOPAddress primary)
     {
-        this.orb = orb ;
-        this.giopVersion = version ;
-        this.primary = primary ;
+        this.orb = orb;
+        this.giopVersion = version;
+        this.primary = primary;
         if (giopVersion.getMinor() == 0)
-            // Adding tagged components is not allowed for IIOP 1.0,
-            // so this template is complete and should be made immutable.
-            makeImmutable() ;
+            // Adding tagged components is not allowed for IIOP 1.0, so this template is complete and should be made
+            // immutable.
+            makeImmutable();
     }
 
-    public IIOPProfileTemplateImpl( InputStream istr )
+    public IIOPProfileTemplateImpl(InputStream istr)
     {
-        byte major = istr.read_octet() ;
-        byte minor = istr.read_octet() ;
-        giopVersion = GIOPVersion.getInstance( major, minor ) ;
-        primary = new IIOPAddressImpl( istr ) ;
-        orb = (ORB)(istr.orb()) ;
+        byte major = istr.read_octet();
+        byte minor = istr.read_octet();
+        giopVersion = GIOPVersion.getInstance(major, minor);
+        primary = new IIOPAddressImpl(istr);
+        orb = (ORB) (istr.orb());
         // Handle any tagged components (if applicable)
         if (minor > 0)
-            EncapsulationUtility.readIdentifiableSequence(
-                this, orb.getTaggedComponentFactoryFinder(), istr ) ;
+            EncapsulationUtility.readIdentifiableSequence(this, orb.getTaggedComponentFactoryFinder(), istr);
 
-        makeImmutable() ;
+        makeImmutable();
     }
 
-    public void write( ObjectKeyTemplate okeyTemplate, ObjectId id, OutputStream os)
+    public void write(ObjectKeyTemplate okeyTemplate, ObjectId id, OutputStream os)
     {
-        giopVersion.write( os ) ;
-        primary.write( os ) ;
+        giopVersion.write(os);
+        primary.write(os);
 
-        // Note that this is NOT an encapsulation: do not marshal
-        // the endianness flag.  However, the length is required.
+        // Note that this is NOT an encapsulation: do not marshal the endianness flag. However, the length is required.
         // Note that this cannot be accomplished with a codec!
 
         // Use the byte order of the given stream
-        OutputStream encapsulatedOS = new EncapsOutputStream( (ORB)os.orb(),
-            ((CDROutputStream)os).isLittleEndian() ) ;
+        OutputStream encapsulatedOS = new EncapsOutputStream((ORB) os.orb(), ((CDROutputStream) os).isLittleEndian());
 
-        okeyTemplate.write( id, encapsulatedOS ) ;
-        EncapsulationUtility.writeOutputStream( encapsulatedOS, os ) ;
+        okeyTemplate.write(id, encapsulatedOS);
+        EncapsulationUtility.writeOutputStream(encapsulatedOS, os);
 
         if (giopVersion.getMinor() > 0)
-            EncapsulationUtility.writeIdentifiableSequence( this, os ) ;
+            EncapsulationUtility.writeIdentifiableSequence(this, os);
     }
 
-    /** Write out this IIOPProfileTemplateImpl only.
-    */
-    public void writeContents( OutputStream os)
+    /**
+     * Write out this IIOPProfileTemplateImpl only.
+     */
+    public void writeContents(OutputStream os)
     {
-        giopVersion.write( os ) ;
-        primary.write( os ) ;
+        giopVersion.write(os);
+        primary.write(os);
 
         if (giopVersion.getMinor() > 0)
-            EncapsulationUtility.writeIdentifiableSequence( this, os ) ;
+            EncapsulationUtility.writeIdentifiableSequence(this, os);
     }
 
     public int getId()
     {
-        return TAG_INTERNET_IOP.value ;
+        return TAG_INTERNET_IOP.value;
     }
 
-    public boolean isEquivalent( TaggedProfileTemplate temp )
+    public boolean isEquivalent(TaggedProfileTemplate temp)
     {
         if (!(temp instanceof IIOPProfileTemplateImpl))
-            return false ;
+            return false;
 
-        IIOPProfileTemplateImpl tempimp = (IIOPProfileTemplateImpl)temp ;
+        IIOPProfileTemplateImpl tempimp = (IIOPProfileTemplateImpl) temp;
 
-        return primary.equals( tempimp.primary )  ;
+        return primary.equals(tempimp.primary);
     }
 
 }

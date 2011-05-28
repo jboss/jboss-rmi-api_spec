@@ -32,28 +32,27 @@ import org.jboss.com.sun.corba.se.spi.presentation.rmi.PresentationManager;
 
 public abstract class PresentationDefaults
 {
-    private static StubFactoryFactoryStaticImpl staticImpl = null ;
+    private static StubFactoryFactoryStaticImpl staticImpl = null;
 
-    private PresentationDefaults() {}
-
-    public synchronized static PresentationManager.StubFactoryFactory
-        getStaticStubFactoryFactory()
+    private PresentationDefaults()
     {
-        if (staticImpl == null)
-            staticImpl = new StubFactoryFactoryStaticImpl( );
-
-        return staticImpl ;
     }
 
-    public static PresentationManager.StubFactoryFactory
-        getProxyStubFactoryFactory()
+    public synchronized static PresentationManager.StubFactoryFactory getStaticStubFactoryFactory()
+    {
+        if (staticImpl == null)
+            staticImpl = new StubFactoryFactoryStaticImpl();
+
+        return staticImpl;
+    }
+
+    public static PresentationManager.StubFactoryFactory getProxyStubFactoryFactory()
     {
         return new StubFactoryFactoryProxyImpl();
     }
 
-    public static PresentationManager.StubFactory makeStaticStubFactory(
-        Class<?> stubClass )
+    public static PresentationManager.StubFactory makeStaticStubFactory(Class<?> stubClass)
     {
-        return new StubFactoryStaticImpl( stubClass ) ;
+        return new StubFactoryStaticImpl(stubClass);
     }
 }

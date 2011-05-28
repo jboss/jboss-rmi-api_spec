@@ -23,71 +23,68 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.orb ;
+package org.jboss.com.sun.corba.se.impl.orb;
 
 import org.jboss.com.sun.corba.se.spi.orb.ORBVersion;
 import org.omg.CORBA.portable.OutputStream;
 
-public class ORBVersionImpl implements ORBVersion {
-    private byte orbType ;
+public class ORBVersionImpl implements ORBVersion
+{
+    private byte orbType;
 
-    public ORBVersionImpl( byte orbType )
+    public ORBVersionImpl(byte orbType)
     {
-        this.orbType = orbType ;
+        this.orbType = orbType;
     }
 
-    public static final ORBVersion FOREIGN = new ORBVersionImpl(
-        ORBVersion.FOREIGN ) ;
+    public static final ORBVersion FOREIGN = new ORBVersionImpl(ORBVersion.FOREIGN);
 
-    public static final ORBVersion OLD = new ORBVersionImpl(
-        ORBVersion.OLD ) ;
+    public static final ORBVersion OLD = new ORBVersionImpl(ORBVersion.OLD);
 
-    public static final ORBVersion NEW = new ORBVersionImpl(
-        ORBVersion.NEW ) ;
+    public static final ORBVersion NEW = new ORBVersionImpl(ORBVersion.NEW);
 
-    public static final ORBVersion JDK1_3_1_01 = new ORBVersionImpl(
-        ORBVersion.JDK1_3_1_01 ) ;
+    public static final ORBVersion JDK1_3_1_01 = new ORBVersionImpl(ORBVersion.JDK1_3_1_01);
 
-    public static final ORBVersion NEWER = new ORBVersionImpl(
-        ORBVersion.NEWER ) ;
+    public static final ORBVersion NEWER = new ORBVersionImpl(ORBVersion.NEWER);
 
-    public static final ORBVersion PEORB = new ORBVersionImpl(
-        ORBVersion.PEORB ) ;
+    public static final ORBVersion PEORB = new ORBVersionImpl(ORBVersion.PEORB);
 
     public byte getORBType()
     {
-        return orbType ;
+        return orbType;
     }
 
-    public void write( OutputStream os )
+    public void write(OutputStream os)
     {
-        os.write_octet( (byte)orbType ) ;
+        os.write_octet(orbType);
     }
 
     public String toString()
     {
-        return "ORBVersionImpl[" + Byte.toString( orbType ) + "]" ;
+        return "ORBVersionImpl[" + Byte.toString(orbType) + "]";
     }
 
-    public boolean equals( Object obj )
+    public boolean equals(Object obj)
     {
         if (!(obj instanceof ORBVersion))
-            return false ;
+            return false;
 
-        ORBVersion version = (ORBVersion)obj ;
-        return version.getORBType() == orbType ;
+        ORBVersion version = (ORBVersion) obj;
+        return version.getORBType() == orbType;
     }
 
     public int hashCode()
     {
-        return orbType ;
+        return orbType;
     }
 
-    public boolean lessThan(ORBVersion version) {
+    public boolean lessThan(ORBVersion version)
+    {
         return orbType < version.getORBType();
     }
 
-    public int compareTo(ORBVersion obj) {
+    public int compareTo(ORBVersion obj)
+    {
         // The Comparable interface says that this
         // method throws a ClassCastException if the
         // given object's type prevents it from being

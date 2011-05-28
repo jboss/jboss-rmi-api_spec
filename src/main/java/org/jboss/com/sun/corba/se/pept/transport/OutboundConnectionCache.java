@@ -28,8 +28,7 @@ package org.jboss.com.sun.corba.se.pept.transport;
 /**
  * @author Harold Carr
  */
-public interface OutboundConnectionCache
-    extends ConnectionCache
+public interface OutboundConnectionCache extends ConnectionCache
 {
     public Connection get(ContactInfo contactInfo);
 

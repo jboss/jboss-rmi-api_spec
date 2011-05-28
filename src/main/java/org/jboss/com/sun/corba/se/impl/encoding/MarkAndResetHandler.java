@@ -24,10 +24,8 @@
  */
 package org.jboss.com.sun.corba.se.impl.encoding;
 
-
 /**
- * Defines an abstraction for a RestorableInputStream to
- * implement mark/reset.
+ * Defines an abstraction for a RestorableInputStream to implement mark/reset.
  */
 interface MarkAndResetHandler
 {

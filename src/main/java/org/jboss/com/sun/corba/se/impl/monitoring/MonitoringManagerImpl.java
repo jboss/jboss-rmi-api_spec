@@ -30,21 +30,23 @@ import org.jboss.com.sun.corba.se.spi.monitoring.MonitoredObject;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoredObjectFactory;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoringFactories;
 
-public class MonitoringManagerImpl implements MonitoringManager {
+public class MonitoringManagerImpl implements MonitoringManager
+{
     private final MonitoredObject rootMonitoredObject;
 
-    MonitoringManagerImpl( String nameOfTheRoot, String description ) {
-        MonitoredObjectFactory f =
-            MonitoringFactories.getMonitoredObjectFactory();
-        rootMonitoredObject =
-            f.createMonitoredObject( nameOfTheRoot, description );
+    MonitoringManagerImpl(String nameOfTheRoot, String description)
+    {
+        MonitoredObjectFactory f = MonitoringFactories.getMonitoredObjectFactory();
+        rootMonitoredObject = f.createMonitoredObject(nameOfTheRoot, description);
     }
 
-    public void clearState( ) {
-        rootMonitoredObject.clearState( );
+    public void clearState()
+    {
+        rootMonitoredObject.clearState();
     }
 
-    public MonitoredObject getRootMonitoredObject( ) {
+    public MonitoredObject getRootMonitoredObject()
+    {
         return rootMonitoredObject;
     }
 }

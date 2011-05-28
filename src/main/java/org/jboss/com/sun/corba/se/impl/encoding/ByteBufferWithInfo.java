@@ -32,34 +32,32 @@ import org.jboss.com.sun.corba.se.impl.orbutil.ORBUtility;
 import org.jboss.com.sun.corba.se.pept.transport.ByteBufferPool;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 
-
-// Notes about the class.
-// Assumptions, the ByteBuffer's position is set by the constructor's
-// index variable and the ByteBuffer's limit points to the end of the
-// data. Also, since the index variable tracks the current empty
-// position in the buffer, the ByteBuffer's position is updated
-// any time there's a call to this class's position().
-// Although, a ByteBuffer's length is it's capacity(), the context in
-// which length is used in this object, this.buflen is actually the
-// ByteBuffer limit().
-
+// Notes about the class. Assumptions, the ByteBuffer's position is set by the constructor's index variable and the 
+// ByteBuffer's limit points to the end of the data. Also, since the index variable tracks the current empty position
+// in the buffer, the ByteBuffer's position is updated any time there's a call to this class's position(). Although,
+// a ByteBuffer's length is it's capacity(), the context in which length is used in this object, this.buflen is 
+// actually the ByteBuffer limit().
 public class ByteBufferWithInfo
 {
     private ORB orb;
+
     private boolean debug;
+
     // REVISIT - index should eventually be replaced with byteBuffer.position()
-    private int     index;     // Current empty position in buffer.
+    private int index; // Current empty position in buffer.
+
     // REVISIT - CHANGE THESE TO PRIVATE
     public ByteBuffer byteBuffer;// Marshal buffer.
-    public int     buflen;     // Total length of buffer. // Unnecessary...
-    public int     needed;     // How many more bytes are needed on overflow.
+
+    public int buflen; // Total length of buffer. // Unnecessary...
+
+    public int needed; // How many more bytes are needed on overflow.
+
     public boolean fragmented; // Did the overflow operation fragment?
 
-    public ByteBufferWithInfo(org.omg.CORBA.ORB orb,
-                              ByteBuffer byteBuffer,
-                              int index)
+    public ByteBufferWithInfo(org.omg.CORBA.ORB orb, ByteBuffer byteBuffer, int index)
     {
-        this.orb = (org.jboss.com.sun.corba.se.spi.orb.ORB)orb;
+        this.orb = (org.jboss.com.sun.corba.se.spi.orb.ORB) orb;
         debug = this.orb.transportDebugFlag;
         this.byteBuffer = byteBuffer;
         if (byteBuffer != null)
@@ -76,8 +74,7 @@ public class ByteBufferWithInfo
         this(orb, byteBuffer, 0);
     }
 
-    public ByteBufferWithInfo(org.omg.CORBA.ORB orb,
-                              BufferManagerWrite bufferManager)
+    public ByteBufferWithInfo(org.omg.CORBA.ORB orb, BufferManagerWrite bufferManager)
     {
         this(orb, bufferManager, true);
     }
@@ -87,11 +84,9 @@ public class ByteBufferWithInfo
     // byte buffers. Hence, the reason for the boolean 'usePooledByteBuffers'.
     // See EncapsOutputStream for additional information.
 
-    public ByteBufferWithInfo(org.omg.CORBA.ORB orb,
-                              BufferManagerWrite bufferManager,
-                              boolean usePooledByteBuffers)
+    public ByteBufferWithInfo(org.omg.CORBA.ORB orb, BufferManagerWrite bufferManager, boolean usePooledByteBuffers)
     {
-        this.orb = (org.jboss.com.sun.corba.se.spi.orb.ORB)orb;
+        this.orb = (org.jboss.com.sun.corba.se.spi.orb.ORB) orb;
         debug = this.orb.transportDebugFlag;
 
         int bufferSize = bufferManager.getBufferSize();
@@ -106,17 +101,16 @@ public class ByteBufferWithInfo
                 // print address of ByteBuffer gotten from pool
                 int bbAddress = System.identityHashCode(byteBuffer);
                 StringBuffer sb = new StringBuffer(80);
-                sb.append("constructor (ORB, BufferManagerWrite) - got ")
-                  .append("ByteBuffer id (").append(bbAddress)
-                  .append(") from ByteBufferPool.");
+                sb.append("constructor (ORB, BufferManagerWrite) - got ").append("ByteBuffer id (").append(bbAddress)
+                        .append(") from ByteBufferPool.");
                 String msgStr = sb.toString();
                 dprint(msgStr);
             }
         }
         else
         {
-             // don't allocate from pool, allocate non-direct ByteBuffer
-             this.byteBuffer = ByteBuffer.allocate(bufferSize);
+            // don't allocate from pool, allocate non-direct ByteBuffer
+            this.byteBuffer = ByteBuffer.allocate(bufferSize);
         }
 
         position(0);
@@ -127,7 +121,7 @@ public class ByteBufferWithInfo
     }
 
     // Shallow copy constructor
-    public ByteBufferWithInfo (ByteBufferWithInfo bbwi)
+    public ByteBufferWithInfo(ByteBufferWithInfo bbwi)
     {
         this.orb = bbwi.orb;
         this.debug = bbwi.debug;
@@ -148,30 +142,23 @@ public class ByteBufferWithInfo
     // accessor to buflen
     public int getLength()
     {
-         return buflen;
+        return buflen;
     }
 
     // get position in this buffer
     public int position()
     {
-        // REVISIT - This should be changed to return the
-        //           value of byteBuffer.position() rather
-        //           than this.index. But, byteBuffer.position
-        //           is manipulated via ByteBuffer writes, reads,
-        //           gets and puts. These locations need to be
-        //           investigated and updated before
-        //           byteBuffer.position() can be returned here.
-        // return byteBuffer.position();
+        // REVISIT - This should be changed to return the value of byteBuffer.position() rather than this.index. But,
+        // byteBuffer.position is manipulated via ByteBuffer writes, reads, gets and puts. These locations need to be
+        // investigated and updated before byteBuffer.position() can be returned here. return byteBuffer.position();
         return index;
     }
 
     // set position in this buffer
     public void position(int newPosition)
     {
-        // REVISIT - This should be changed to set only the
-        //           value of byteBuffer.position rather
-        //           than this.index. This change should be made
-        //           in conjunction with the change to this.position().
+        // REVISIT - This should be changed to set only the value of byteBuffer.position rather than this.index. This
+        // change should be made in conjunction with the change to this.position().
         byteBuffer.position(newPosition);
         index = newPosition;
     }
@@ -188,9 +175,7 @@ public class ByteBufferWithInfo
     {
         // This code used to live directly in CDROutputStream.grow.
 
-        // Recall that the byteBuffer size is 'really' the limit or
-        // buflen.
-
+        // Recall that the byteBuffer size is 'really' the limit or buflen.
         int newLength = byteBuffer.limit() * 2;
 
         while (position() + needed >= newLength)

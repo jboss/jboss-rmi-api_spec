@@ -39,10 +39,11 @@ import org.omg.CORBA.portable.InvokeHandler;
 /**
  * Defines methods which all RMI-IIOP server side ties must implement.
  */
-public interface Tie extends InvokeHandler {
+public interface Tie extends InvokeHandler
+{
     /**
-     * Returns an object reference for the target object represented by
-     * this tie.
+     * Returns an object reference for the target object represented by this tie.
+     * 
      * @return an object reference for the target object.
      */
     org.omg.CORBA.Object thisObject();
@@ -54,25 +55,30 @@ public interface Tie extends InvokeHandler {
 
     /**
      * Returns the ORB for this tie.
+     * 
      * @return the ORB.
      */
     ORB orb();
 
     /**
      * Sets the ORB for this tie.
-     * @param orb the ORB.
+     * 
+     * @param orb
+     *            the ORB.
      */
     void orb(ORB orb);
 
     /**
-     * Called by {@link Util#registerTarget} to set the target
-     * for this tie.
-     * @param target the object to use as the target for this tie.
+     * Called by {@link Util#registerTarget} to set the target for this tie.
+     * 
+     * @param target
+     *            the object to use as the target for this tie.
      */
     void setTarget(java.rmi.Remote target);
 
     /**
      * Returns the target for this tie.
+     * 
      * @return the target.
      */
     Remote getTarget();

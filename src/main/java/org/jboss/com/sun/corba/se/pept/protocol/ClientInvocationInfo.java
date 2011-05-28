@@ -32,9 +32,9 @@ import java.util.Iterator;
  */
 public interface ClientInvocationInfo
 {
-    public Iterator getContactInfoListIterator();
+    public Iterator<Object> getContactInfoListIterator();
 
-    public void setContactInfoListIterator(Iterator contactInfoListIterator);
+    public void setContactInfoListIterator(Iterator<Object> contactInfoListIterator);
 
     public boolean isRetryInvocation();
 

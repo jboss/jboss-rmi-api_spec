@@ -34,24 +34,20 @@ import org.jboss.com.sun.corba.se.spi.ior.iiop.RequestPartitioningComponent;
 import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.omg.CORBA_2_3.portable.OutputStream;
 
-
-public class RequestPartitioningComponentImpl extends TaggedComponentBase
-    implements RequestPartitioningComponent
+public class RequestPartitioningComponentImpl extends TaggedComponentBase implements RequestPartitioningComponent
 {
-    private static ORBUtilSystemException wrapper =
-        ORBUtilSystemException.get( CORBALogDomains.OA_IOR ) ;
+    private static ORBUtilSystemException wrapper = ORBUtilSystemException.get(CORBALogDomains.OA_IOR);
 
     private int partitionToUse;
 
     public boolean equals(Object obj)
     {
         if (!(obj instanceof RequestPartitioningComponentImpl))
-            return false ;
+            return false;
 
-        RequestPartitioningComponentImpl other =
-            (RequestPartitioningComponentImpl)obj ;
+        RequestPartitioningComponentImpl other = (RequestPartitioningComponentImpl) obj;
 
-        return partitionToUse == other.partitionToUse ;
+        return partitionToUse == other.partitionToUse;
     }
 
     public int hashCode()
@@ -61,7 +57,7 @@ public class RequestPartitioningComponentImpl extends TaggedComponentBase
 
     public String toString()
     {
-        return "RequestPartitioningComponentImpl[partitionToUse=" + partitionToUse + "]" ;
+        return "RequestPartitioningComponentImpl[partitionToUse=" + partitionToUse + "]";
     }
 
     public RequestPartitioningComponentImpl()
@@ -69,13 +65,14 @@ public class RequestPartitioningComponentImpl extends TaggedComponentBase
         partitionToUse = 0;
     }
 
-    public RequestPartitioningComponentImpl(int thePartitionToUse) {
-        if (thePartitionToUse < ORBConstants.REQUEST_PARTITIONING_MIN_THREAD_POOL_ID ||
-            thePartitionToUse > ORBConstants.REQUEST_PARTITIONING_MAX_THREAD_POOL_ID) {
-            throw wrapper.invalidRequestPartitioningComponentValue(
-                  new Integer(thePartitionToUse),
-                  new Integer(ORBConstants.REQUEST_PARTITIONING_MIN_THREAD_POOL_ID),
-                  new Integer(ORBConstants.REQUEST_PARTITIONING_MAX_THREAD_POOL_ID));
+    public RequestPartitioningComponentImpl(int thePartitionToUse)
+    {
+        if (thePartitionToUse < ORBConstants.REQUEST_PARTITIONING_MIN_THREAD_POOL_ID
+                || thePartitionToUse > ORBConstants.REQUEST_PARTITIONING_MAX_THREAD_POOL_ID)
+        {
+            throw wrapper.invalidRequestPartitioningComponentValue(new Integer(thePartitionToUse), new Integer(
+                    ORBConstants.REQUEST_PARTITIONING_MIN_THREAD_POOL_ID), new Integer(
+                    ORBConstants.REQUEST_PARTITIONING_MAX_THREAD_POOL_ID));
         }
         partitionToUse = thePartitionToUse;
     }

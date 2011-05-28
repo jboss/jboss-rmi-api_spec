@@ -28,18 +28,19 @@ package org.jboss.com.sun.corba.se.spi.ior.iiop;
 import org.jboss.com.sun.corba.se.spi.ior.TaggedProfileTemplate;
 
 /**
- * IIOPProfileTemplate represents the parts of an IIOPProfile that are independent
- * of the object identifier.  It is a container of tagged components.
+ * IIOPProfileTemplate represents the parts of an IIOPProfile that are independent of the object identifier. It is a
+ * container of tagged components.
  */
 public interface IIOPProfileTemplate extends TaggedProfileTemplate
 {
-    /** Return the GIOP version of this profile.
-    */
-    public GIOPVersion getGIOPVersion() ;
+    /**
+     * Return the GIOP version of this profile.
+     */
+    public GIOPVersion getGIOPVersion();
 
-    /** Return the IIOP address from the IIOP profile.  This is called the
-    * primary address here since other addresses may be contained in
-    * components.
-    */
-    public IIOPAddress getPrimaryAddress()  ;
+    /**
+     * Return the IIOP address from the IIOP profile. This is called the primary address here since other addresses may
+     * be contained in components.
+     */
+    public IIOPAddress getPrimaryAddress();
 }

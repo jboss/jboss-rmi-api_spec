@@ -32,5 +32,5 @@ import org.jboss.com.sun.corba.se.spi.ior.TaggedComponent;
  */
 public interface AlternateIIOPAddressComponent extends TaggedComponent
 {
-    public IIOPAddress getAddress() ;
+    public IIOPAddress getAddress();
 }

@@ -35,36 +35,37 @@ import org.omg.CORBA_2_3.portable.InputStream;
  */
 public final class IIOPAddressImpl extends IIOPAddressBase
 {
-    private IORSystemException wrapper ;
+    private IORSystemException wrapper;
+
     private String host;
+
     private int port;
 
-    public IIOPAddressImpl( ORB orb, String host, int port )
+    public IIOPAddressImpl(ORB orb, String host, int port)
     {
-        wrapper = IORSystemException.get( orb,
-            CORBALogDomains.OA_IOR ) ;
+        wrapper = IORSystemException.get(orb, CORBALogDomains.OA_IOR);
 
         if ((port < 0) || (port > 65535))
-            throw wrapper.badIiopAddressPort( new Integer(port)) ;
+            throw wrapper.badIiopAddressPort(new Integer(port));
 
-        this.host = host ;
-        this.port = port ;
+        this.host = host;
+        this.port = port;
     }
 
-    public IIOPAddressImpl( InputStream is )
+    public IIOPAddressImpl(InputStream is)
     {
-        host = is.read_string() ;
-        short thePort = is.read_short() ;
-        port = shortToInt( thePort ) ;
+        host = is.read_string();
+        short thePort = is.read_short();
+        port = shortToInt(thePort);
     }
 
     public String getHost()
     {
-        return host ;
+        return host;
     }
 
     public int getPort()
     {
-        return port ;
+        return port;
     }
 }

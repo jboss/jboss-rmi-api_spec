@@ -33,48 +33,47 @@ import org.omg.IOP.TAG_ORB_TYPE;
 /**
  * @author Ken Cavanaugh
  */
-public class ORBTypeComponentImpl extends TaggedComponentBase
-    implements ORBTypeComponent
+public class ORBTypeComponentImpl extends TaggedComponentBase implements ORBTypeComponent
 {
     private int ORBType;
 
-    public boolean equals( Object obj )
+    public boolean equals(Object obj)
     {
         if (!(obj instanceof ORBTypeComponentImpl))
-            return false ;
+            return false;
 
-        ORBTypeComponentImpl other = (ORBTypeComponentImpl)obj ;
+        ORBTypeComponentImpl other = (ORBTypeComponentImpl) obj;
 
-        return ORBType == other.ORBType ;
+        return ORBType == other.ORBType;
     }
 
     public int hashCode()
     {
-        return ORBType ;
+        return ORBType;
     }
 
     public String toString()
     {
-        return "ORBTypeComponentImpl[ORBType=" + ORBType + "]" ;
+        return "ORBTypeComponentImpl[ORBType=" + ORBType + "]";
     }
 
     public ORBTypeComponentImpl(int ORBType)
     {
-        this.ORBType = ORBType ;
+        this.ORBType = ORBType;
     }
 
     public int getId()
     {
-        return TAG_ORB_TYPE.value ; // 0 in CORBA 2.3.1 13.6.3
+        return TAG_ORB_TYPE.value; // 0 in CORBA 2.3.1 13.6.3
     }
 
     public int getORBType()
     {
-        return ORBType ;
+        return ORBType;
     }
 
     public void writeContents(OutputStream os)
     {
-        os.write_ulong( ORBType ) ;
+        os.write_ulong(ORBType);
     }
 }

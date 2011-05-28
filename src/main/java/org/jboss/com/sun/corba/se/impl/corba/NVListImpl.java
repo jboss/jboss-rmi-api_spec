@@ -41,17 +41,19 @@ import org.omg.CORBA.NamedValue;
 
 public class NVListImpl extends NVList
 {
-    private final int    INITIAL_CAPACITY       = 4;
-    private final int    CAPACITY_INCREMENT     = 2;
+    private final int INITIAL_CAPACITY = 4;
 
-    private Vector _namedValues;
+    private final int CAPACITY_INCREMENT = 2;
+
+    private Vector<NamedValue> _namedValues;
+
     private ORB orb;
 
     public NVListImpl(ORB orb)
     {
         // Note: This orb could be an instanceof ORBSingleton or ORB
         this.orb = orb;
-        _namedValues = new Vector(INITIAL_CAPACITY, CAPACITY_INCREMENT);
+        _namedValues = new Vector<NamedValue>(INITIAL_CAPACITY, CAPACITY_INCREMENT);
     }
 
     public NVListImpl(ORB orb, int size)
@@ -59,9 +61,8 @@ public class NVListImpl extends NVList
         this.orb = orb;
 
         // Note: the size arg is only a hint of the size of the NVList.
-        _namedValues = new Vector(size);
+        _namedValues = new Vector<NamedValue>(size);
     }
-
 
     public int count()
     {
@@ -77,8 +78,7 @@ public class NVListImpl extends NVList
 
     public NamedValue add_item(String itemName, int flags)
     {
-        NamedValue tmpVal = new NamedValueImpl(orb, itemName, new AnyImpl(orb),
-                                               flags);
+        NamedValue tmpVal = new NamedValueImpl(orb, itemName, new AnyImpl(orb), flags);
         _namedValues.addElement(tmpVal);
         return tmpVal;
     }
@@ -90,22 +90,26 @@ public class NVListImpl extends NVList
         return tmpVal;
     }
 
-    public NamedValue item(int index)
-        throws Bounds
+    public NamedValue item(int index) throws Bounds
     {
-        try {
-            return (NamedValue) _namedValues.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        try
+        {
+            return _namedValues.elementAt(index);
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
             throw new Bounds();
         }
     }
 
-    public void remove(int index)
-        throws Bounds
+    public void remove(int index) throws Bounds
     {
-        try {
+        try
+        {
             _namedValues.removeElementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
             throw new Bounds();
         }
     }

@@ -34,20 +34,18 @@ public interface Work
     public void doWork();
 
     /**
-     * This methods sets the time in millis in the work item, when this
-     * work item was enqueued in the work queue.
+     * This methods sets the time in millis in the work item, when this work item was enqueued in the work queue.
      */
     public void setEnqueueTime(long timeInMillis);
 
     /**
-     * This methods gets the time in millis in the work item, when this
-     * work item was enqueued in the work queue.
+     * This methods gets the time in millis in the work item, when this work item was enqueued in the work queue.
      */
     public long getEnqueueTime();
 
     /**
-    * This method will return the name of the work item.
-    */
+     * This method will return the name of the work item.
+     */
     public String getName();
 
 }

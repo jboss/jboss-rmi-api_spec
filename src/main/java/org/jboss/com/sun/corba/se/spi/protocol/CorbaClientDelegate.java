@@ -25,9 +25,9 @@
 
 package org.jboss.com.sun.corba.se.spi.protocol;
 
-public abstract class CorbaClientDelegate
-    extends org.omg.CORBA_2_3.portable.Delegate
-    implements org.jboss.com.sun.corba.se.pept.protocol.ClientDelegate
+public abstract class CorbaClientDelegate extends org.omg.CORBA_2_3.portable.Delegate
+        implements
+            org.jboss.com.sun.corba.se.pept.protocol.ClientDelegate
 {
 }
 

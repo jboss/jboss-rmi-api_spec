@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.oa.poa ;
+package org.jboss.com.sun.corba.se.impl.oa.poa;
 
 import org.jboss.com.sun.corba.se.impl.oa.NullServantImpl;
 import org.omg.PortableServer.ForwardRequest;
@@ -33,32 +33,31 @@ import org.omg.PortableServer.POAPackage.NoServant;
 import org.omg.PortableServer.POAPackage.ObjectNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
-/** Implementation of POARequesHandler that provides policy specific
- * operations on the POA in the case:
+/**
+ * Implementation of POARequesHandler that provides policy specific operations on the POA in the case:
  * <ul>
  * <li>retain</li>
  * <li>useActiveObjectMapOnly</li>
  * </ul>
  */
-public class POAPolicyMediatorImpl_R_AOM extends POAPolicyMediatorBase_R {
-    POAPolicyMediatorImpl_R_AOM( Policies policies, POAImpl poa )
+public class POAPolicyMediatorImpl_R_AOM extends POAPolicyMediatorBase_R
+{
+    POAPolicyMediatorImpl_R_AOM(Policies policies, POAImpl poa)
     {
         // assert policies.retainServants()
-        super( policies, poa ) ;
+        super(policies, poa);
 
         // policies.useActiveObjectMapOnly()
         if (!policies.useActiveMapOnly())
-            throw poa.invocationWrapper().policyMediatorBadPolicyInFactory() ;
+            throw poa.invocationWrapper().policyMediatorBadPolicyInFactory();
     }
 
-    protected java.lang.Object internalGetServant( byte[] id,
-        String operation ) throws ForwardRequest
+    protected java.lang.Object internalGetServant(byte[] id, String operation) throws ForwardRequest
     {
-        java.lang.Object servant = internalIdToServant( id ) ;
+        java.lang.Object servant = internalIdToServant(id);
         if (servant == null)
-            servant = new NullServantImpl(
-                poa.invocationWrapper().nullServant() ) ;
-        return servant ;
+            servant = new NullServantImpl(poa.invocationWrapper().nullServant());
+        return servant;
     }
 
     public void etherealizeAll()
@@ -71,8 +70,7 @@ public class POAPolicyMediatorImpl_R_AOM extends POAPolicyMediatorBase_R {
         throw new WrongPolicy();
     }
 
-    public void setServantManager( ServantManager servantManager )
-        throws WrongPolicy
+    public void setServantManager(ServantManager servantManager) throws WrongPolicy
     {
         throw new WrongPolicy();
     }
@@ -82,18 +80,17 @@ public class POAPolicyMediatorImpl_R_AOM extends POAPolicyMediatorBase_R {
         throw new WrongPolicy();
     }
 
-    public void setDefaultServant( Servant servant ) throws WrongPolicy
+    public void setDefaultServant(Servant servant) throws WrongPolicy
     {
         throw new WrongPolicy();
     }
 
-    public Servant idToServant( byte[] id )
-        throws WrongPolicy, ObjectNotActive
+    public Servant idToServant(byte[] id) throws WrongPolicy, ObjectNotActive
     {
-        Servant s = internalIdToServant( id ) ;
+        Servant s = internalIdToServant(id);
 
         if (s == null)
-            throw new ObjectNotActive() ;
+            throw new ObjectNotActive();
         else
             return s;
     }

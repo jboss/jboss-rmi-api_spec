@@ -32,65 +32,64 @@ import org.jboss.com.sun.corba.se.impl.orbutil.ORBUtility;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 import org.omg.CORBA.BAD_PARAM;
 
-public class ServiceContextRegistry {
-    private ORB orb ;
-    private Vector<ServiceContextData> scCollection ;
+public class ServiceContextRegistry
+{
 
-    private void dprint( String msg )
+    private Vector<ServiceContextData> scCollection;
+
+    private void dprint(String msg)
     {
-        ORBUtility.dprint( this, msg ) ;
+        ORBUtility.dprint(this, msg);
     }
 
-    public ServiceContextRegistry( ORB orb )
+    public ServiceContextRegistry(ORB orb)
     {
-        scCollection = new Vector<ServiceContextData>() ;
-        this.orb = orb ;
+        scCollection = new Vector<ServiceContextData>();
     }
 
-    /** Register the ServiceContext class so that it will be recognized
-     * by the read method.
-     * Class cls must have the following properties:
+    /**
+     * Register the ServiceContext class so that it will be recognized by the read method. Class cls must have the
+     * following properties:
      * <ul>
-     * <li>It must derive from com.sun.corba.se.spi.servicecontext.ServiceContext.</li>
-     * <li>It must have a public static final int SERVICE_CONTEXT_ID
-     * member.</li>
-     * <li>It must implement a constructor that takes a
-     * org.omg.CORBA_2_3.portable.InputStream argument.</li>
+     * <li>It must derive from org.jboss.com.sun.corba.se.spi.servicecontext.ServiceContext.</li>
+     * <li>It must have a public static final int SERVICE_CONTEXT_ID member.</li>
+     * <li>It must implement a constructor that takes a org.omg.CORBA_2_3.portable.InputStream argument.</li>
      * </ul>
      */
-    public void register( Class<?> cls )
+    public void register(Class<?> cls)
     {
         if (ORB.ORBInitDebug)
-            dprint( "Registering service context class " + cls ) ;
+            dprint("Registering service context class " + cls);
 
-        ServiceContextData scd = new ServiceContextData( cls ) ;
+        ServiceContextData scd = new ServiceContextData(cls);
 
         if (findServiceContextData(scd.getId()) == null)
-            scCollection.addElement( scd ) ;
+            scCollection.addElement(scd);
         else
-            throw new BAD_PARAM( "Tried to register duplicate service context" ) ;
+            throw new BAD_PARAM("Tried to register duplicate service context");
     }
 
-    public ServiceContextData findServiceContextData( int scId )
+    public ServiceContextData findServiceContextData(int scId)
     {
         if (ORB.ORBInitDebug)
-            dprint( "Searching registry for service context id " + scId ) ;
+            dprint("Searching registry for service context id " + scId);
 
-        Enumeration<ServiceContextData> enumeration = scCollection.elements() ;
-        while (enumeration.hasMoreElements()) {
-            ServiceContextData scd =
-                enumeration.nextElement();
-            if (scd.getId() == scId) {
+        Enumeration<ServiceContextData> enumeration = scCollection.elements();
+        while (enumeration.hasMoreElements())
+        {
+            ServiceContextData scd = enumeration.nextElement();
+            if (scd.getId() == scId)
+            {
                 if (ORB.ORBInitDebug)
-                    dprint( "Service context data found: " + scd ) ;
+                    dprint("Service context data found: " + scd);
 
-                return scd ;
+                return scd;
             }
         }
 
         if (ORB.ORBInitDebug)
-            dprint( "Service context data not found" ) ;
+            dprint("Service context data not found");
 
-        return null ;
+        return null;
     }
 }

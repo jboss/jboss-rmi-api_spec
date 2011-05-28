@@ -27,64 +27,47 @@ package org.jboss.com.sun.corba.se.impl.encoding;
 
 import java.nio.ByteBuffer;
 
-import org.omg.CORBA.CompletionStatus;
-
-import org.jboss.com.sun.corba.se.impl.encoding.BufferManagerFactory;
-import org.jboss.com.sun.corba.se.impl.encoding.CDRInputStream;
-import org.jboss.com.sun.corba.se.impl.encoding.CodeSetConversion;
-import org.jboss.com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 import org.jboss.com.sun.corba.se.impl.logging.ORBUtilSystemException;
 import org.jboss.com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import org.jboss.com.sun.corba.se.spi.ior.iiop.GIOPVersion;
 import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 import org.jboss.com.sun.org.omg.SendingContext.CodeBase;
+import org.omg.CORBA.CompletionStatus;
 
 /**
- * Encapsulations are supposed to explicitly define their
- * code sets and GIOP version.  The original resolution to issue 2784
- * said that the defaults were UTF-8 and UTF-16, but that was not
- * agreed upon.
- *
- * These streams currently use CDR 1.2 with ISO8859-1 for char/string and
- * UTF16 for wchar/wstring.  If no byte order marker is available,
- * the endianness of the encapsulation is used.
- *
- * When more encapsulations arise that have their own special code
- * sets defined, we can make all constructors take such parameters.
+ * Encapsulations are supposed to explicitly define their code sets and GIOP version. The original resolution to issue
+ * 2784 said that the defaults were UTF-8 and UTF-16, but that was not agreed upon.
+ * 
+ * These streams currently use CDR 1.2 with ISO8859-1 for char/string and UTF16 for wchar/wstring. If no byte order
+ * marker is available, the endianness of the encapsulation is used.
+ * 
+ * When more encapsulations arise that have their own special code sets defined, we can make all constructors take such
+ * parameters.
  */
 public class EncapsInputStream extends CDRInputStream
 {
-    private ORBUtilSystemException wrapper ;
+    private ORBUtilSystemException wrapper;
 
     // corba/EncapsOutputStream
     // corba/ORBSingleton
     // iiop/ORB
-    public EncapsInputStream(org.omg.CORBA.ORB orb, byte[] buf,
-                             int size, boolean littleEndian,
-                             GIOPVersion version) {
-        super(orb, ByteBuffer.wrap(buf), size, littleEndian,
-              version, Message.CDR_ENC_VERSION,
-              BufferManagerFactory.newBufferManagerRead(
-                                      BufferManagerFactory.GROW,
-                                      Message.CDR_ENC_VERSION,
-                                      (ORB)orb));
+    public EncapsInputStream(org.omg.CORBA.ORB orb, byte[] buf, int size, boolean littleEndian, GIOPVersion version)
+    {
+        super(orb, ByteBuffer.wrap(buf), size, littleEndian, version, Message.CDR_ENC_VERSION, BufferManagerFactory
+                .newBufferManagerRead(BufferManagerFactory.GROW, Message.CDR_ENC_VERSION, (ORB) orb));
 
-        wrapper = ORBUtilSystemException.get( (ORB)orb,
-            CORBALogDomains.RPC_ENCODING ) ;
+        wrapper = ORBUtilSystemException.get((ORB) orb, CORBALogDomains.RPC_ENCODING);
 
         performORBVersionSpecificInit();
     }
 
-    public EncapsInputStream(org.omg.CORBA.ORB orb, ByteBuffer byteBuffer,
-                             int size, boolean littleEndian,
-                             GIOPVersion version) {
-        super(orb, byteBuffer, size, littleEndian,
-              version, Message.CDR_ENC_VERSION,
-              BufferManagerFactory.newBufferManagerRead(
-                                      BufferManagerFactory.GROW,
-                                      Message.CDR_ENC_VERSION,
-                                      (org.jboss.com.sun.corba.se.spi.orb.ORB)orb));
+    public EncapsInputStream(org.omg.CORBA.ORB orb, ByteBuffer byteBuffer, int size, boolean littleEndian,
+            GIOPVersion version)
+    {
+        super(orb, byteBuffer, size, littleEndian, version, Message.CDR_ENC_VERSION, BufferManagerFactory
+                .newBufferManagerRead(BufferManagerFactory.GROW, Message.CDR_ENC_VERSION,
+                        (org.jboss.com.sun.corba.se.spi.orb.ORB) orb));
 
         performORBVersionSpecificInit();
     }
@@ -103,8 +86,7 @@ public class EncapsInputStream extends CDRInputStream
     {
         super(eis);
 
-        wrapper = ORBUtilSystemException.get( (ORB)(eis.orb()),
-            CORBALogDomains.RPC_ENCODING ) ;
+        wrapper = ORBUtilSystemException.get((ORB) (eis.orb()), CORBALogDomains.RPC_ENCODING);
 
         performORBVersionSpecificInit();
     }
@@ -121,49 +103,39 @@ public class EncapsInputStream extends CDRInputStream
     }
 
     /**
-     * Full constructor with a CodeBase parameter useful for
-     * unmarshaling RMI-IIOP valuetypes (technically against the
-     * intention of an encapsulation, but necessary due to OMG
-     * issue 4795.  Used by ServiceContexts.
+     * Full constructor with a CodeBase parameter useful for unmarshaling RMI-IIOP valuetypes (technically against the
+     * intention of an encapsulation, but necessary due to OMG issue 4795. Used by ServiceContexts.
      */
-    public EncapsInputStream(org.omg.CORBA.ORB orb,
-                             byte[] data,
-                             int size,
-                             GIOPVersion version,
-                             CodeBase codeBase) {
-        super(orb,
-              ByteBuffer.wrap(data),
-              size,
-              false,
-              version, Message.CDR_ENC_VERSION,
-              BufferManagerFactory.newBufferManagerRead(
-                                      BufferManagerFactory.GROW,
-                                      Message.CDR_ENC_VERSION,
-                                      (ORB)orb));
+    public EncapsInputStream(org.omg.CORBA.ORB orb, byte[] data, int size, GIOPVersion version, CodeBase codeBase)
+    {
+        super(orb, ByteBuffer.wrap(data), size, false, version, Message.CDR_ENC_VERSION, BufferManagerFactory
+                .newBufferManagerRead(BufferManagerFactory.GROW, Message.CDR_ENC_VERSION, (ORB) orb));
 
         this.codeBase = codeBase;
 
         performORBVersionSpecificInit();
     }
 
-    public CDRInputStream dup() {
+    public CDRInputStream dup()
+    {
         return new EncapsInputStream(this);
     }
 
-    protected CodeSetConversion.BTCConverter createCharBTCConverter() {
+    protected CodeSetConversion.BTCConverter createCharBTCConverter()
+    {
         return CodeSetConversion.impl().getBTCConverter(OSFCodeSetRegistry.ISO_8859_1);
     }
 
-    protected CodeSetConversion.BTCConverter createWCharBTCConverter() {
+    protected CodeSetConversion.BTCConverter createWCharBTCConverter()
+    {
         // Wide characters don't exist in GIOP 1.0
         if (getGIOPVersion().equals(GIOPVersion.V1_0))
-            throw wrapper.wcharDataInGiop10( CompletionStatus.COMPLETED_MAYBE);
+            throw wrapper.wcharDataInGiop10(CompletionStatus.COMPLETED_MAYBE);
 
-        // In GIOP 1.1, we shouldn't have byte order markers.  Take the order
+        // In GIOP 1.1, we shouldn't have byte order markers. Take the order
         // of the stream if we don't see them.
         if (getGIOPVersion().equals(GIOPVersion.V1_1))
-            return CodeSetConversion.impl().getBTCConverter(OSFCodeSetRegistry.UTF_16,
-                                                            isLittleEndian());
+            return CodeSetConversion.impl().getBTCConverter(OSFCodeSetRegistry.UTF_16, isLittleEndian());
 
         // Assume anything else adheres to GIOP 1.2 requirements.
         //
@@ -172,11 +144,11 @@ public class EncapsInputStream extends CDRInputStream
         //
         // With no byte order marker, it's big endian in GIOP 1.2.
         // formal 00-11-03 15.3.16.
-        return CodeSetConversion.impl().getBTCConverter(OSFCodeSetRegistry.UTF_16,
-                                                        false);
+        return CodeSetConversion.impl().getBTCConverter(OSFCodeSetRegistry.UTF_16, false);
     }
 
-    public CodeBase getCodeBase() {
+    public CodeBase getCodeBase()
+    {
         return codeBase;
     }
 

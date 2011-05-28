@@ -37,35 +37,38 @@ import org.jboss.com.sun.corba.se.pept.transport.ByteBufferPool;
 import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 
-public class BufferManagerReadStream
-    implements BufferManagerRead, MarkAndResetHandler
+public class BufferManagerReadStream implements BufferManagerRead, MarkAndResetHandler
 {
     private boolean receivedCancel = false;
+
     private int cancelReqId = 0;
 
     // We should convert endOfStream to a final static dummy end node
     private boolean endOfStream = true;
+
     private BufferQueue fragmentQueue = new BufferQueue();
+
     private long FRAGMENT_TIMEOUT = 60000;
 
-    // REVISIT - This should go in BufferManagerRead. But, since
-    //           BufferManagerRead is an interface. BufferManagerRead
-    //           might ought to be an abstract class instead of an
-    //           interface.
-    private ORB orb ;
-    private ORBUtilSystemException wrapper ;
+    // REVISIT - This should go in BufferManagerRead. But, since BufferManagerRead is an interface. BufferManagerRead
+    // might ought to be an abstract class instead of an interface.
+    private ORB orb;
+
+    private ORBUtilSystemException wrapper;
+
     private boolean debug = false;
 
-    BufferManagerReadStream( ORB orb )
+    BufferManagerReadStream(ORB orb)
     {
-        this.orb = orb ;
-        this.wrapper = ORBUtilSystemException.get( orb,
-            CORBALogDomains.RPC_ENCODING ) ;
+        this.orb = orb;
+        this.wrapper = ORBUtilSystemException.get(orb, CORBALogDomains.RPC_ENCODING);
         debug = orb.transportDebugFlag;
     }
 
-    public void cancelProcessing(int requestId) {
-        synchronized(fragmentQueue) {
+    public void cancelProcessing(int requestId)
+    {
+        synchronized (fragmentQueue)
+        {
             receivedCancel = true;
             cancelReqId = requestId;
             fragmentQueue.notify();
@@ -74,10 +77,10 @@ public class BufferManagerReadStream
 
     public void processFragment(ByteBuffer byteBuffer, FragmentMessage msg)
     {
-        ByteBufferWithInfo bbwi =
-            new ByteBufferWithInfo(orb, byteBuffer, msg.getHeaderLength());
+        ByteBufferWithInfo bbwi = new ByteBufferWithInfo(orb, byteBuffer, msg.getHeaderLength());
 
-        synchronized (fragmentQueue) {
+        synchronized (fragmentQueue)
+        {
             if (debug)
             {
                 // print address of ByteBuffer being queued
@@ -94,92 +97,104 @@ public class BufferManagerReadStream
         }
     }
 
-    public ByteBufferWithInfo underflow (ByteBufferWithInfo bbwi)
+    public ByteBufferWithInfo underflow(ByteBufferWithInfo bbwi)
     {
 
-      ByteBufferWithInfo result = null;
+        ByteBufferWithInfo result = null;
 
-      try {
-          //System.out.println("ENTER underflow");
+        try
+        {
+            // System.out.println("ENTER underflow");
 
-        synchronized (fragmentQueue) {
+            synchronized (fragmentQueue)
+            {
 
-            if (receivedCancel) {
-                throw new RequestCanceledException(cancelReqId);
-            }
-
-            while (fragmentQueue.size() == 0) {
-
-                if (endOfStream) {
-                    throw wrapper.endOfStream() ;
-                }
-
-                boolean interrupted = false;
-                try {
-                    fragmentQueue.wait(FRAGMENT_TIMEOUT);
-                } catch (InterruptedException e) {
-                    interrupted = true;
-                }
-
-                if (!interrupted && fragmentQueue.size() == 0) {
-                    throw wrapper.bufferReadManagerTimeout();
-                }
-
-                if (receivedCancel) {
+                if (receivedCancel)
+                {
                     throw new RequestCanceledException(cancelReqId);
                 }
-            }
 
-            result = fragmentQueue.dequeue();
-            result.fragmented = true;
+                while (fragmentQueue.size() == 0)
+                {
 
-            if (debug)
-            {
-                // print address of ByteBuffer being dequeued
-                int bbAddr = System.identityHashCode(result.byteBuffer);
-                StringBuffer sb1 = new StringBuffer(80);
-                sb1.append("underflow() - dequeued ByteBuffer id (");
-                sb1.append(bbAddr).append(") from fragment queue.");
-                String msg1 = sb1.toString();
-                dprint(msg1);
-            }
+                    if (endOfStream)
+                    {
+                        throw wrapper.endOfStream();
+                    }
 
-            // VERY IMPORTANT
-            // Release bbwi.byteBuffer to the ByteBufferPool only if
-            // this BufferManagerStream is not marked for potential restore.
-            if (markEngaged == false && bbwi != null && bbwi.byteBuffer != null)
-            {
-                ByteBufferPool byteBufferPool = getByteBufferPool();
+                    boolean interrupted = false;
+                    try
+                    {
+                        fragmentQueue.wait(FRAGMENT_TIMEOUT);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        interrupted = true;
+                    }
+
+                    if (!interrupted && fragmentQueue.size() == 0)
+                    {
+                        throw wrapper.bufferReadManagerTimeout();
+                    }
+
+                    if (receivedCancel)
+                    {
+                        throw new RequestCanceledException(cancelReqId);
+                    }
+                }
+
+                result = fragmentQueue.dequeue();
+                result.fragmented = true;
 
                 if (debug)
                 {
-                    // print address of ByteBuffer being released
-                    int bbAddress = System.identityHashCode(bbwi.byteBuffer);
-                    StringBuffer sb = new StringBuffer(80);
-                    sb.append("underflow() - releasing ByteBuffer id (");
-                    sb.append(bbAddress).append(") to ByteBufferPool.");
-                    String msg = sb.toString();
-                    dprint(msg);
+                    // print address of ByteBuffer being dequeued
+                    int bbAddr = System.identityHashCode(result.byteBuffer);
+                    StringBuffer sb1 = new StringBuffer(80);
+                    sb1.append("underflow() - dequeued ByteBuffer id (");
+                    sb1.append(bbAddr).append(") from fragment queue.");
+                    String msg1 = sb1.toString();
+                    dprint(msg1);
                 }
 
-                byteBufferPool.releaseByteBuffer(bbwi.byteBuffer);
-                bbwi.byteBuffer = null;
-                bbwi = null;
+                // VERY IMPORTANT
+                // Release bbwi.byteBuffer to the ByteBufferPool only if this BufferManagerStream is not marked for
+                // potential restore.
+                if (markEngaged == false && bbwi != null && bbwi.byteBuffer != null)
+                {
+                    ByteBufferPool byteBufferPool = getByteBufferPool();
+
+                    if (debug)
+                    {
+                        // print address of ByteBuffer being released
+                        int bbAddress = System.identityHashCode(bbwi.byteBuffer);
+                        StringBuffer sb = new StringBuffer(80);
+                        sb.append("underflow() - releasing ByteBuffer id (");
+                        sb.append(bbAddress).append(") to ByteBufferPool.");
+                        String msg = sb.toString();
+                        dprint(msg);
+                    }
+
+                    byteBufferPool.releaseByteBuffer(bbwi.byteBuffer);
+                    bbwi.byteBuffer = null;
+                    bbwi = null;
+                }
             }
+            return result;
         }
-        return result;
-      } finally {
-          //System.out.println("EXIT underflow");
-      }
+        finally
+        {
+            // System.out.println("EXIT underflow");
+        }
     }
 
-    public void init(Message msg) {
+    public void init(Message msg)
+    {
         if (msg != null)
             endOfStream = !msg.moreFragmentsToFollow();
     }
 
-    // Release any queued ByteBufferWithInfo's byteBuffers to the
-    // ByteBufferPoool
+    // Release any queued ByteBufferWithInfo's byteBuffers to the ByteBufferPoool
     public void close(ByteBufferWithInfo bbwi)
     {
         int inputBbAddress = 0;
@@ -189,13 +204,10 @@ public class BufferManagerReadStream
         {
             synchronized (fragmentQueue)
             {
-                // IMPORTANT: The fragment queue may have one ByteBuffer
-                //            on it that's also on the CDRInputStream if
-                //            this method is called when the stream is 'marked'.
-                //            Thus, we'll compare the ByteBuffer passed
-                //            in (from a CDRInputStream) with all ByteBuffers
-                //            on the stack. If one is found to equal, it will
-                //            not be released to the ByteBufferPool.
+                // IMPORTANT: The fragment queue may have one ByteBuffer on it that's also on the CDRInputStream if this
+                // method is called when the stream is 'marked'. Thus, we'll compare the ByteBuffer passed in (from a
+                // CDRInputStream) with all ByteBuffers on the stack. If one is found to equal, it will not be released
+                // to the ByteBufferPool.
                 if (bbwi != null)
                 {
                     inputBbAddress = System.identityHashCode(bbwi.byteBuffer);
@@ -213,14 +225,12 @@ public class BufferManagerReadStream
                         {
                             if (debug)
                             {
-                                 // print address of ByteBuffer released
-                                 StringBuffer sb = new StringBuffer(80);
-                                 sb.append("close() - fragmentQueue is ")
-                                   .append("releasing ByteBuffer id (")
-                                   .append(bbAddress).append(") to ")
-                                   .append("ByteBufferPool.");
-                                 String msg = sb.toString();
-                                 dprint(msg);
+                                // print address of ByteBuffer released
+                                StringBuffer sb = new StringBuffer(80);
+                                sb.append("close() - fragmentQueue is ").append("releasing ByteBuffer id (")
+                                        .append(bbAddress).append(") to ").append("ByteBufferPool.");
+                                String msg = sb.toString();
+                                dprint(msg);
                             }
                         }
                         byteBufferPool.releaseByteBuffer(abbwi.byteBuffer);
@@ -233,13 +243,10 @@ public class BufferManagerReadStream
         // release ByteBuffers on fragmentStack
         if (fragmentStack != null && fragmentStack.size() != 0)
         {
-            // IMPORTANT: The fragment stack may have one ByteBuffer
-            //            on it that's also on the CDRInputStream if
-            //            this method is called when the stream is 'marked'.
-            //            Thus, we'll compare the ByteBuffer passed
-            //            in (from a CDRInputStream) with all ByteBuffers
-            //            on the stack. If one is found to equal, it will
-            //            not be released to the ByteBufferPool.
+            // IMPORTANT: The fragment stack may have one ByteBuffer on it that's also on the CDRInputStream if this
+            // method is called when the stream is 'marked'. Thus, we'll compare the ByteBuffer passed in (from a
+            // CDRInputStream) with all ByteBuffers on the stack. If one is found to equal, it will not be released to
+            // the ByteBufferPool.
             if (bbwi != null)
             {
                 inputBbAddress = System.identityHashCode(bbwi.byteBuffer);
@@ -254,21 +261,20 @@ public class BufferManagerReadStream
 
                 if (abbwi != null && abbwi.byteBuffer != null)
                 {
-                   int bbAddress = System.identityHashCode(abbwi.byteBuffer);
-                   if (inputBbAddress != bbAddress)
-                   {
-                       if (debug)
-                       {
+                    int bbAddress = System.identityHashCode(abbwi.byteBuffer);
+                    if (inputBbAddress != bbAddress)
+                    {
+                        if (debug)
+                        {
                             // print address of ByteBuffer being released
                             StringBuffer sb = new StringBuffer(80);
                             sb.append("close() - fragmentStack - releasing ")
-                              .append("ByteBuffer id (" + bbAddress + ") to ")
-                              .append("ByteBufferPool.");
+                                    .append("ByteBuffer id (" + bbAddress + ") to ").append("ByteBufferPool.");
                             String msg = sb.toString();
                             dprint(msg);
-                       }
-                       byteBufferPool.releaseByteBuffer(abbwi.byteBuffer);
-                   }
+                        }
+                        byteBufferPool.releaseByteBuffer(abbwi.byteBuffer);
+                    }
                 }
             }
             fragmentStack = null;
@@ -290,9 +296,9 @@ public class BufferManagerReadStream
 
     private boolean markEngaged = false;
 
-    // List of fragment ByteBufferWithInfos received since
-    // the mark was engaged.
+    // List of fragment ByteBufferWithInfos received since the mark was engaged.
     private LinkedList<ByteBufferWithInfo> fragmentStack = null;
+
     private RestorableInputStream inputStream = null;
 
     // Original state of the stream
@@ -303,11 +309,11 @@ public class BufferManagerReadStream
         this.inputStream = inputStream;
         markEngaged = true;
 
-        // Get the magic Object that the stream will use to
-        // reconstruct it's state when reset is called
+        // Get the magic Object that the stream will use to reconstruct it's state when reset is called
         streamMemento = inputStream.createStreamMemento();
 
-        if (fragmentStack != null) {
+        if (fragmentStack != null)
+        {
             fragmentStack.clear();
         }
     }
@@ -326,21 +332,23 @@ public class BufferManagerReadStream
 
     public void reset()
     {
-        if (!markEngaged) {
+        if (!markEngaged)
+        {
             // REVISIT - call to reset without call to mark
             return;
         }
 
         markEngaged = false;
 
-        // If we actually did peek across fragments, we need
-        // to push those fragments onto the front of the
-        // buffer queue.
-        if (fragmentStack != null && fragmentStack.size() != 0) {
+        // If we actually did peek across fragments, we need to push those fragments onto the front of the buffer queue.
+        if (fragmentStack != null && fragmentStack.size() != 0)
+        {
             ListIterator<ByteBufferWithInfo> iter = fragmentStack.listIterator();
 
-            synchronized(fragmentQueue) {
-                while (iter.hasNext()) {
+            synchronized (fragmentQueue)
+            {
+                while (iter.hasNext())
+                {
                     fragmentQueue.push(iter.next());
                 }
             }
@@ -348,12 +356,12 @@ public class BufferManagerReadStream
             fragmentStack.clear();
         }
 
-        // Give the stream the magic Object to restore
-        // it's state.
+        // Give the stream the magic Object to restore it's state.
         inputStream.restoreInternalState(streamMemento);
     }
 
-    public MarkAndResetHandler getMarkAndResetHandler() {
+    public MarkAndResetHandler getMarkAndResetHandler()
+    {
         return this;
     }
 }

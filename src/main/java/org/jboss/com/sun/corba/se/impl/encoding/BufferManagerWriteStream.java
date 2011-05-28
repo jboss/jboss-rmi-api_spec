@@ -38,24 +38,25 @@ public class BufferManagerWriteStream extends BufferManagerWrite
 {
     private int fragmentCount = 0;
 
-    BufferManagerWriteStream( ORB orb )
+    BufferManagerWriteStream(ORB orb)
     {
-        super(orb) ;
+        super(orb);
     }
 
-    public boolean sentFragment() {
+    public boolean sentFragment()
+    {
         return fragmentCount > 0;
     }
 
     /**
-     * Returns the correct buffer size for this type of
-     * buffer manager as set in the ORB.
+     * Returns the correct buffer size for this type of buffer manager as set in the ORB.
      */
-    public int getBufferSize() {
+    public int getBufferSize()
+    {
         return orb.getORBData().getGIOPFragmentSize();
     }
 
-    public void overflow (ByteBufferWithInfo bbwi)
+    public void overflow(ByteBufferWithInfo bbwi)
     {
         // Set the fragment's moreFragments field to true
         MessageBase.setFlag(bbwi.byteBuffer, Message.MORE_FRAGMENTS_BIT);
@@ -64,38 +65,39 @@ public class BufferManagerWriteStream extends BufferManagerWrite
 
         // Reuse the old buffer
 
-        // REVISIT - need to account for case when needed > available
-        // even after fragmenting.  This is the large array case, so
-        // the caller should retry when it runs out of space.
+        // REVISIT - need to account for case when needed > available even after fragmenting. This is the large array
+        // case, so the caller should retry when it runs out of space.
         bbwi.position(0);
         bbwi.buflen = bbwi.byteBuffer.limit();
         bbwi.fragmented = true;
 
         // Now we must marshal in the fragment header/GIOP header
 
-        // REVISIT - we can optimize this by not creating the fragment message
-        // each time.
+        // REVISIT - we can optimize this by not creating the fragment message each time.
 
-        FragmentMessage header = ((CDROutputObject)outputObject).getMessageHeader().createFragmentMessage();
+        FragmentMessage header = ((CDROutputObject) outputObject).getMessageHeader().createFragmentMessage();
 
-        header.write(((CDROutputObject)outputObject));
+        header.write(((CDROutputObject) outputObject));
     }
 
     private void sendFragment(boolean isLastFragment)
     {
-        Connection conn = ((OutputObject)outputObject).getMessageMediator().getConnection();
+        Connection conn = ((OutputObject) outputObject).getMessageMediator().getConnection();
 
         // REVISIT: need an ORB
-        //System.out.println("sendFragment: last?: " + isLastFragment);
+        // System.out.println("sendFragment: last?: " + isLastFragment);
         conn.writeLock();
 
-        try {
+        try
+        {
             // Send the fragment
-            conn.sendWithoutLock(((OutputObject)outputObject));
+            conn.sendWithoutLock(((OutputObject) outputObject));
 
             fragmentCount++;
 
-        } finally {
+        }
+        finally
+        {
 
             conn.writeUnlock();
         }
@@ -103,7 +105,7 @@ public class BufferManagerWriteStream extends BufferManagerWrite
     }
 
     // Sends the last fragment
-    public void sendMessage ()
+    public void sendMessage()
     {
         sendFragment(true);
 
@@ -112,9 +114,11 @@ public class BufferManagerWriteStream extends BufferManagerWrite
 
     /**
      * Close the BufferManagerWrite and do any outstanding cleanup.
-     *
+     * 
      * No work to do for a BufferManagerWriteStream
      */
-    public void close(){};
+    public void close()
+    {
+    };
 
 }

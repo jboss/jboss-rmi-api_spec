@@ -38,17 +38,15 @@ import org.omg.CORBA.ContextList;
 
 public class ContextListImpl extends ContextList
 {
-    private final int    INITIAL_CAPACITY       = 2;
-    private final int    CAPACITY_INCREMENT     = 2;
+    private final int INITIAL_CAPACITY = 2;
 
-    private org.omg.CORBA.ORB _orb;
-    private Vector _contexts;
+    private final int CAPACITY_INCREMENT = 2;
+
+    private Vector<String> _contexts;
 
     public ContextListImpl(org.omg.CORBA.ORB orb)
     {
-        // Note: This orb could be an instanceof ORBSingleton or ORB
-        _orb = orb;
-        _contexts = new Vector(INITIAL_CAPACITY, CAPACITY_INCREMENT);
+        _contexts = new Vector<String>(INITIAL_CAPACITY, CAPACITY_INCREMENT);
     }
 
     public int count()
@@ -61,22 +59,26 @@ public class ContextListImpl extends ContextList
         _contexts.addElement(ctxt);
     }
 
-    public String item(int index)
-        throws Bounds
+    public String item(int index) throws Bounds
     {
-        try {
-            return (String) _contexts.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        try
+        {
+            return _contexts.elementAt(index);
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
             throw new Bounds();
         }
     }
 
-    public void remove(int index)
-        throws Bounds
+    public void remove(int index) throws Bounds
     {
-        try {
+        try
+        {
             _contexts.removeElementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
             throw new Bounds();
         }
     }

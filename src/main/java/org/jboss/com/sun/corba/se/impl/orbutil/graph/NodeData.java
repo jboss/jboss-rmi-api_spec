@@ -23,48 +23,51 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.orbutil.graph ;
+package org.jboss.com.sun.corba.se.impl.orbutil.graph;
 
-/** Data about a node in a graph.
+/**
+ * Data about a node in a graph.
  */
 public class NodeData
 {
-    private boolean visited ;
-    private boolean root ;
+    private boolean visited;
+
+    private boolean root;
 
     public NodeData()
     {
-        clear() ;
+        clear();
     }
 
     public void clear()
     {
-        this.visited = false ;
-        this.root = true ;
+        this.visited = false;
+        this.root = true;
     }
 
-    /** Return whether this node has been visited in a traversal.
-     * Note that we only support a single traversal at a time.
+    /**
+     * Return whether this node has been visited in a traversal. Note that we only support a single traversal at a time.
      */
     boolean isVisited()
     {
-        return visited ;
+        return visited;
     }
 
     void visited()
     {
-        visited = true ;
+        visited = true;
     }
 
-    /** Return whether this node is a root.
+    /**
+     * Return whether this node is a root.
      */
     boolean isRoot()
     {
-        return root ;
+        return root;
     }
 
     void notRoot()
     {
-        root = false ;
+        root = false;
     }
 }

@@ -30,58 +30,62 @@ import java.util.Iterator;
 
 import org.jboss.com.sun.corba.se.impl.ior.FreezableList;
 
-/** Convenience class for defining objects that contain lists of Identifiables.
- * Mainly implements iteratorById.  Also note that the constructor creates the
- * list, which here is always an ArrayList, as this is much more efficient overall
- * for short lists.
- * @author  Ken Cavanaugh
+/**
+ * Convenience class for defining objects that contain lists of Identifiables. Mainly implements iteratorById. Also note
+ * that the constructor creates the list, which here is always an ArrayList, as this is much more efficient overall for
+ * short lists.
+ * 
+ * @author Ken Cavanaugh
  */
 public class IdentifiableContainerBase extends FreezableList
 {
-    /** Create this class with an empty list of identifiables.
-     * The current implementation uses an ArrayList.
+    /**
+     * Create this class with an empty list of identifiables. The current implementation uses an ArrayList.
      */
     public IdentifiableContainerBase()
     {
-        super( new ArrayList<Object>() ) ;
+        super(new ArrayList<Object>());
     }
 
-    /** Return an iterator which iterates over all contained Identifiables
-     * with type given by id.
+    /**
+     * Return an iterator which iterates over all contained Identifiables with type given by id.
      */
-    public Iterator<Object> iteratorById( final int id)
+    public Iterator<Object> iteratorById(final int id)
     {
-        return new Iterator<Object>() {
-            Iterator<Object> iter = IdentifiableContainerBase.this.iterator() ;
-            Object current = advance() ;
+        return new Iterator<Object>()
+        {
+            Iterator<Object> iter = IdentifiableContainerBase.this.iterator();
+
+            Object current = advance();
 
             private Object advance()
             {
-                while (iter.hasNext()) {
-                    Identifiable ide = (Identifiable)(iter.next()) ;
+                while (iter.hasNext())
+                {
+                    Identifiable ide = (Identifiable) (iter.next());
                     if (ide.getId() == id)
-                        return ide ;
+                        return ide;
                 }
 
-                return null ;
+                return null;
             }
 
             public boolean hasNext()
             {
-                return current != null ;
+                return current != null;
             }
 
             public Object next()
             {
-                Object result = current ;
-                current = advance() ;
-                return result ;
+                Object result = current;
+                current = advance();
+                return result;
             }
 
             public void remove()
             {
-                iter.remove() ;
+                iter.remove();
             }
-        } ;
+        };
     }
 }

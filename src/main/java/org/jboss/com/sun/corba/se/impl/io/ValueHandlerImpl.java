@@ -48,35 +48,40 @@ import org.jboss.com.sun.org.omg.SendingContext.CodeBase;
 import org.jboss.com.sun.org.omg.SendingContext.CodeBaseHelper;
 import org.omg.CORBA.TCKind;
 import org.omg.CORBA.portable.IndirectionException;
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.OutputStream;
 
-public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat {
+public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
+{
 
     // Property to override our maximum stream format version
-    public static final String FORMAT_VERSION_PROPERTY
-        = "org.jboss.com.sun.CORBA.MaxStreamFormatVersion";
+    public static final String FORMAT_VERSION_PROPERTY = "org.jboss.com.sun.CORBA.MaxStreamFormatVersion";
 
-    private static final byte MAX_SUPPORTED_FORMAT_VERSION = (byte)2;
-    private static final byte STREAM_FORMAT_VERSION_1 = (byte)1;
+    private static final byte MAX_SUPPORTED_FORMAT_VERSION = (byte) 2;
+
+    private static final byte STREAM_FORMAT_VERSION_1 = (byte) 1;
 
     // The ValueHandler's maximum stream format version to advertise,
     // set in a static initializer.
     private static final byte MAX_STREAM_FORMAT_VERSION;
 
-    static {
+    static
+    {
         MAX_STREAM_FORMAT_VERSION = getMaxStreamFormatVersion();
     }
 
-    // Looks for the FORMAT_VERSION_PROPERTY system property
-    // to allow the user to override our default stream format
-    // version.  Note that this still only allows them to pick
-    // a supported version (1 through MAX_STREAM_FORMAT_VERSION).
-    private static byte getMaxStreamFormatVersion() {
+    // Looks for the FORMAT_VERSION_PROPERTY system property to allow the user to override our default stream format
+    // version. Note that this still only allows them to pick a supported version (1 through MAX_STREAM_FORMAT_VERSION).
+    private static byte getMaxStreamFormatVersion()
+    {
 
-        try {
+        try
+        {
 
-            String propValue = (String) AccessController.doPrivileged(
-                                        new PrivilegedAction<String>() {
-                public String run() {
+            String propValue = AccessController.doPrivileged(new PrivilegedAction<String>()
+            {
+                public String run()
+                {
                     return System.getProperty(ValueHandlerImpl.FORMAT_VERSION_PROPERTY);
                 }
             });
@@ -87,98 +92,116 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
 
             byte result = Byte.parseByte(propValue);
 
-            // REVISIT.  Just set to MAX_SUPPORTED_FORMAT_VERSION
-            // or really let the system shutdown with this Error?
+            // REVISIT. Just set to MAX_SUPPORTED_FORMAT_VERSION or really let the system shutdown with this Error?
             if (result < 1 || result > MAX_SUPPORTED_FORMAT_VERSION)
                 // XXX I18N, logging needed.
-                throw new ExceptionInInitializerError("Invalid stream format version: "
-                                                      + result
-                                                      + ".  Valid range is 1 through "
-                                                      + MAX_SUPPORTED_FORMAT_VERSION);
+                throw new ExceptionInInitializerError("Invalid stream format version: " + result
+                        + ".  Valid range is 1 through " + MAX_SUPPORTED_FORMAT_VERSION);
 
             return result;
 
-        } catch (Exception ex) {
-            // REVISIT.  Swallow this or really let
-            // the system shutdown with this Error?
+        }
+        catch (Exception ex)
+        {
+            // REVISIT. Swallow this or really let the system shutdown with this Error?
 
             Error err = new ExceptionInInitializerError(ex);
-            err.initCause( ex ) ;
-            throw err ;
+            err.initCause(ex);
+            throw err;
         }
     }
 
     public static final short kRemoteType = 0;
+
     public static final short kAbstractType = 1;
+
     public static final short kValueType = 2;
 
-    private Hashtable inputStreamPairs = null;
-    private Hashtable outputStreamPairs = null;
+    private Hashtable<InputStream, IIOPInputStream> inputStreamPairs = null;
+
+    private Hashtable<OutputStream, IIOPOutputStream> outputStreamPairs = null;
+
     private CodeBase codeBase = null;
+
     private boolean useHashtables = true;
+
     private IIOPOutputStream outputStreamBridge = null;
+
     private IIOPInputStream inputStreamBridge = null;
-    private OMGSystemException omgWrapper = OMGSystemException.get(
-        CORBALogDomains.RPC_ENCODING ) ;
-    private UtilSystemException utilWrapper = UtilSystemException.get(
-        CORBALogDomains.RPC_ENCODING ) ;
+
+    private OMGSystemException omgWrapper = OMGSystemException.get(CORBALogDomains.RPC_ENCODING);
+
+    private UtilSystemException utilWrapper = UtilSystemException.get(CORBALogDomains.RPC_ENCODING);
 
     // See javax.rmi.CORBA.ValueHandlerMultiFormat
-    public byte getMaximumStreamFormatVersion() {
+    public byte getMaximumStreamFormatVersion()
+    {
         return MAX_STREAM_FORMAT_VERSION;
     }
 
     // See javax.rmi.CORBA.ValueHandlerMultiFormat
-    public void writeValue(org.omg.CORBA.portable.OutputStream out,
-                           java.io.Serializable value,
-                           byte streamFormatVersion) {
+    public void writeValue(org.omg.CORBA.portable.OutputStream out, java.io.Serializable value, byte streamFormatVersion)
+    {
 
-        if (streamFormatVersion == 2) {
-            if (!(out instanceof org.omg.CORBA.portable.ValueOutputStream)) {
-                throw omgWrapper.notAValueoutputstream() ;
+        if (streamFormatVersion == 2)
+        {
+            if (!(out instanceof org.omg.CORBA.portable.ValueOutputStream))
+            {
+                throw omgWrapper.notAValueoutputstream();
             }
-        } else if (streamFormatVersion != 1) {
-            throw omgWrapper.invalidStreamFormatVersion(
-                new Integer(streamFormatVersion) ) ;
+        }
+        else if (streamFormatVersion != 1)
+        {
+            throw omgWrapper.invalidStreamFormatVersion(new Integer(streamFormatVersion));
         }
 
         writeValueWithVersion(out, value, streamFormatVersion);
     }
 
-    public ValueHandlerImpl(){}
+    public ValueHandlerImpl()
+    {
+    }
 
-    public ValueHandlerImpl(boolean isInputStream) {
+    public ValueHandlerImpl(boolean isInputStream)
+    {
         this();
         useHashtables = false;
     }
 
     /**
      * Writes the value to the stream using java semantics.
-     * @param out The stream to write the value to
-     * @param value The value to be written to the stream
+     * 
+     * @param out
+     *            The stream to write the value to
+     * @param value
+     *            The value to be written to the stream
      **/
-    public void writeValue(org.omg.CORBA.portable.OutputStream _out,
-                           java.io.Serializable value) {
+    public void writeValue(org.omg.CORBA.portable.OutputStream _out, java.io.Serializable value)
+    {
         writeValueWithVersion(_out, value, STREAM_FORMAT_VERSION_1);
     }
 
-    private void writeValueWithVersion(org.omg.CORBA.portable.OutputStream _out,
-                                       java.io.Serializable value,
-                                       byte streamFormatVersion) {
+    private void writeValueWithVersion(org.omg.CORBA.portable.OutputStream _out, java.io.Serializable value,
+            byte streamFormatVersion)
+    {
 
-        org.omg.CORBA_2_3.portable.OutputStream out =
-            (org.omg.CORBA_2_3.portable.OutputStream) _out;
+        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) _out;
 
-        if (!useHashtables) {
-            if (outputStreamBridge == null) {
+        if (!useHashtables)
+        {
+            if (outputStreamBridge == null)
+            {
                 outputStreamBridge = createOutputStream();
                 outputStreamBridge.setOrbStream(out);
             }
 
-            try {
+            try
+            {
                 outputStreamBridge.increaseRecursionDepth();
                 writeValueInternal(outputStreamBridge, out, value, streamFormatVersion);
-            } finally {
+            }
+            finally
+            {
                 outputStreamBridge.decreaseRecursionDepth();
             }
 
@@ -188,31 +211,34 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
         IIOPOutputStream jdkToOrbOutputStreamBridge = null;
 
         if (outputStreamPairs == null)
-            outputStreamPairs = new Hashtable();
+            outputStreamPairs = new Hashtable<OutputStream, IIOPOutputStream>();
 
-        jdkToOrbOutputStreamBridge = (IIOPOutputStream)outputStreamPairs.get(_out);
+        jdkToOrbOutputStreamBridge = outputStreamPairs.get(_out);
 
-        if (jdkToOrbOutputStreamBridge == null) {
+        if (jdkToOrbOutputStreamBridge == null)
+        {
             jdkToOrbOutputStreamBridge = createOutputStream();
             jdkToOrbOutputStreamBridge.setOrbStream(out);
             outputStreamPairs.put(_out, jdkToOrbOutputStreamBridge);
         }
 
-        try {
+        try
+        {
 
             jdkToOrbOutputStreamBridge.increaseRecursionDepth();
             writeValueInternal(jdkToOrbOutputStreamBridge, out, value, streamFormatVersion);
-        } finally {
-            if (jdkToOrbOutputStreamBridge.decreaseRecursionDepth() == 0) {
+        }
+        finally
+        {
+            if (jdkToOrbOutputStreamBridge.decreaseRecursionDepth() == 0)
+            {
                 outputStreamPairs.remove(_out);
             }
         }
     }
 
-    private void writeValueInternal(IIOPOutputStream bridge,
-                                    org.omg.CORBA_2_3.portable.OutputStream out,
-                                    java.io.Serializable value,
-                                    byte streamFormatVersion)
+    private void writeValueInternal(IIOPOutputStream bridge, org.omg.CORBA_2_3.portable.OutputStream out,
+            java.io.Serializable value, byte streamFormatVersion)
     {
         Class<?> clazz = value.getClass();
 
@@ -224,45 +250,47 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
 
     /**
      * Reads a value from the stream using java semantics.
-     * @param in The stream to read the value from
-     * @param clazz The type of the value to be read in
-     * @param sender The sending context runtime
+     * 
+     * @param in
+     *            The stream to read the value from
+     * @param clazz
+     *            The type of the value to be read in
+     * @param sender
+     *            The sending context runtime
      **/
-    public java.io.Serializable readValue(org.omg.CORBA.portable.InputStream _in,
-                                          int offset,
-                                          Class<?> clazz,
-                                          String repositoryID,
-                                          org.omg.SendingContext.RunTime _sender)
+    public java.io.Serializable readValue(org.omg.CORBA.portable.InputStream _in, int offset, Class<?> clazz,
+            String repositoryID, org.omg.SendingContext.RunTime _sender)
     {
-        // Must use narrow rather than a direct cast to a org.jboss.com.sun
-        // class.  Fix for bug 4379539.
+        // Must use narrow rather than a direct cast to a org.jboss.com.sun class. Fix for bug 4379539.
         CodeBase sender = CodeBaseHelper.narrow(_sender);
 
-        org.omg.CORBA_2_3.portable.InputStream in =
-            (org.omg.CORBA_2_3.portable.InputStream) _in;
+        org.omg.CORBA_2_3.portable.InputStream in = (org.omg.CORBA_2_3.portable.InputStream) _in;
 
-        if (!useHashtables) {
-            if (inputStreamBridge == null) {
+        if (!useHashtables)
+        {
+            if (inputStreamBridge == null)
+            {
                 inputStreamBridge = createInputStream();
                 inputStreamBridge.setOrbStream(in);
-                inputStreamBridge.setSender(sender); //d11638
+                inputStreamBridge.setSender(sender); // d11638
                 // backward compatability 4365188
                 inputStreamBridge.setValueHandler(this);
             }
 
             java.io.Serializable result = null;
 
-            try {
-
+            try
+            {
                 inputStreamBridge.increaseRecursionDepth();
-                result = (java.io.Serializable) readValueInternal(inputStreamBridge, in, offset, clazz, repositoryID, sender);
+                result = readValueInternal(inputStreamBridge, in, offset, clazz, repositoryID, sender);
+            }
+            finally
+            {
 
-            } finally {
-
-                if (inputStreamBridge.decreaseRecursionDepth() == 0) {
-                    // Indirections are resolved immediately since
-                    // the change to the active recursion manager,
-                    // so this will never happen.
+                if (inputStreamBridge.decreaseRecursionDepth() == 0)
+                {
+                    // Indirections are resolved immediately since the change to the active recursion manager, so this
+                    // will never happen.
                 }
             }
 
@@ -271,15 +299,16 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
 
         IIOPInputStream jdkToOrbInputStreamBridge = null;
         if (inputStreamPairs == null)
-            inputStreamPairs = new Hashtable();
+            inputStreamPairs = new Hashtable<InputStream, IIOPInputStream>();
 
-        jdkToOrbInputStreamBridge = (IIOPInputStream)inputStreamPairs.get(_in);
+        jdkToOrbInputStreamBridge = inputStreamPairs.get(_in);
 
-        if (jdkToOrbInputStreamBridge == null) {
+        if (jdkToOrbInputStreamBridge == null)
+        {
 
             jdkToOrbInputStreamBridge = createInputStream();
             jdkToOrbInputStreamBridge.setOrbStream(in);
-            jdkToOrbInputStreamBridge.setSender(sender); //d11638
+            jdkToOrbInputStreamBridge.setSender(sender); // d11638
             // backward compatability 4365188
             jdkToOrbInputStreamBridge.setValueHandler(this);
             inputStreamPairs.put(_in, jdkToOrbInputStreamBridge);
@@ -287,14 +316,16 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
 
         java.io.Serializable result = null;
 
-        try {
-
+        try
+        {
             jdkToOrbInputStreamBridge.increaseRecursionDepth();
-            result = (java.io.Serializable) readValueInternal(jdkToOrbInputStreamBridge, in, offset, clazz, repositoryID, sender);
+            result = readValueInternal(jdkToOrbInputStreamBridge, in, offset, clazz, repositoryID, sender);
+        }
+        finally
+        {
 
-        } finally {
-
-            if (jdkToOrbInputStreamBridge.decreaseRecursionDepth() == 0) {
+            if (jdkToOrbInputStreamBridge.decreaseRecursionDepth() == 0)
+            {
                 inputStreamPairs.remove(_in);
             }
         }
@@ -302,29 +333,32 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
         return result;
     }
 
-    private java.io.Serializable readValueInternal(IIOPInputStream bridge,
-                                                  org.omg.CORBA_2_3.portable.InputStream in,
-                                                  int offset,
-                                                  Class<?> clazz,
-                                                  String repositoryID,
-                                                  org.jboss.com.sun.org.omg.SendingContext.CodeBase sender)
+    private java.io.Serializable readValueInternal(IIOPInputStream bridge, org.omg.CORBA_2_3.portable.InputStream in,
+            int offset, Class<?> clazz, String repositoryID, org.jboss.com.sun.org.omg.SendingContext.CodeBase sender)
     {
         java.io.Serializable result = null;
 
-        if (clazz == null) {
+        if (clazz == null)
+        {
             // clazz == null indicates an FVD situation for a nonexistant class
-            if (isArray(repositoryID)){
+            if (isArray(repositoryID))
+            {
                 read_Array(bridge, in, null, sender, offset);
-            } else {
+            }
+            else
+            {
                 bridge.simpleSkipObject(repositoryID, sender);
             }
             return result;
         }
 
-        if (clazz.isArray()) {
-            result = (java.io.Serializable)read_Array(bridge, in, clazz, sender, offset);
-        } else {
-            result = (java.io.Serializable)bridge.simpleReadObject(clazz, repositoryID, sender, offset);
+        if (clazz.isArray())
+        {
+            result = (java.io.Serializable) read_Array(bridge, in, clazz, sender, offset);
+        }
+        else
+        {
+            result = (java.io.Serializable) bridge.simpleReadObject(clazz, repositoryID, sender, offset);
         }
 
         return result;
@@ -332,267 +366,293 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
 
     /**
      * Returns the repository ID for the given RMI value Class.
-     * @param clz The class to return a repository ID for.
+     * 
+     * @param clz
+     *            The class to return a repository ID for.
      * @return the repository ID of the Class.
      **/
-    public java.lang.String getRMIRepositoryID(Class<?> clz) {
+    public String getRMIRepositoryID(Class<?> clz)
+    {
         return RepositoryId.createForJavaType(clz);
     }
 
     /**
-     * Indicates whether the given Class performs custom or
-     * default marshaling.
-     * @param clz The class to test for custom marshaling.
-     * @return True if the class performs custom marshaling, false
-     * if it does not.
+     * Indicates whether the given Class performs custom or default marshaling.
+     * 
+     * @param clz
+     *            The class to test for custom marshaling.
+     * @return True if the class performs custom marshaling, false if it does not.
      **/
-    public boolean isCustomMarshaled(Class<?> clz) {
+    public boolean isCustomMarshaled(Class<?> clz)
+    {
         return ObjectStreamClass.lookup(clz).isCustomMarshaled();
     }
 
     /**
-     * Returns the CodeBase for this ValueHandler.  This is used by
-     * the ORB runtime.  The server sends the service context containing
-     * the IOR for this CodeBase on the first GIOP reply.  The clients
-     * do the same on the first GIOP request.
+     * Returns the CodeBase for this ValueHandler. This is used by the ORB runtime. The server sends the service context
+     * containing the IOR for this CodeBase on the first GIOP reply. The clients do the same on the first GIOP request.
+     * 
      * @return the SendingContext.CodeBase of this ValueHandler.
      **/
-    public org.omg.SendingContext.RunTime getRunTimeCodeBase() {
+    public org.omg.SendingContext.RunTime getRunTimeCodeBase()
+    {
         if (codeBase != null)
             return codeBase;
-        else {
+        else
+        {
             codeBase = new FVDCodeBaseImpl();
 
             // backward compatability 4365188
-            // set the valueHandler so that correct/incorrect RepositoryID
-            // calculations can be done based on the ORB version
+            // set the valueHandler so that correct/incorrect RepositoryID calculations can be done based on the ORB
+            // version
             FVDCodeBaseImpl fvdImpl = (FVDCodeBaseImpl) codeBase;
             fvdImpl.setValueHandler(this);
             return codeBase;
         }
     }
 
-
-    // methods supported for backward compatability so that the appropriate
-    // Rep-id calculations take place based on the ORB version
+    // methods supported for backward compatability so that the appropriate Rep-id calculations take place based on the
+    // ORB version
 
     /**
-     *  Returns a boolean of whether or not RepositoryId indicates
-     *  FullValueDescriptor.
-     *  used for backward compatability
+     * Returns a boolean of whether or not RepositoryId indicates FullValueDescriptor. used for backward compatability
      */
 
-     public boolean useFullValueDescription(Class<?> clazz, String repositoryID)
-        throws IOException
-     {
+    public boolean useFullValueDescription(Class<?> clazz, String repositoryID) throws IOException
+    {
         return RepositoryId.useFullValueDescription(clazz, repositoryID);
-     }
+    }
 
-     public String getClassName(String id)
-     {
+    public String getClassName(String id)
+    {
         RepositoryId repID = RepositoryId.cache.getId(id);
         return repID.getClassName();
-     }
+    }
 
-     public Class<?> getClassFromType(String id)
-        throws ClassNotFoundException
-     {
+    public Class<?> getClassFromType(String id) throws ClassNotFoundException
+    {
         RepositoryId repId = RepositoryId.cache.getId(id);
         return repId.getClassFromType();
-     }
+    }
 
-     public Class<?> getAnyClassFromType(String id)
-        throws ClassNotFoundException
-     {
+    public Class<?> getAnyClassFromType(String id) throws ClassNotFoundException
+    {
         RepositoryId repId = RepositoryId.cache.getId(id);
         return repId.getAnyClassFromType();
-     }
+    }
 
-     public String createForAnyType(Class<?> cl)
-     {
+    public String createForAnyType(Class<?> cl)
+    {
         return RepositoryId.createForAnyType(cl);
-     }
+    }
 
-     public String getDefinedInId(String id)
-     {
+    public String getDefinedInId(String id)
+    {
         RepositoryId repId = RepositoryId.cache.getId(id);
         return repId.getDefinedInId();
-     }
+    }
 
-     public String getUnqualifiedName(String id)
-     {
+    public String getUnqualifiedName(String id)
+    {
         RepositoryId repId = RepositoryId.cache.getId(id);
         return repId.getUnqualifiedName();
-     }
+    }
 
-     public String getSerialVersionUID(String id)
-     {
+    public String getSerialVersionUID(String id)
+    {
         RepositoryId repId = RepositoryId.cache.getId(id);
         return repId.getSerialVersionUID();
-     }
+    }
 
-
-     public boolean isAbstractBase(Class<?> clazz)
-     {
+    public boolean isAbstractBase(Class<?> clazz)
+    {
         return RepositoryId.isAbstractBase(clazz);
-     }
+    }
 
-     public boolean isSequence(String id)
-     {
+    public boolean isSequence(String id)
+    {
         RepositoryId repId = RepositoryId.cache.getId(id);
         return repId.isSequence();
-     }
+    }
 
     /**
-     * If the value contains a writeReplace method then the result
-     * is returned.  Otherwise, the value itself is returned.
+     * If the value contains a writeReplace method then the result is returned. Otherwise, the value itself is returned.
+     * 
      * @return the true value to marshal on the wire.
      **/
-    public java.io.Serializable writeReplace(java.io.Serializable value) {
+    public java.io.Serializable writeReplace(java.io.Serializable value)
+    {
         return ObjectStreamClass.lookup(value.getClass()).writeReplace(value);
     }
 
     /**
-     * Encapsulates writing of Java char arrays so that the 1.3 subclass
-     * can override it without exposing internals across packages.  This
-     * is a fix for bug 4367783.
+     * Encapsulates writing of Java char arrays so that the 1.3 subclass can override it without exposing internals
+     * across packages. This is a fix for bug 4367783.
      */
-    protected void writeCharArray(org.omg.CORBA_2_3.portable.OutputStream out,
-                                char[] array,
-                                int offset,
-                                int length)
+    protected void writeCharArray(org.omg.CORBA_2_3.portable.OutputStream out, char[] array, int offset, int length)
     {
         out.write_wchar_array(array, offset, length);
     }
 
-    private void write_Array(org.omg.CORBA_2_3.portable.OutputStream out, java.io.Serializable obj, Class<?> type) {
+    private void write_Array(org.omg.CORBA_2_3.portable.OutputStream out, java.io.Serializable obj, Class<?> type)
+    {
 
         int i, length;
 
-        if (type.isPrimitive()) {
-            if (type == Integer.TYPE) {
-                int[] array = (int[])((Object)obj);
+        if (type.isPrimitive())
+        {
+            if (type == Integer.TYPE)
+            {
+                int[] array = (int[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 out.write_long_array(array, 0, length);
-            } else if (type == Byte.TYPE) {
-                byte[] array = (byte[])((Object)obj);
+            }
+            else if (type == Byte.TYPE)
+            {
+                byte[] array = (byte[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 out.write_octet_array(array, 0, length);
-            } else if (type == Long.TYPE) {
-                long[] array = (long[])((Object)obj);
+            }
+            else if (type == Long.TYPE)
+            {
+                long[] array = (long[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 out.write_longlong_array(array, 0, length);
-            } else if (type == Float.TYPE) {
-                float[] array = (float[])((Object)obj);
+            }
+            else if (type == Float.TYPE)
+            {
+                float[] array = (float[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 out.write_float_array(array, 0, length);
-            } else if (type == Double.TYPE) {
-                double[] array = (double[])((Object)obj);
+            }
+            else if (type == Double.TYPE)
+            {
+                double[] array = (double[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 out.write_double_array(array, 0, length);
-            } else if (type == Short.TYPE) {
-                short[] array = (short[])((Object)obj);
+            }
+            else if (type == Short.TYPE)
+            {
+                short[] array = (short[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 out.write_short_array(array, 0, length);
-            } else if (type == Character.TYPE) {
-                char[] array = (char[])((Object)obj);
+            }
+            else if (type == Character.TYPE)
+            {
+                char[] array = (char[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 writeCharArray(out, array, 0, length);
-            } else if (type == Boolean.TYPE) {
-                boolean[] array = (boolean[])((Object)obj);
+            }
+            else if (type == Boolean.TYPE)
+            {
+                boolean[] array = (boolean[]) obj;
                 length = array.length;
                 out.write_ulong(length);
                 out.write_boolean_array(array, 0, length);
-            } else {
-                // XXX I18N, logging needed.
-                throw new Error("Invalid primitive type : " +
-                    obj.getClass().getName());
             }
-        } else if (type == java.lang.Object.class) {
-            Object[] array = (Object[])((Object)obj);
+            else
+            {
+                // XXX I18N, logging needed.
+                throw new Error("Invalid primitive type : " + obj.getClass().getName());
+            }
+        }
+        else if (type == Object.class)
+        {
+            Object[] array = (Object[]) obj;
             length = array.length;
             out.write_ulong(length);
-            for (i = 0; i < length; i++) {
+            for (i = 0; i < length; i++)
+            {
                 Util.writeAny(out, array[i]);
             }
-        } else {
-            Object[] array = (Object[])((Object)obj);
+        }
+        else
+        {
+            Object[] array = (Object[]) obj;
             length = array.length;
             out.write_ulong(length);
             int callType = kValueType;
 
-            if (type.isInterface()) {
-                if (java.rmi.Remote.class.isAssignableFrom(type)) {
+            if (type.isInterface())
+            {
+                if (java.rmi.Remote.class.isAssignableFrom(type))
+                {
                     // RMI Object reference...
                     callType = kRemoteType;
-                } else if (org.omg.CORBA.Object.class.isAssignableFrom(type)){
+                }
+                else if (org.omg.CORBA.Object.class.isAssignableFrom(type))
+                {
                     // IDL Object reference...
                     callType = kRemoteType;
-                } else if (RepositoryId.isAbstractBase(type)) {
+                }
+                else if (RepositoryId.isAbstractBase(type))
+                {
                     // IDL Abstract Object reference...
                     callType = kAbstractType;
-                } else if (ObjectStreamClassCorbaExt.isAbstractInterface(type)) {
+                }
+                else if (ObjectStreamClassCorbaExt.isAbstractInterface(type))
+                {
                     callType = kAbstractType;
                 }
             }
 
-            for (i = 0; i < length; i++) {
-                switch (callType) {
-                case kRemoteType:
-                    Util.writeRemoteObject(out, array[i]);
-                    break;
-                case kAbstractType:
-                    Util.writeAbstractObject(out,array[i]);
-                    break;
-                case kValueType:
-                    try{
-                        out.write_value((java.io.Serializable)array[i]);
-                    } catch(ClassCastException cce){
-                        if (array[i] instanceof java.io.Serializable)
-                            throw cce;
-                        else {
-                            Utility.throwNotSerializableForCorba(
-                                array[i].getClass().getName());
+            for (i = 0; i < length; i++)
+            {
+                switch (callType)
+                {
+                    case kRemoteType :
+                        Util.writeRemoteObject(out, array[i]);
+                        break;
+                    case kAbstractType :
+                        Util.writeAbstractObject(out, array[i]);
+                        break;
+                    case kValueType :
+                        try
+                        {
+                            out.write_value((java.io.Serializable) array[i]);
                         }
-                    }
-                    break;
+                        catch (ClassCastException cce)
+                        {
+                            if (array[i] instanceof java.io.Serializable)
+                                throw cce;
+                            else
+                            {
+                                Utility.throwNotSerializableForCorba(array[i].getClass().getName());
+                            }
+                        }
+                        break;
                 }
             }
         }
     }
 
     /**
-     * Encapsulates reading of Java char arrays so that the 1.3 subclass
-     * can override it without exposing internals across packages.  This
-     * is a fix for bug 4367783.
+     * Encapsulates reading of Java char arrays so that the 1.3 subclass can override it without exposing internals
+     * across packages. This is a fix for bug 4367783.
      */
-    protected void readCharArray(org.omg.CORBA_2_3.portable.InputStream in,
-                                 char[] array,
-                                 int offset,
-                                 int length)
+    protected void readCharArray(org.omg.CORBA_2_3.portable.InputStream in, char[] array, int offset, int length)
     {
         in.read_wchar_array(array, offset, length);
     }
 
-    private java.lang.Object read_Array(IIOPInputStream bridge,
-                                        org.omg.CORBA_2_3.portable.InputStream in,
-                                        Class<?> sequence,
-                                        org.jboss.com.sun.org.omg.SendingContext.CodeBase sender,
-                                        int offset)
+    private Object read_Array(IIOPInputStream bridge, org.omg.CORBA_2_3.portable.InputStream in, Class<?> sequence,
+            org.jboss.com.sun.org.omg.SendingContext.CodeBase sender, int offset)
     {
-        try {
+        try
+        {
             // Read length of coming array
             int length = in.read_ulong();
             int i;
 
-            if (sequence == null) {
+            if (sequence == null)
+            {
                 for (i = 0; i < length; i++)
                     in.read_value();
 
@@ -602,113 +662,137 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
             Class<?> componentType = sequence.getComponentType();
             Class<?> actualType = componentType;
 
-
-            if (componentType.isPrimitive()) {
-                if (componentType == Integer.TYPE) {
+            if (componentType.isPrimitive())
+            {
+                if (componentType == Integer.TYPE)
+                {
                     int[] array = new int[length];
                     in.read_long_array(array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else if (componentType == Byte.TYPE) {
+                    return array;
+                }
+                else if (componentType == Byte.TYPE)
+                {
                     byte[] array = new byte[length];
                     in.read_octet_array(array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else if (componentType == Long.TYPE) {
+                    return array;
+                }
+                else if (componentType == Long.TYPE)
+                {
                     long[] array = new long[length];
                     in.read_longlong_array(array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else if (componentType == Float.TYPE) {
+                    return array;
+                }
+                else if (componentType == Float.TYPE)
+                {
                     float[] array = new float[length];
                     in.read_float_array(array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else if (componentType == Double.TYPE) {
+                    return array;
+                }
+                else if (componentType == Double.TYPE)
+                {
                     double[] array = new double[length];
                     in.read_double_array(array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else if (componentType == Short.TYPE) {
+                    return array;
+                }
+                else if (componentType == Short.TYPE)
+                {
                     short[] array = new short[length];
                     in.read_short_array(array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else if (componentType == Character.TYPE) {
+                    return array;
+                }
+                else if (componentType == Character.TYPE)
+                {
                     char[] array = new char[length];
                     readCharArray(in, array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else if (componentType == Boolean.TYPE) {
+                    return array;
+                }
+                else if (componentType == Boolean.TYPE)
+                {
                     boolean[] array = new boolean[length];
                     in.read_boolean_array(array, 0, length);
-                    return ((java.io.Serializable)((Object)array));
-                } else {
+                    return array;
+                }
+                else
+                {
                     // XXX I18N, logging needed.
                     throw new Error("Invalid primitive componentType : " + sequence.getName());
                 }
-            } else if (componentType == java.lang.Object.class) {
-                Object[] array = (Object[])java.lang.reflect.Array.newInstance(
-                    componentType, length);
+            }
+            else if (componentType == Object.class)
+            {
+                Object[] array = (Object[]) java.lang.reflect.Array.newInstance(componentType, length);
 
-                // Store this object and its beginning position
-                // since there might be indirections to it while
-                // it's been unmarshalled.
+                // Store this object and its beginning position since there might be indirections to it while it's been
+                // unmarshalled.
                 bridge.activeRecursionMgr.addObject(offset, array);
 
-                for (i = 0; i < length; i++) {
+                for (i = 0; i < length; i++)
+                {
                     Object objectValue = null;
-                    try {
+                    try
+                    {
                         objectValue = Util.readAny(in);
-                    } catch(IndirectionException cdrie) {
-                        try {
-                            // The CDR stream had never seen the given offset
-                            // before, so check the recursion manager (it will
-                            // throw an IOException if it doesn't have a
-                            // reference, either).
-                            objectValue = bridge.activeRecursionMgr.getObject(
-                                cdrie.offset);
-                        } catch (IOException ie) {
-                            // Translate to a MARSHAL exception since
-                            // ValueHandlers aren't allowed to throw
-                            // IOExceptions
-                            throw utilWrapper.invalidIndirection( ie,
-                                new Integer( cdrie.offset ) ) ;
+                    }
+                    catch (IndirectionException cdrie)
+                    {
+                        try
+                        {
+                            // The CDR stream had never seen the given offset before, so check the recursion manager (it
+                            // will throw an IOException if it doesn't have a reference, either).
+                            objectValue = bridge.activeRecursionMgr.getObject(cdrie.offset);
+                        }
+                        catch (IOException ie)
+                        {
+                            // Translate to a MARSHAL exception since ValueHandlers aren't allowed to throw
+                            // sIOExceptions
+                            throw utilWrapper.invalidIndirection(ie, new Integer(cdrie.offset));
                         }
                     }
 
                     array[i] = objectValue;
                 }
-                return ((java.io.Serializable)((Object)array));
-            } else {
-                Object[] array = (Object[])java.lang.reflect.Array.newInstance(
-                    componentType, length);
-                // Store this object and its beginning position
-                // since there might be indirections to it while
-                // it's been unmarshalled.
+                return array;
+            }
+            else
+            {
+                Object[] array = (Object[]) java.lang.reflect.Array.newInstance(componentType, length);
+                // Store this object and its beginning position since there might be indirections to it while it's been
+                // unmarshalled.
                 bridge.activeRecursionMgr.addObject(offset, array);
 
-                // Decide what method call to make based on the componentType.
-                // If it is a componentType for which we need to load a stub,
-                // convert the componentType to the correct stub type.
+                // Decide what method call to make based on the componentType. If it is a componentType for which we
+                // need to load a stub, convert the componentType to the correct stub type.
 
                 int callType = kValueType;
                 boolean narrow = false;
 
-                if (componentType.isInterface()) {
+                if (componentType.isInterface())
+                {
                     boolean loadStubClass = false;
                     // String className = componentType.getName();
 
-                    if (java.rmi.Remote.class.isAssignableFrom(componentType)) {
-
+                    if (java.rmi.Remote.class.isAssignableFrom(componentType))
+                    {
                         // RMI Object reference...
                         callType = kRemoteType;
 
-                        // for better performance, load the stub class once
-                        // instead of for each element of the array
+                        // for better performance, load the stub class once instead of for each element of the array
                         loadStubClass = true;
-                    } else if (org.omg.CORBA.Object.class.isAssignableFrom(componentType)){
+                    }
+                    else if (org.omg.CORBA.Object.class.isAssignableFrom(componentType))
+                    {
                         // IDL Object reference...
                         callType = kRemoteType;
                         loadStubClass = true;
-                    } else if (RepositoryId.isAbstractBase(componentType)) {
+                    }
+                    else if (RepositoryId.isAbstractBase(componentType))
+                    {
                         // IDL Abstract Object reference...
                         callType = kAbstractType;
                         loadStubClass = true;
-                    } else if (ObjectStreamClassCorbaExt.isAbstractInterface(componentType)) {
+                    }
+                    else if (ObjectStreamClassCorbaExt.isAbstractInterface(componentType))
+                    {
 
                         // RMI Abstract Object reference...
 
@@ -716,115 +800,131 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
                         callType = kAbstractType;
                     }
 
-                    if (loadStubClass) {
-                        try {
+                    if (loadStubClass)
+                    {
+                        try
+                        {
                             String codebase = Util.getCodebase(componentType);
                             String repID = RepositoryId.createForAnyType(componentType);
-                            Class<?> stubType =
-                                Utility.loadStubClass(repID, codebase, componentType);
+                            Class<?> stubType = Utility.loadStubClass(repID, codebase, componentType);
                             actualType = stubType;
-                        } catch (ClassNotFoundException e) {
+                        }
+                        catch (ClassNotFoundException e)
+                        {
                             narrow = true;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         narrow = true;
                     }
                 }
 
-                for (i = 0; i < length; i++) {
+                for (i = 0; i < length; i++)
+                {
 
-                    try {
-                        switch (callType) {
-                        case kRemoteType:
-                            if (!narrow)
-                                array[i] = (Object)in.read_Object(actualType);
-                            else {
-                                array[i] = Utility.readObjectAndNarrow(in, actualType);
+                    try
+                    {
+                        switch (callType)
+                        {
+                            case kRemoteType :
+                                if (!narrow)
+                                    array[i] = in.read_Object(actualType);
+                                else
+                                {
+                                    array[i] = Utility.readObjectAndNarrow(in, actualType);
 
-                            }
-                            break;
-                        case kAbstractType:
-                            if (!narrow)
-                                array[i] = (Object)in.read_abstract_interface(actualType);
-                            else {
-                                array[i] = Utility.readAbstractAndNarrow(in, actualType);
-                            }
-                            break;
-                        case kValueType:
-                            array[i] = (Object)in.read_value(actualType);
-                            break;
+                                }
+                                break;
+                            case kAbstractType :
+                                if (!narrow)
+                                    array[i] = in.read_abstract_interface(actualType);
+                                else
+                                {
+                                    array[i] = Utility.readAbstractAndNarrow(in, actualType);
+                                }
+                                break;
+                            case kValueType :
+                                array[i] = in.read_value(actualType);
+                                break;
                         }
-                    } catch(IndirectionException cdrie) {
-                        // The CDR stream had never seen the given offset before,
-                        // so check the recursion manager (it will throw an
-                        // IOException if it doesn't have a reference, either).
-                        try {
-                            array[i] = bridge.activeRecursionMgr.getObject(
-                                cdrie.offset);
-                        } catch (IOException ioe) {
-                            // Translate to a MARSHAL exception since
-                            // ValueHandlers aren't allowed to throw
-                            // IOExceptions
-                            throw utilWrapper.invalidIndirection( ioe,
-                                new Integer( cdrie.offset ) ) ;
+                    }
+                    catch (IndirectionException cdrie)
+                    {
+                        // The CDR stream had never seen the given offset before, so check the recursion manager (it
+                        // will throw an IOException if it doesn't have a reference, either).
+                        try
+                        {
+                            array[i] = bridge.activeRecursionMgr.getObject(cdrie.offset);
+                        }
+                        catch (IOException ioe)
+                        {
+                            // Translate to a MARSHAL exception since ValueHandlers aren't allowed to throw IOExceptions
+                            throw utilWrapper.invalidIndirection(ioe, new Integer(cdrie.offset));
                         }
                     }
 
                 }
 
-                return ((java.io.Serializable)((Object)array));
+                return array;
             }
-        } finally {
-            // We've completed deserializing this object.  Any
-            // future indirections will be handled correctly at the
-            // CDR level.  The ActiveRecursionManager only deals with
-            // objects currently being deserialized.
+        }
+        finally
+        {
+            // We've completed deserializing this object. Any future indirections will be handled correctly at the CDR
+            // evel. The ActiveRecursionManager only deals with objects currently being deserialized.
             bridge.activeRecursionMgr.removeObject(offset);
         }
     }
 
-    private boolean isArray(String repId){
+    private boolean isArray(String repId)
+    {
         return RepositoryId.cache.getId(repId).isSequence();
     }
 
-    protected String getOutputStreamClassName() {
+    protected String getOutputStreamClassName()
+    {
         return "org.jboss.com.sun.corba.se.impl.io.IIOPOutputStream";
     }
 
-   private IIOPOutputStream createOutputStream() {
+    private IIOPOutputStream createOutputStream()
+    {
         final String name = getOutputStreamClassName();
-        try {
-             IIOPOutputStream stream = createOutputStreamBuiltIn(name);
-             if (stream != null) {
-                 return stream;
-             }
-             return createCustom(IIOPOutputStream.class, name);
-        } catch (Throwable t) {
+        try
+        {
+            IIOPOutputStream stream = createOutputStreamBuiltIn(name);
+            if (stream != null)
+            {
+                return stream;
+            }
+            return createCustom(IIOPOutputStream.class, name);
+        }
+        catch (Throwable t)
+        {
             // Throw exception under the carpet.
-            InternalError ie = new InternalError(
-                "Error loading " + name
-            );
-                ie.initCause(t);
-                throw ie;
+            InternalError ie = new InternalError("Error loading " + name);
+            ie.initCause(t);
+            throw ie;
         }
     }
 
     /**
-     * Construct a built in implementation with priveleges.
-     * Returning null indicates a non-built is specified.
+     * Construct a built in implementation with priveleges. Returning null indicates a non-built is specified.
      */
-    private IIOPOutputStream createOutputStreamBuiltIn(
-        final String name
-    ) throws Throwable {
-        try {
-            return AccessController.doPrivileged(
-                new PrivilegedExceptionAction<IIOPOutputStream>() {
-                    public IIOPOutputStream run() throws IOException {
-                        return createOutputStreamBuiltInNoPriv(name);
-                    }
+    private IIOPOutputStream createOutputStreamBuiltIn(final String name) throws Throwable
+    {
+        try
+        {
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<IIOPOutputStream>()
+            {
+                public IIOPOutputStream run() throws IOException
+                {
+                    return createOutputStreamBuiltInNoPriv(name);
                 }
-            );
-        } catch (java.security.PrivilegedActionException exc) {
+            });
+        }
+        catch (java.security.PrivilegedActionException exc)
+        {
             throw exc.getCause();
         }
     }
@@ -832,130 +932,111 @@ public class ValueHandlerImpl implements javax.rmi.CORBA.ValueHandlerMultiFormat
     /**
      * Returning null indicates a non-built is specified.
      */
-    private IIOPOutputStream createOutputStreamBuiltInNoPriv(
-        final String name
-    ) throws IOException {
-        return 
-            name.equals(
-                IIOPOutputStream
-                    .class.getName()
-            ) ?
-            new IIOPOutputStream() :
+    private IIOPOutputStream createOutputStreamBuiltInNoPriv(final String name) throws IOException
+    {
+        return name.equals(IIOPOutputStream.class.getName()) ? new IIOPOutputStream() :
 
-            name.equals(
-                org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3
-                    .class.getName()
-            ) ?
-            new org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3() :
+        name.equals(org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3.class.getName())
+                ? new org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3()
+                :
 
-            name.equals(
-                org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3_1
-                    .class.getName()
-            ) ?
-            new org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3_1() :
+                name.equals(org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3_1.class.getName())
+                        ? new org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3_1()
+                        :
 
-            null;
+                        null;
     }
 
-    protected String getInputStreamClassName() {
+    protected String getInputStreamClassName()
+    {
         return "org.jboss.com.sun.corba.se.impl.io.IIOPInputStream";
     }
 
-    private IIOPInputStream createInputStream() {
+    private IIOPInputStream createInputStream()
+    {
         final String name = getInputStreamClassName();
-        try {
-             IIOPInputStream stream = createInputStreamBuiltIn(name);
-             if (stream != null) {
-                 return stream;
-             }
-             return createCustom(IIOPInputStream.class, name);
-        } catch (Throwable t) {
+        try
+        {
+            IIOPInputStream stream = createInputStreamBuiltIn(name);
+            if (stream != null)
+            {
+                return stream;
+            }
+            return createCustom(IIOPInputStream.class, name);
+        }
+        catch (Throwable t)
+        {
             // Throw exception under the carpet.
-            InternalError ie = new InternalError(
-                "Error loading " + name
-            );
-                ie.initCause(t);
-                throw ie;
+            InternalError ie = new InternalError("Error loading " + name);
+            ie.initCause(t);
+            throw ie;
         }
     }
 
     /**
-     * Construct a built in implementation with priveleges.
+     * Construct a built in implementation with priveleges. Returning null indicates a non-built is specified.
+     */
+    private IIOPInputStream createInputStreamBuiltIn(final String name) throws Throwable
+    {
+        try
+        {
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<IIOPInputStream>()
+            {
+                public IIOPInputStream run() throws IOException
+                {
+                    return createInputStreamBuiltInNoPriv(name);
+                }
+            });
+        }
+        catch (java.security.PrivilegedActionException exc)
+        {
+            throw exc.getCause();
+        }
+    }
+
+    /**
      * Returning null indicates a non-built is specified.
      */
-     private IIOPInputStream createInputStreamBuiltIn(
-         final String name
-     ) throws Throwable {
-         try {
-             return AccessController.doPrivileged(
-                 new PrivilegedExceptionAction<IIOPInputStream>() {
-                     public IIOPInputStream run() throws IOException {
-                         return createInputStreamBuiltInNoPriv(name);
-                     }
-                 }
-             );
-         } catch (java.security.PrivilegedActionException exc) {
-             throw exc.getCause();
-         }
-     }
- 
-     /**
-      * Returning null indicates a non-built is specified.
-      */
-     private IIOPInputStream createInputStreamBuiltInNoPriv(
-         final String name
-     ) throws IOException {
-         return 
-             name.equals(
-                 IIOPInputStream
-                     .class.getName()
-             ) ?
-             new IIOPInputStream() :
- 
-             name.equals(
-                 org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3
-                     .class.getName()
-             ) ?
-             new org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3() :
- 
-             name.equals(
-                 org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3_1
-                     .class.getName()
-             ) ?
-             new org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3_1() :
- 
-             null;
-     }
+    private IIOPInputStream createInputStreamBuiltInNoPriv(final String name) throws IOException
+    {
+        return name.equals(IIOPInputStream.class.getName()) ? new IIOPInputStream() :
 
-     /**
-      * Create a custom implementation without privileges.
-      */
-     private <T> T createCustom(
-         final Class<T> type, final String className
-     ) throws Throwable {
-           // Note: We use the thread context or system ClassLoader here
-           // since we want to load classes outside of the
-           // core JDK when running J2EE Pure ORB and
-           // talking to Kestrel.
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                if (cl == null)
-                    cl = ClassLoader.getSystemClassLoader();
+        name.equals(org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3.class.getName())
+                ? new org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3()
+                :
 
-                Class<?> clazz = cl.loadClass(className);
-                Class<? extends T> streamClass = clazz.asSubclass(type);
+                name.equals(org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3_1.class.getName())
+                        ? new org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3_1()
+                        :
 
-                // Since the ClassLoader should cache the class, this isn't
-                // as expensive as it looks.
-                return streamClass.newInstance();
+                        null;
+    }
+
+    /**
+     * Create a custom implementation without privileges.
+     */
+    private <T> T createCustom(final Class<T> type, final String className) throws Throwable
+    {
+        // Note: We use the thread context or system ClassLoader here since we want to load classes outside of the core
+        // JDK when running J2EE Pure ORB and talking to Kestrel.
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null)
+            cl = ClassLoader.getSystemClassLoader();
+
+        Class<?> clazz = cl.loadClass(className);
+        Class<? extends T> streamClass = clazz.asSubclass(type);
+
+        // Since the ClassLoader should cache the class, this isn't as expensive as it looks.
+        return streamClass.newInstance();
 
     }
 
     /**
-     * Our JDK 1.3 and JDK 1.3.1 behavior subclasses override this.
-     * The correct behavior is for a Java char to map to a CORBA wchar,
-     * but our older code mapped it to a CORBA char.
+     * Our JDK 1.3 and JDK 1.3.1 behavior subclasses override this. The correct behavior is for a Java char to map to a
+     * CORBA wchar, but our older code mapped it to a CORBA char.
      */
-    protected TCKind getJavaCharTCKind() {
+    protected TCKind getJavaCharTCKind()
+    {
         return TCKind.tk_wchar;
     }
 }

@@ -29,20 +29,19 @@ import org.jboss.com.sun.corba.se.impl.encoding.EncapsOutputStream;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 import org.omg.CORBA_2_3.portable.InputStream;
 
-
-/** Base class to use for implementing TaggedComponents.  It implements
- * the getIOPComponent method using the TaggedComponent.write() method.
+/**
+ * Base class to use for implementing TaggedComponents. It implements the getIOPComponent method using the
+ * TaggedComponent.write() method.
+ * 
  * @author Ken Cavanaugh
  */
-public abstract class TaggedComponentBase extends IdentifiableBase
-    implements TaggedComponent
+public abstract class TaggedComponentBase extends IdentifiableBase implements TaggedComponent
 {
-    public org.omg.IOP.TaggedComponent getIOPComponent(
-        org.omg.CORBA.ORB orb )
+    public org.omg.IOP.TaggedComponent getIOPComponent(org.omg.CORBA.ORB orb)
     {
-        EncapsOutputStream os = new EncapsOutputStream( (ORB)orb ) ;
-        write( os ) ;
-        InputStream is = (InputStream)(os.create_input_stream() ) ;
-        return org.omg.IOP.TaggedComponentHelper.read( is ) ;
+        EncapsOutputStream os = new EncapsOutputStream((ORB) orb);
+        write(os);
+        InputStream is = (InputStream) (os.create_input_stream());
+        return org.omg.IOP.TaggedComponentHelper.read(is);
     }
 }

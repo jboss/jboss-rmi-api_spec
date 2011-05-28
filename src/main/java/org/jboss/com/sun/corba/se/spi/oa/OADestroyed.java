@@ -24,8 +24,12 @@
  */
 package org.jboss.com.sun.corba.se.spi.oa;
 
-/** This exception is thrown when an operation on an ObjectAdapter
- * fails because the ObjectAdapter was destroyed during the operation.
+/**
+ * This exception is thrown when an operation on an ObjectAdapter fails because the ObjectAdapter was destroyed during
+ * the operation.
  */
-public class OADestroyed extends java.lang.Exception {
+public class OADestroyed extends java.lang.Exception
+{
+
+    private static final long serialVersionUID = -4890682626609516321L;
 }

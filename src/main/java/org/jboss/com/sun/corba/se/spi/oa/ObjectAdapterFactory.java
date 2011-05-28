@@ -23,25 +23,27 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.oa ;
+package org.jboss.com.sun.corba.se.spi.oa;
 
 import org.jboss.com.sun.corba.se.spi.ior.ObjectAdapterId;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 
-public interface ObjectAdapterFactory {
-    /** Initialize this object adapter factory instance.
-    */
-    void init( ORB orb ) ;
-
-    /** Shutdown all object adapters and other state associated
-     * with this factory.
+public interface ObjectAdapterFactory
+{
+    /**
+     * Initialize this object adapter factory instance.
      */
-    void shutdown( boolean waitForCompletion ) ;
+    void init(ORB orb);
 
-    /** Find the ObjectAdapter instance that corresponds to the
-    * given ObjectAdapterId.
-    */
-    ObjectAdapter find( ObjectAdapterId oaid ) ;
+    /**
+     * Shutdown all object adapters and other state associated with this factory.
+     */
+    void shutdown(boolean waitForCompletion);
 
-    ORB getORB() ;
+    /**
+     * Find the ObjectAdapter instance that corresponds to the given ObjectAdapterId.
+     */
+    ObjectAdapter find(ObjectAdapterId oaid);
+
+    ORB getORB();
 }

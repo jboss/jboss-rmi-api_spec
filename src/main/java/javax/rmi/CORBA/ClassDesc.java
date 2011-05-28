@@ -34,9 +34,13 @@ package javax.rmi.CORBA;
 /**
  * This class is used to marshal java.lang.Class objects over IIOP.
  */
-public class ClassDesc implements java.io.Serializable {
+@SuppressWarnings("unused")
+public class ClassDesc implements java.io.Serializable
+{
 
-	/**
+    private static final long serialVersionUID = -3477057297839810709L;
+
+    /**
      * @serial The class's RepositoryId.
      */
     private String repid;

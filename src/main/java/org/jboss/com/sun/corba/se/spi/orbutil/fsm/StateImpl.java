@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.orbutil.fsm ;
+package org.jboss.com.sun.corba.se.spi.orbutil.fsm;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,26 +33,30 @@ import java.util.Set;
 import org.jboss.com.sun.corba.se.impl.orbutil.fsm.GuardedAction;
 import org.jboss.com.sun.corba.se.impl.orbutil.fsm.NameBase;
 
-/** Base class for all states in a StateEngine.  This must be used
-* as the base class for all states in transitions added to a StateEngine.
-*/
-public class StateImpl extends NameBase implements State {
-    private Action defaultAction ;
-    private State defaultNextState ;
-    private Map inputToGuardedActions ;
+/**
+ * Base class for all states in a StateEngine. This must be used as the base class for all states in transitions added
+ * to a StateEngine.
+ */
+public class StateImpl extends NameBase implements State
+{
+    private Action defaultAction;
 
-    public StateImpl( String name )
+    private State defaultNextState;
+
+    private Map<Input, Set<GuardedAction>> inputToGuardedActions;
+
+    public StateImpl(String name)
     {
-        super( name ) ;
-        defaultAction = null ;
-        inputToGuardedActions = new HashMap() ;
+        super(name);
+        defaultAction = null;
+        inputToGuardedActions = new HashMap<Input, Set<GuardedAction>>();
     }
 
-    public void preAction( FSM fsm )
+    public void preAction(FSM fsm)
     {
     }
 
-    public void postAction( FSM fsm )
+    public void postAction(FSM fsm)
     {
     }
 
@@ -60,37 +64,38 @@ public class StateImpl extends NameBase implements State {
 
     public State getDefaultNextState()
     {
-        return defaultNextState ;
+        return defaultNextState;
     }
 
-    public void setDefaultNextState( State defaultNextState )
+    public void setDefaultNextState(State defaultNextState)
     {
-        this.defaultNextState = defaultNextState ;
+        this.defaultNextState = defaultNextState;
     }
 
     public Action getDefaultAction()
     {
-        return defaultAction ;
+        return defaultAction;
     }
 
-    public void setDefaultAction( Action defaultAction )
+    public void setDefaultAction(Action defaultAction)
     {
-        this.defaultAction = defaultAction ;
+        this.defaultAction = defaultAction;
     }
 
-    public void addGuardedAction( Input in, GuardedAction ga )
+    public void addGuardedAction(Input in, GuardedAction ga)
     {
-        Set gas = (Set)inputToGuardedActions.get( in ) ;
-        if (gas == null) {
-            gas = new HashSet() ;
-            inputToGuardedActions.put( in, gas ) ;
+        Set<GuardedAction> gas = inputToGuardedActions.get(in);
+        if (gas == null)
+        {
+            gas = new HashSet<GuardedAction>();
+            inputToGuardedActions.put(in, gas);
         }
 
-        gas.add( ga ) ;
+        gas.add(ga);
     }
 
-    public Set getGuardedActions( Input in )
+    public Set<GuardedAction> getGuardedActions(Input in)
     {
-        return (Set)inputToGuardedActions.get( in ) ;
+        return inputToGuardedActions.get(in);
     }
 }

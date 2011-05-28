@@ -30,5 +30,5 @@ import org.jboss.com.sun.corba.se.spi.ior.TaggedComponent;
 // TAG_RMI_CUSTOM_MAX_STREAM_FORMAT
 public interface MaxStreamFormatVersionComponent extends TaggedComponent
 {
-    public byte getMaxStreamFormatVersion() ;
+    public byte getMaxStreamFormatVersion();
 }

@@ -26,18 +26,15 @@ package org.jboss.com.sun.corba.se.spi.monitoring;
 
 /**
  * <p>
- *
+ * MonitoringObjectFactory is used internally by the ORB, It is not for general public use.
+ * </p>
+ * 
  * @author Hemanth Puttaswamy
- * </p>
- * <p>
- * MonitoringObjectFactory is used internally by the ORB, It is not for
- * general public use.
- * </p>
  */
-public interface MonitoringManagerFactory {
+public interface MonitoringManagerFactory
+{
     /**
-     *  A Simple Factory Method to create the Monitored Attribute Info.
+     * A Simple Factory Method to create the Monitored Attribute Info.
      */
-    MonitoringManager createMonitoringManager( String nameOfTheRoot,
-        String description );
+    MonitoringManager createMonitoringManager(String nameOfTheRoot, String description);
 }

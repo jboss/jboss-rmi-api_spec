@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.presentation.rmi ;
+package org.jboss.com.sun.corba.se.impl.presentation.rmi;
 
 import java.io.Externalizable;
 import java.io.Serializable;
@@ -42,419 +42,423 @@ import org.omg.CORBA_2_3.portable.OutputStream;
 
 public class DynamicMethodMarshallerImpl implements DynamicMethodMarshaller
 {
-    Method method ;
-    ExceptionHandler ehandler ;
-    boolean hasArguments = true ;
-    boolean hasVoidResult = true ;
-    boolean needsArgumentCopy ;         // true if copyObjects call needs for args
-    boolean needsResultCopy ;           // true if copyObject call needs for result
-    ReaderWriter[] argRWs = null ;
-    ReaderWriter resultRW = null ;
+    Method method;
 
-    private static boolean isAnyClass( Class<?> cls )
+    ExceptionHandler ehandler;
+
+    boolean hasArguments = true;
+
+    boolean hasVoidResult = true;
+
+    boolean needsArgumentCopy; // true if copyObjects call needs for args
+
+    boolean needsResultCopy; // true if copyObject call needs for result
+
+    ReaderWriter[] argRWs = null;
+
+    ReaderWriter resultRW = null;
+
+    private static boolean isAnyClass(Class<?> cls)
     {
-        return cls.equals( Object.class ) || cls.equals( Serializable.class ) ||
-            cls.equals( Externalizable.class ) ;
+        return cls.equals(Object.class) || cls.equals(Serializable.class) || cls.equals(Externalizable.class);
     }
 
-    // Assume that cls is not Remote, !isAnyClass(cls), and
-    // !org.omg.CORBA.Object.class.isAssignableFrom( cls ).
-    // Then return whether cls is an RMI-IIOP abstract interface.
-    private static boolean isAbstractInterface( Class<?> cls )
+    // Assume that cls is not Remote, !isAnyClass(cls), and !org.omg.CORBA.Object.class.isAssignableFrom( cls ). Then
+    // return whether cls is an RMI-IIOP abstract interface.
+    private static boolean isAbstractInterface(Class<?> cls)
     {
-        // Either cls is an interface that extends IDLEntity, or else
-        // cls does not extend java.rmi.Remote and all of its methods
-        // throw RemoteException.
-        if (IDLEntity.class.isAssignableFrom( cls ))
-            return cls.isInterface() ;
+        // Either cls is an interface that extends IDLEntity, or else cls does not extend java.rmi.Remote and all of its
+        // methods throw RemoteException.
+        if (IDLEntity.class.isAssignableFrom(cls))
+            return cls.isInterface();
         else
-            return cls.isInterface() && allMethodsThrowRemoteException( cls ) ;
+            return cls.isInterface() && allMethodsThrowRemoteException(cls);
     }
 
-    private static boolean allMethodsThrowRemoteException( Class<?> cls )
+    private static boolean allMethodsThrowRemoteException(Class<?> cls)
     {
-        Method[] methods = cls.getMethods() ;
+        Method[] methods = cls.getMethods();
 
-        // Check that all methods (other than those declared in java.lang.Object)
-        // throw an exception that is a subclass of RemoteException.
-        for (int ctr=0; ctr<methods.length; ctr++) {
-            Method method = methods[ctr] ;
+        // Check that all methods (other than those declared in java.lang.Object) throw an exception that is a subclass
+        // of RemoteException.
+        for (int ctr = 0; ctr < methods.length; ctr++)
+        {
+            Method method = methods[ctr];
             if (method.getDeclaringClass() != Object.class)
-                if (!throwsRemote( method ))
-                    return false ;
+                if (!throwsRemote(method))
+                    return false;
         }
 
-        return true ;
+        return true;
     }
 
-    private static boolean throwsRemote( Method method )
+    private static boolean throwsRemote(Method method)
     {
-        Class<?>[] exceptionTypes = method.getExceptionTypes() ;
+        Class<?>[] exceptionTypes = method.getExceptionTypes();
 
         // Check that some exceptionType is a subclass of RemoteException
-        for (int ctr=0; ctr<exceptionTypes.length; ctr++) {
-            Class<?> exceptionType = exceptionTypes[ctr] ;
-            if (java.rmi.RemoteException.class.isAssignableFrom( exceptionType ))
-                return true ;
+        for (int ctr = 0; ctr < exceptionTypes.length; ctr++)
+        {
+            Class<?> exceptionType = exceptionTypes[ctr];
+            if (java.rmi.RemoteException.class.isAssignableFrom(exceptionType))
+                return true;
         }
 
-        return false ;
+        return false;
     }
 
     public interface ReaderWriter
     {
-        Object read( InputStream is ) ;
+        Object read(InputStream is);
 
-        void write( OutputStream os, Object value ) ;
+        void write(OutputStream os, Object value);
     }
 
     abstract static class ReaderWriterBase implements ReaderWriter
     {
-        String name ;
+        String name;
 
-        public ReaderWriterBase( String name )
+        public ReaderWriterBase(String name)
         {
-            this.name = name ;
+            this.name = name;
         }
 
         public String toString()
         {
-            return "ReaderWriter[" + name + "]" ;
+            return "ReaderWriter[" + name + "]";
         }
     }
 
-    private static ReaderWriter booleanRW = new ReaderWriterBase( "boolean" )
+    private static ReaderWriter booleanRW = new ReaderWriterBase("boolean")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            boolean value = is.read_boolean() ;
-            return new Boolean( value ) ;
+            boolean value = is.read_boolean();
+            return new Boolean(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Boolean val = (Boolean)value ;
-            os.write_boolean( val.booleanValue() ) ;
+            Boolean val = (Boolean) value;
+            os.write_boolean(val.booleanValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter byteRW = new ReaderWriterBase( "byte" )
+    private static ReaderWriter byteRW = new ReaderWriterBase("byte")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            byte value = is.read_octet() ;
-            return new Byte( value ) ;
+            byte value = is.read_octet();
+            return new Byte(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Byte val = (Byte)value ;
-            os.write_octet( val.byteValue() ) ;
+            Byte val = (Byte) value;
+            os.write_octet(val.byteValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter charRW = new ReaderWriterBase( "char" )
+    private static ReaderWriter charRW = new ReaderWriterBase("char")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            char value = is.read_wchar() ;
-            return new Character( value ) ;
+            char value = is.read_wchar();
+            return new Character(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Character val = (Character)value ;
-            os.write_wchar( val.charValue() ) ;
+            Character val = (Character) value;
+            os.write_wchar(val.charValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter shortRW = new ReaderWriterBase( "short" )
+    private static ReaderWriter shortRW = new ReaderWriterBase("short")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            short value = is.read_short() ;
-            return new Short( value ) ;
+            short value = is.read_short();
+            return new Short(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Short val = (Short)value ;
-            os.write_short( val.shortValue() ) ;
+            Short val = (Short) value;
+            os.write_short(val.shortValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter intRW = new ReaderWriterBase( "int" )
+    private static ReaderWriter intRW = new ReaderWriterBase("int")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            int value = is.read_long() ;
-            return new Integer( value ) ;
+            int value = is.read_long();
+            return new Integer(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Integer val = (Integer)value ;
-            os.write_long( val.intValue() ) ;
+            Integer val = (Integer) value;
+            os.write_long(val.intValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter longRW = new ReaderWriterBase( "long" )
+    private static ReaderWriter longRW = new ReaderWriterBase("long")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            long value = is.read_longlong() ;
-            return new Long( value ) ;
+            long value = is.read_longlong();
+            return new Long(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Long val = (Long)value ;
-            os.write_longlong( val.longValue() ) ;
+            Long val = (Long) value;
+            os.write_longlong(val.longValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter floatRW = new ReaderWriterBase( "float" )
+    private static ReaderWriter floatRW = new ReaderWriterBase("float")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            float value = is.read_float() ;
-            return new Float( value ) ;
+            float value = is.read_float();
+            return new Float(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Float val = (Float)value ;
-            os.write_float( val.floatValue() ) ;
+            Float val = (Float) value;
+            os.write_float(val.floatValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter doubleRW = new ReaderWriterBase( "double" )
+    private static ReaderWriter doubleRW = new ReaderWriterBase("double")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            double value = is.read_double() ;
-            return new Double( value ) ;
+            double value = is.read_double();
+            return new Double(value);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Double val = (Double)value ;
-            os.write_double( val.doubleValue() ) ;
+            Double val = (Double) value;
+            os.write_double(val.doubleValue());
         }
-    } ;
+    };
 
-    private static ReaderWriter corbaObjectRW = new ReaderWriterBase(
-        "org.omg.CORBA.Object" )
+    private static ReaderWriter corbaObjectRW = new ReaderWriterBase("org.omg.CORBA.Object")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            return is.read_Object() ;
+            return is.read_Object();
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            os.write_Object( (org.omg.CORBA.Object)value ) ;
+            os.write_Object((org.omg.CORBA.Object) value);
         }
-    } ;
+    };
 
-    private static ReaderWriter anyRW = new ReaderWriterBase( "any" )
+    private static ReaderWriter anyRW = new ReaderWriterBase("any")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            return Util.readAny(is) ;
+            return Util.readAny(is);
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Util.writeAny( os, value ) ;
+            Util.writeAny(os, value);
         }
-    } ;
+    };
 
-    private static ReaderWriter abstractInterfaceRW = new ReaderWriterBase(
-        "abstract_interface"  )
+    private static ReaderWriter abstractInterfaceRW = new ReaderWriterBase("abstract_interface")
     {
-        public Object read( InputStream is )
+        public Object read(InputStream is)
         {
-            return is.read_abstract_interface() ;
+            return is.read_abstract_interface();
         }
 
-        public void write( OutputStream os, Object value )
+        public void write(OutputStream os, Object value)
         {
-            Util.writeAbstractObject( os, value ) ;
+            Util.writeAbstractObject(os, value);
         }
-    } ;
+    };
 
-
-    public static ReaderWriter makeReaderWriter( final Class<?> cls )
+    public static ReaderWriter makeReaderWriter(final Class<?> cls)
     {
-        if (cls.equals( boolean.class ))
-            return booleanRW ;
-        else if (cls.equals( byte.class ))
-            return byteRW ;
-        else if (cls.equals( char.class ))
-            return charRW ;
-        else if (cls.equals( short.class ))
-            return shortRW ;
-        else if (cls.equals( int.class ))
-            return intRW ;
-        else if (cls.equals( long.class ))
-            return longRW ;
-        else if (cls.equals( float.class ))
-            return floatRW ;
-        else if (cls.equals( double.class ))
-            return doubleRW ;
-        else if (java.rmi.Remote.class.isAssignableFrom( cls ))
-            return new ReaderWriterBase( "remote(" + cls.getName() + ")" )
+        if (cls.equals(boolean.class))
+            return booleanRW;
+        else if (cls.equals(byte.class))
+            return byteRW;
+        else if (cls.equals(char.class))
+            return charRW;
+        else if (cls.equals(short.class))
+            return shortRW;
+        else if (cls.equals(int.class))
+            return intRW;
+        else if (cls.equals(long.class))
+            return longRW;
+        else if (cls.equals(float.class))
+            return floatRW;
+        else if (cls.equals(double.class))
+            return doubleRW;
+        else if (java.rmi.Remote.class.isAssignableFrom(cls))
+            return new ReaderWriterBase("remote(" + cls.getName() + ")")
             {
-                public Object read( InputStream is )
+                public Object read(InputStream is)
                 {
-                    return PortableRemoteObject.narrow( is.read_Object(),
-                        cls ) ;
+                    return PortableRemoteObject.narrow(is.read_Object(), cls);
                 }
 
-                public void write( OutputStream os, Object value )
+                public void write(OutputStream os, Object value)
                 {
-                    Util.writeRemoteObject( os, value ) ;
+                    Util.writeRemoteObject(os, value);
                 }
-            } ;
+            };
         else if (cls.equals(org.omg.CORBA.Object.class))
-            return corbaObjectRW ;
-        else if (org.omg.CORBA.Object.class.isAssignableFrom( cls ))
-            return new ReaderWriterBase( "org.omg.CORBA.Object(" +
-                cls.getName() + ")" )
+            return corbaObjectRW;
+        else if (org.omg.CORBA.Object.class.isAssignableFrom(cls))
+            return new ReaderWriterBase("org.omg.CORBA.Object(" + cls.getName() + ")")
             {
-                public Object read( InputStream is )
+                public Object read(InputStream is)
                 {
-                    return is.read_Object(cls) ;
+                    return is.read_Object(cls);
                 }
 
-                public void write( OutputStream os, Object value )
+                public void write(OutputStream os, Object value)
                 {
-                    os.write_Object( (org.omg.CORBA.Object)value ) ;
+                    os.write_Object((org.omg.CORBA.Object) value);
                 }
-            } ;
+            };
         else if (isAnyClass(cls))
-            return anyRW ;
+            return anyRW;
         else if (isAbstractInterface(cls))
-            return abstractInterfaceRW ;
+            return abstractInterfaceRW;
 
         // For anything else, just read it as a value type.
-        return new ReaderWriterBase( "value(" + cls.getName() + ")" )
+        return new ReaderWriterBase("value(" + cls.getName() + ")")
         {
-            public Object read( InputStream is )
+            public Object read(InputStream is)
             {
-                return is.read_value(cls) ;
+                return is.read_value(cls);
             }
 
-            public void write( OutputStream os, Object value )
+            public void write(OutputStream os, Object value)
             {
-                os.write_value( (Serializable)value, cls ) ;
+                os.write_value((Serializable) value, cls);
             }
-        } ;
+        };
     }
 
-    public DynamicMethodMarshallerImpl( Method method )
+    public DynamicMethodMarshallerImpl(Method method)
     {
-        this.method = method ;
-        ehandler = new ExceptionHandlerImpl( method.getExceptionTypes() ) ;
-        needsArgumentCopy = false ;
+        this.method = method;
+        ehandler = new ExceptionHandlerImpl(method.getExceptionTypes());
+        needsArgumentCopy = false;
 
-        Class<?>[] argTypes = method.getParameterTypes() ;
-        hasArguments = argTypes.length > 0 ;
-        if (hasArguments) {
-            argRWs = new ReaderWriter[ argTypes.length ] ;
-            for (int ctr=0; ctr<argTypes.length; ctr++ ) {
-                // This could be further optimized to avoid
-                // copying if argTypes contains at most one
-                // immutable object type.
+        Class<?>[] argTypes = method.getParameterTypes();
+        hasArguments = argTypes.length > 0;
+        if (hasArguments)
+        {
+            argRWs = new ReaderWriter[argTypes.length];
+            for (int ctr = 0; ctr < argTypes.length; ctr++)
+            {
+                // This could be further optimized to avoid copying if argTypes contains at most one immutable object
+                // type.
                 if (!argTypes[ctr].isPrimitive())
-                    needsArgumentCopy = true ;
-                argRWs[ctr] = makeReaderWriter( argTypes[ctr] ) ;
+                    needsArgumentCopy = true;
+                argRWs[ctr] = makeReaderWriter(argTypes[ctr]);
             }
         }
 
-        Class<?> resultType = method.getReturnType() ;
-        needsResultCopy = false ;
-        hasVoidResult = resultType.equals( void.class ) ;
-        if (!hasVoidResult) {
-            needsResultCopy = !resultType.isPrimitive() ;
-            resultRW = makeReaderWriter( resultType ) ;
+        Class<?> resultType = method.getReturnType();
+        needsResultCopy = false;
+        hasVoidResult = resultType.equals(void.class);
+        if (!hasVoidResult)
+        {
+            needsResultCopy = !resultType.isPrimitive();
+            resultRW = makeReaderWriter(resultType);
         }
     }
 
     public Method getMethod()
     {
-        return method ;
+        return method;
     }
 
-    public Object[] copyArguments( Object[] args,
-        ORB orb ) throws RemoteException
+    public Object[] copyArguments(Object[] args, ORB orb) throws RemoteException
     {
         if (needsArgumentCopy)
-            return Util.copyObjects( args, orb ) ;
+            return Util.copyObjects(args, orb);
         else
-            return args ;
+            return args;
     }
 
-    public Object[] readArguments( InputStream is )
+    public Object[] readArguments(InputStream is)
     {
-        Object[] result = null ;
+        Object[] result = null;
 
-        if (hasArguments) {
-            result = new Object[ argRWs.length ] ;
-            for (int ctr=0; ctr<argRWs.length; ctr++ )
-                result[ctr] = argRWs[ctr].read( is ) ;
+        if (hasArguments)
+        {
+            result = new Object[argRWs.length];
+            for (int ctr = 0; ctr < argRWs.length; ctr++)
+                result[ctr] = argRWs[ctr].read(is);
         }
 
-        return result ;
+        return result;
     }
 
-    public void writeArguments( OutputStream os, Object[] args )
+    public void writeArguments(OutputStream os, Object[] args)
     {
-        if (hasArguments) {
+        if (hasArguments)
+        {
             if (args.length != argRWs.length)
-                throw new IllegalArgumentException( "Expected " + argRWs.length +
-                    " arguments, but got " + args.length + " arguments." ) ;
+                throw new IllegalArgumentException("Expected " + argRWs.length + " arguments, but got " + args.length
+                        + " arguments.");
 
-            for (int ctr=0; ctr<argRWs.length; ctr++ )
-                argRWs[ctr].write( os, args[ctr] ) ;
+            for (int ctr = 0; ctr < argRWs.length; ctr++)
+                argRWs[ctr].write(os, args[ctr]);
         }
     }
 
-    public Object copyResult( Object result, ORB orb ) throws RemoteException
+    public Object copyResult(Object result, ORB orb) throws RemoteException
     {
         if (needsResultCopy)
-            return Util.copyObject( result, orb ) ;
+            return Util.copyObject(result, orb);
         else
-            return result ;
+            return result;
     }
 
-    public Object readResult( InputStream is )
+    public Object readResult(InputStream is)
     {
         if (hasVoidResult)
-            return null ;
+            return null;
         else
-            return resultRW.read( is ) ;
+            return resultRW.read(is);
     }
 
-    public void writeResult( OutputStream os, Object result )
+    public void writeResult(OutputStream os, Object result)
     {
         if (!hasVoidResult)
-            resultRW.write( os, result ) ;
+            resultRW.write(os, result);
     }
 
-    public boolean isDeclaredException( Throwable thr )
+    public boolean isDeclaredException(Throwable thr)
     {
-        return ehandler.isDeclaredException( thr.getClass() ) ;
+        return ehandler.isDeclaredException(thr.getClass());
     }
 
-    public void writeException( OutputStream os, Exception ex )
+    public void writeException(OutputStream os, Exception ex)
     {
-        ehandler.writeException( os, ex ) ;
+        ehandler.writeException(os, ex);
     }
 
-    public Exception readException( ApplicationException ae )
+    public Exception readException(ApplicationException ae)
     {
-        return ehandler.readException( ae ) ;
+        return ehandler.readException(ae);
     }
 }

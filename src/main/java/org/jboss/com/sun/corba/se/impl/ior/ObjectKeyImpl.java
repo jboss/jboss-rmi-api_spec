@@ -39,57 +39,57 @@ import org.omg.CORBA_2_3.portable.OutputStream;
 public class ObjectKeyImpl implements ObjectKey
 {
     private ObjectKeyTemplate oktemp;
+
     private ObjectId id;
 
-    public boolean equals( Object obj )
+    public boolean equals(Object obj)
     {
         if (obj == null)
-            return false ;
+            return false;
 
         if (!(obj instanceof ObjectKeyImpl))
-            return false ;
+            return false;
 
-        ObjectKeyImpl other = (ObjectKeyImpl)obj ;
+        ObjectKeyImpl other = (ObjectKeyImpl) obj;
 
-        return oktemp.equals( other.oktemp ) &&
-            id.equals( other.id ) ;
+        return oktemp.equals(other.oktemp) && id.equals(other.id);
     }
 
     public int hashCode()
     {
-        return oktemp.hashCode() ^ id.hashCode() ;
+        return oktemp.hashCode() ^ id.hashCode();
     }
 
     public ObjectKeyTemplate getTemplate()
     {
-        return oktemp ;
+        return oktemp;
     }
 
     public ObjectId getId()
     {
-        return id ;
+        return id;
     }
 
-    public ObjectKeyImpl( ObjectKeyTemplate oktemp, ObjectId id )
+    public ObjectKeyImpl(ObjectKeyTemplate oktemp, ObjectId id)
     {
-        this.oktemp = oktemp ;
-        this.id = id ;
+        this.oktemp = oktemp;
+        this.id = id;
     }
 
-    public void write( OutputStream os )
+    public void write(OutputStream os)
     {
-        oktemp.write( id, os ) ;
+        oktemp.write(id, os);
     }
 
-    public byte[] getBytes( org.omg.CORBA.ORB orb )
+    public byte[] getBytes(org.omg.CORBA.ORB orb)
     {
-        EncapsOutputStream os = new EncapsOutputStream( (ORB)orb ) ;
-        write( os ) ;
-        return os.toByteArray() ;
+        EncapsOutputStream os = new EncapsOutputStream((ORB) orb);
+        write(os);
+        return os.toByteArray();
     }
 
-    public CorbaServerRequestDispatcher getServerRequestDispatcher( ORB orb )
+    public CorbaServerRequestDispatcher getServerRequestDispatcher(ORB orb)
     {
-        return oktemp.getServerRequestDispatcher( orb, id ) ;
+        return oktemp.getServerRequestDispatcher(orb, id);
     }
 }

@@ -33,13 +33,14 @@ public interface IORToSocketInfo
 {
     /**
      * Used to extract socket address information from an IOR.
-     *
-     * @param ior.
-     *
+     * 
+     * @param ior
+     *            .
+     * 
      * @return List - a list of SocketInfo.
-     *
+     * 
      */
-    public List getSocketInfo(IOR ior);
+    public List<Object> getSocketInfo(IOR ior);
 }
 
 // End of file.

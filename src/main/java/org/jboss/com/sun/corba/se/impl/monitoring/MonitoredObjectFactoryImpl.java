@@ -28,11 +28,11 @@ package org.jboss.com.sun.corba.se.impl.monitoring;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoredObjectFactory;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoredObject;
 
-public class MonitoredObjectFactoryImpl implements MonitoredObjectFactory {
+public class MonitoredObjectFactoryImpl implements MonitoredObjectFactory
+{
 
-    public MonitoredObject createMonitoredObject( String name,
-        String description )
+    public MonitoredObject createMonitoredObject(String name, String description)
     {
-        return new MonitoredObjectImpl( name, description );
+        return new MonitoredObjectImpl(name, description);
     }
 }

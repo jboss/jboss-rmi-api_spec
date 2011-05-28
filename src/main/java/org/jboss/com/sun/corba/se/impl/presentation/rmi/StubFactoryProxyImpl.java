@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.presentation.rmi ;
+package org.jboss.com.sun.corba.se.impl.presentation.rmi;
 
 import java.lang.reflect.Proxy;
 
@@ -35,23 +35,20 @@ import org.jboss.com.sun.corba.se.spi.presentation.rmi.PresentationManager;
 
 public class StubFactoryProxyImpl extends StubFactoryDynamicBase
 {
-    public StubFactoryProxyImpl( PresentationManager.ClassData classData,
-        ClassLoader loader )
+    public StubFactoryProxyImpl(PresentationManager.ClassData classData, ClassLoader loader)
     {
-        super( classData, loader ) ;
+        super(classData, loader);
     }
 
     public org.omg.CORBA.Object makeStub()
     {
         // Construct the dynamic proxy that implements this stub
         // using the composite handler
-        InvocationHandlerFactory factory = classData.getInvocationHandlerFactory() ;
-        LinkedInvocationHandler handler =
-            (LinkedInvocationHandler)factory.getInvocationHandler() ;
-        Class<?>[] interfaces = factory.getProxyInterfaces() ;
-        DynamicStub stub = (DynamicStub)Proxy.newProxyInstance( loader, interfaces,
-            handler ) ;
-        handler.setProxy( (Proxy)stub ) ;
-        return stub ;
+        InvocationHandlerFactory factory = classData.getInvocationHandlerFactory();
+        LinkedInvocationHandler handler = (LinkedInvocationHandler) factory.getInvocationHandler();
+        Class<?>[] interfaces = factory.getProxyInterfaces();
+        DynamicStub stub = (DynamicStub) Proxy.newProxyInstance(loader, interfaces, handler);
+        handler.setProxy((Proxy) stub);
+        return stub;
     }
 }

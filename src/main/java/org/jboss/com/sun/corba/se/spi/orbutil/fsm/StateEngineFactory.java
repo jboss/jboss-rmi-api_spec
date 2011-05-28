@@ -29,14 +29,17 @@ import org.jboss.com.sun.corba.se.impl.orbutil.fsm.StateEngineImpl;
 
 /**
  * Factory for creating the standard state machine implementation.
- *
+ * 
  * @author Ken Cavanaugh
  */
-public class StateEngineFactory {
-    private StateEngineFactory() {}
+public class StateEngineFactory
+{
+    private StateEngineFactory()
+    {
+    }
 
     public static StateEngine create()
     {
-        return new StateEngineImpl() ;
+        return new StateEngineImpl();
     }
 }

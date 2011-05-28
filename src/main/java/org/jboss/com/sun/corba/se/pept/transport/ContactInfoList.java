@@ -28,23 +28,19 @@ package org.jboss.com.sun.corba.se.pept.transport;
 import java.util.Iterator;
 
 /**
- * <p> <code>ContactInfoList</code> contains one or more
- * {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfo ContactInfo}.
- *
+ * <p>
+ * <code>ContactInfoList</code> contains one or more {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfo
+ * ContactInfo}.
+ * 
  * @author Harold Carr
  */
 public interface ContactInfoList
 {
     /**
-     * Used to get a
-     * {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfoListIterator
-     * ContactInfoListIterator} to retrieve individual
-     * {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfo ContactInfo}
-     * from the list.
-     *
-     * @return A
-     * {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfoListIterator
-     * ContactInfoListIterator}.
+     * Used to get a {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfoListIterator ContactInfoListIterator}
+     * to retrieve individual {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfo ContactInfo} from the list.
+     * 
+     * @return A {@link org.jboss.com.sun.corba.se.pept.transport.ContactInfoListIterator ContactInfoListIterator}.
      */
     public Iterator<ContactInfo> iterator();
 }

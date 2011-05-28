@@ -40,17 +40,18 @@ import org.omg.PortableServer.ServantLocatorPackage.CookieHolder;
 
 // XXX Needs to be turned into LocalObjectImpl.
 
-public class POACurrent extends org.omg.CORBA.portable.ObjectImpl
-    implements org.omg.PortableServer.Current
+public class POACurrent extends org.omg.CORBA.portable.ObjectImpl implements org.omg.PortableServer.Current
 {
+    private static final long serialVersionUID = 6652432719945390553L;
+
     private ORB orb;
-    private POASystemException wrapper ;
+
+    private POASystemException wrapper;
 
     public POACurrent(ORB orb)
     {
         this.orb = orb;
-        wrapper = POASystemException.get( orb,
-            CORBALogDomains.OA_INVOCATION ) ;
+        wrapper = POASystemException.get(orb, CORBALogDomains.OA_INVOCATION);
     }
 
     public String[] _ids()
@@ -60,31 +61,23 @@ public class POACurrent extends org.omg.CORBA.portable.ObjectImpl
         return ids;
     }
 
-    //
     // Standard OMG operations.
-    //
 
-    public POA get_POA()
-        throws
-            NoContext
+    public POA get_POA() throws NoContext
     {
-        POA poa = (POA)(peekThrowNoContext().oa());
+        POA poa = (POA) (peekThrowNoContext().oa());
         throwNoContextIfNull(poa);
         return poa;
     }
 
-    public byte[] get_object_id()
-        throws
-            NoContext
+    public byte[] get_object_id() throws NoContext
     {
         byte[] objectid = peekThrowNoContext().id();
         throwNoContextIfNull(objectid);
         return objectid;
     }
 
-    //
     // Implementation operations used by POA package.
-    //
 
     public ObjectAdapter getOA()
     {
@@ -102,9 +95,8 @@ public class POACurrent extends org.omg.CORBA.portable.ObjectImpl
 
     Servant getServant()
     {
-        Servant servant = (Servant)(peekThrowInternal().getServantContainer());
-        // If is OK for the servant to be null.
-        // This could happen if POAImpl.getServant is called but
+        Servant servant = (Servant) (peekThrowInternal().getServantContainer());
+        // If is OK for the servant to be null. This could happen if POAImpl.getServant is called but
         // POAImpl.internalGetServant throws an exception.
         return servant;
     }
@@ -116,9 +108,8 @@ public class POACurrent extends org.omg.CORBA.portable.ObjectImpl
         return cookieHolder;
     }
 
-    // This is public so we can test the stack balance.
-    // It is not a security hole since this same info can be obtained from
-    // PortableInterceptors.
+    // This is public so we can test the stack balance. It is not a security hole since this same info can be obtained
+    // from PortableInterceptors.
     public String getOperation()
     {
         String operation = peekThrowInternal().getOperation();
@@ -128,21 +119,22 @@ public class POACurrent extends org.omg.CORBA.portable.ObjectImpl
 
     void setServant(Servant servant)
     {
-        peekThrowInternal().setServant( servant );
+        peekThrowInternal().setServant(servant);
     }
 
     //
     // Class utilities.
     //
 
-    private OAInvocationInfo peekThrowNoContext()
-        throws
-            NoContext
+    private OAInvocationInfo peekThrowNoContext() throws NoContext
     {
         OAInvocationInfo invocationInfo = null;
-        try {
-            invocationInfo = orb.peekInvocationInfo() ;
-        } catch (EmptyStackException e) {
+        try
+        {
+            invocationInfo = orb.peekInvocationInfo();
+        }
+        catch (EmptyStackException e)
+        {
             throw new NoContext();
         }
         return invocationInfo;
@@ -151,40 +143,44 @@ public class POACurrent extends org.omg.CORBA.portable.ObjectImpl
     private OAInvocationInfo peekThrowInternal()
     {
         OAInvocationInfo invocationInfo = null;
-        try {
-            invocationInfo = orb.peekInvocationInfo() ;
-        } catch (EmptyStackException e) {
-            // The completion status is maybe because this could happen
-            // after the servant has been invoked.
-            throw wrapper.poacurrentUnbalancedStack( e ) ;
+        try
+        {
+            invocationInfo = orb.peekInvocationInfo();
+        }
+        catch (EmptyStackException e)
+        {
+            // The completion status is maybe because this could happen after the servant has been invoked.
+            throw wrapper.poacurrentUnbalancedStack(e);
         }
         return invocationInfo;
     }
 
-    private void throwNoContextIfNull(Object o)
-        throws
-            NoContext
+    private void throwNoContextIfNull(Object o) throws NoContext
     {
-        if ( o == null ) {
+        if (o == null)
+        {
             throw new NoContext();
         }
     }
 
     private void throwInternalIfNull(Object o)
     {
-        if ( o == null ) {
-            throw wrapper.poacurrentNullField( CompletionStatus.COMPLETED_MAYBE ) ;
+        if (o == null)
+        {
+            throw wrapper.poacurrentNullField(CompletionStatus.COMPLETED_MAYBE);
         }
     }
 
-	public org.omg.CORBA.Object get_reference() throws NoContext {
-		Servant servant = get_servant();
-		if (servant != null)
-			return servant._this_object(orb);
-		return null;
-	}
+    public org.omg.CORBA.Object get_reference() throws NoContext
+    {
+        Servant servant = get_servant();
+        if (servant != null)
+            return servant._this_object(orb);
+        return null;
+    }
 
-	public Servant get_servant() throws NoContext {
-		return getServant();
-	}
+    public Servant get_servant() throws NoContext
+    {
+        return getServant();
+    }
 }

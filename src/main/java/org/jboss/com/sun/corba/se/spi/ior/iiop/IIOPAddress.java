@@ -25,14 +25,14 @@
 
 package org.jboss.com.sun.corba.se.spi.ior.iiop;
 
-import org.jboss.com.sun.corba.se.spi.ior.Writeable ;
+import org.jboss.com.sun.corba.se.spi.ior.Writeable;
 
-/** IIOPAddress represents the host and port used to establish a
- * TCP connection for an IIOP request.
+/**
+ * IIOPAddress represents the host and port used to establish a TCP connection for an IIOP request.
  */
 public interface IIOPAddress extends Writeable
 {
-    public String getHost() ;
+    public String getHost();
 
-    public int getPort() ;
+    public int getPort();
 }

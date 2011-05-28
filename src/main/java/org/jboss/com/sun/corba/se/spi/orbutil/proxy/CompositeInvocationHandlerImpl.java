@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.orbutil.proxy ;
+package org.jboss.com.sun.corba.se.spi.orbutil.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -33,45 +33,43 @@ import java.util.Map;
 import org.jboss.com.sun.corba.se.impl.logging.ORBUtilSystemException;
 import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
 
-public class CompositeInvocationHandlerImpl implements
-    CompositeInvocationHandler
+@SuppressWarnings("serial")
+public class CompositeInvocationHandlerImpl implements CompositeInvocationHandler
 {
-    private Map<Class<?>,InvocationHandler> classToInvocationHandler = new LinkedHashMap<Class<?>,InvocationHandler>() ;
-    private InvocationHandler defaultHandler = null ;
+    private Map<Class<?>, InvocationHandler> classToInvocationHandler = new LinkedHashMap<Class<?>, InvocationHandler>();
 
-    public void addInvocationHandler(Class<?> interf,
-        InvocationHandler handler )
+    private InvocationHandler defaultHandler = null;
+
+    public void addInvocationHandler(Class<?> interf, InvocationHandler handler)
     {
-        classToInvocationHandler.put( interf, handler ) ;
+        classToInvocationHandler.put(interf, handler);
     }
 
-    public void setDefaultHandler( InvocationHandler handler )
+    public void setDefaultHandler(InvocationHandler handler)
     {
-        defaultHandler = handler ;
+        defaultHandler = handler;
     }
 
-    public Object invoke( Object proxy, Method method, Object[] args )
-        throws Throwable
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-        // Note that the declaring class in method is the interface
-        // in which the method was defined, not the proxy class.
-        Class<?> cls = method.getDeclaringClass() ;
-        InvocationHandler handler =
-            (InvocationHandler)classToInvocationHandler.get( cls ) ;
+        // Note that the declaring class in method is the interface in which the method was defined, not the proxy
+        // class.
+        Class<?> cls = method.getDeclaringClass();
+        InvocationHandler handler = classToInvocationHandler.get(cls);
 
-        if (handler == null) {
+        if (handler == null)
+        {
             if (defaultHandler != null)
-                handler = defaultHandler ;
-            else {
-                ORBUtilSystemException wrapper = ORBUtilSystemException.get(
-                    CORBALogDomains.UTIL ) ;
-                throw wrapper.noInvocationHandler( "\"" + method.toString() +
-                    "\"" ) ;
+                handler = defaultHandler;
+            else
+            {
+                ORBUtilSystemException wrapper = ORBUtilSystemException.get(CORBALogDomains.UTIL);
+                throw wrapper.noInvocationHandler("\"" + method.toString() + "\"");
             }
         }
 
         // handler should never be null here.
 
-        return handler.invoke( proxy, method, args ) ;
+        return handler.invoke(proxy, method, args);
     }
 }

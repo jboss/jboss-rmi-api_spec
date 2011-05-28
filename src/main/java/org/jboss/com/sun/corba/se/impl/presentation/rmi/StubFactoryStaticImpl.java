@@ -29,24 +29,29 @@ import org.jboss.com.sun.corba.se.impl.presentation.rmi.StubFactoryBase;
 
 public class StubFactoryStaticImpl extends StubFactoryBase
 {
-    private Class<?> stubClass ;
+    private Class<?> stubClass;
 
     public StubFactoryStaticImpl(Class<?> cls)
     {
-        super( null ) ;
+        super(null);
         this.stubClass = cls;
     }
 
     public org.omg.CORBA.Object makeStub()
     {
         org.omg.CORBA.Object stub = null;
-        try {
+        try
+        {
             stub = (org.omg.CORBA.Object) stubClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        }
+        catch (InstantiationException e)
+        {
             throw new RuntimeException(e);
         }
-        return stub ;
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+        return stub;
     }
 }

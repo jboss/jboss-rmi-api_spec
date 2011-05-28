@@ -23,13 +23,15 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.protocol ;
+package org.jboss.com.sun.corba.se.spi.protocol;
 
 import org.jboss.com.sun.corba.se.spi.protocol.CorbaClientDelegate;
 import org.jboss.com.sun.corba.se.spi.transport.CorbaContactInfoList;
 
-/** Interface used to create a ClientDelegate from a ContactInfoList.
+/**
+ * Interface used to create a ClientDelegate from a ContactInfoList.
  */
-public interface ClientDelegateFactory {
-    CorbaClientDelegate create( CorbaContactInfoList list ) ;
+public interface ClientDelegateFactory
+{
+    CorbaClientDelegate create(CorbaContactInfoList list);
 }

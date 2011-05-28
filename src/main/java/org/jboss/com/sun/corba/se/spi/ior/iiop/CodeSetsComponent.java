@@ -33,5 +33,5 @@ import org.jboss.com.sun.corba.se.spi.ior.TaggedComponent;
  */
 public interface CodeSetsComponent extends TaggedComponent
 {
-    public CodeSetComponentInfo getCodeSetComponentInfo() ;
+    public CodeSetComponentInfo getCodeSetComponentInfo();
 }

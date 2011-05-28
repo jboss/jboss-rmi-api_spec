@@ -32,6 +32,7 @@ import java.security.BasicPermission ;
  * BridgePermission("getBridge") permission must be held by the
  * caller of sun.corba.Bridge.get().
  */
+@SuppressWarnings("serial")
 public final class BridgePermission extends BasicPermission
 {
     /**

@@ -23,162 +23,165 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.orbutil.graph ;
+package org.jboss.com.sun.corba.se.impl.orbutil.graph;
 
-import java.util.Collection ;
-import java.util.AbstractSet ;
-import java.util.Iterator ;
-import java.util.Map ;
-import java.util.HashMap ;
-import java.util.Set ;
-import java.util.HashSet ;
+import java.util.Collection;
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class GraphImpl extends AbstractSet<Node> implements Graph
 {
-    private Map<Node, NodeData> nodeToData ;
+    private Map<Node, NodeData> nodeToData;
 
     public GraphImpl()
     {
-        nodeToData = new HashMap<Node, NodeData>() ;
+        nodeToData = new HashMap<Node, NodeData>();
     }
 
-    public GraphImpl( Collection<Node> coll )
+    public GraphImpl(Collection<Node> coll)
     {
-        this() ;
-        addAll( coll ) ;
+        this();
+        addAll(coll);
     }
 
-/***********************************************************************************/
-/************ AbstractSet implementation *******************************************/
-/***********************************************************************************/
+    /***********************************************************************************/
+    /************ AbstractSet implementation *******************************************/
+    /***********************************************************************************/
 
     // Required for AbstractSet
-    public boolean add( Node obj ) // obj must be a Node
+    public boolean add(Node obj) // obj must be a Node
     {
-        Node node = (Node)obj ;
-        boolean found = nodeToData.keySet().contains( obj ) ;
+        Node node = obj;
+        boolean found = nodeToData.keySet().contains(obj);
 
-        if (!found) {
-            NodeData nd = new NodeData() ;
-            nodeToData.put( node, nd ) ;
+        if (!found)
+        {
+            NodeData nd = new NodeData();
+            nodeToData.put(node, nd);
         }
 
-        return !found ;
+        return !found;
     }
 
     // Required for AbstractSet
     public Iterator<Node> iterator()
     {
-        return nodeToData.keySet().iterator() ;
+        return nodeToData.keySet().iterator();
     }
 
     // Required for AbstractSet
     public int size()
     {
-        return nodeToData.keySet().size() ;
+        return nodeToData.keySet().size();
     }
 
-/***********************************************************************************/
+    /***********************************************************************************/
 
-    public NodeData getNodeData( Node node )
+    public NodeData getNodeData(Node node)
     {
-        return (NodeData)nodeToData.get( node ) ;
+        return nodeToData.get(node);
     }
 
     private void clearNodeData()
     {
         // Clear every node
-        Iterator<Map.Entry<Node,NodeData>> iter = nodeToData.entrySet().iterator() ;
-        while (iter.hasNext()) {
-            Map.Entry<Node,NodeData> entry = iter.next() ;
-            NodeData nd = (NodeData)(entry.getValue()) ;
-            nd.clear( ) ;
+        Iterator<Map.Entry<Node, NodeData>> iter = nodeToData.entrySet().iterator();
+        while (iter.hasNext())
+        {
+            Map.Entry<Node, NodeData> entry = iter.next();
+            NodeData nd = entry.getValue();
+            nd.clear();
         }
     }
 
     interface NodeVisitor
     {
-        void visit( Graph graph, Node node, NodeData nd ) ;
+        void visit(Graph graph, Node node, NodeData nd);
     }
 
-    // This visits every node in the graph exactly once.  A
-    // visitor is allowed to modify the graph during the
-    // traversal.
-    void visitAll( NodeVisitor nv )
+    // This visits every node in the graph exactly once. A visitor is allowed to modify the graph during the traversal.
+    void visitAll(NodeVisitor nv)
     {
-        boolean done = false ;
+        boolean done = false;
 
-        // Repeat the traversal until every node has been visited.  Since
-        // it takes one pass to determine whether or not each node has
-        // already been visited, this loop always runs at least once.
-        do {
-            done = true ;
+        // Repeat the traversal until every node has been visited. Since it takes one pass to determine whether or not
+        // each node has already been visited, this loop always runs at least once.
+        do
+        {
+            done = true;
 
-            // Copy entries to array to avoid concurrent modification
-            // problem with iterator if the visitor is updating the graph.
-            Map.Entry<Node,NodeData>[] entries =
-                nodeToData.entrySet().toArray( new Map.Entry[0] ) ;
+            // Copy entries to array to avoid concurrent modification problem with iterator if the visitor is updating
+            // the graph.
+            @SuppressWarnings("unchecked")
+            Map.Entry<Node, NodeData>[] entries = nodeToData.entrySet().toArray(new Map.Entry[0]);
 
             // Visit each node in the graph that has not already been visited.
-            // If any node is visited in this pass, we must run at least one more
-            // pass.
-            for (int ctr=0; ctr<entries.length; ctr++) {
-                Map.Entry<Node,NodeData> current = entries[ctr] ;
-                Node node = (Node)current.getKey() ;
-                NodeData nd = (NodeData)current.getValue() ;
+            // If any node is visited in this pass, we must run at least one more pass.
+            for (int ctr = 0; ctr < entries.length; ctr++)
+            {
+                Map.Entry<Node, NodeData> current = entries[ctr];
+                Node node = current.getKey();
+                NodeData nd = current.getValue();
 
-                if (!nd.isVisited()) {
-                    nd.visited() ;
-                    done = false ;
+                if (!nd.isVisited())
+                {
+                    nd.visited();
+                    done = false;
 
-                    nv.visit( this, node, nd ) ;
+                    nv.visit(this, node, nd);
                 }
             }
-        } while (!done) ;
+        }
+        while (!done);
     }
 
     private void markNonRoots()
     {
-        visitAll(
-            new NodeVisitor() {
-                public void visit( Graph graph, Node node, NodeData nd )
+        visitAll(new NodeVisitor()
+        {
+            public void visit(Graph graph, Node node, NodeData nd)
+            {
+                Iterator<Node> iter = node.getChildren().iterator(); // Iterator<Node>
+                while (iter.hasNext())
                 {
-                    Iterator<Node> iter = node.getChildren().iterator() ; // Iterator<Node>
-                    while (iter.hasNext()) {
-                        Node child = iter.next() ;
+                    Node child = iter.next();
 
-                        // Make sure the child is in the graph so it can be
-                        // visited later if necessary.
-                        graph.add( child ) ;
+                    // Make sure the child is in the graph so it can be visited later if necessary.
+                    graph.add(child);
 
-                        // Mark the child as a non-root, since a child is never a root.
-                        NodeData cnd = graph.getNodeData( child ) ;
-                        cnd.notRoot() ;
-                    }
+                    // Mark the child as a non-root, since a child is never a root.
+                    NodeData cnd = graph.getNodeData(child);
+                    cnd.notRoot();
                 }
-            } ) ;
+            }
+        });
     }
 
     private Set<Node> collectRootSet()
     {
-        final Set<Node> result = new HashSet<Node>() ;
+        final Set<Node> result = new HashSet<Node>();
 
-        Iterator<Map.Entry<Node,NodeData>> iter = nodeToData.entrySet().iterator() ;
-        while (iter.hasNext()) {
-            Map.Entry<Node,NodeData> entry = iter.next() ;
-            Node node = (Node)entry.getKey() ;
-            NodeData nd = (NodeData)entry.getValue() ;
+        Iterator<Map.Entry<Node, NodeData>> iter = nodeToData.entrySet().iterator();
+        while (iter.hasNext())
+        {
+            Map.Entry<Node, NodeData> entry = iter.next();
+            Node node = entry.getKey();
+            NodeData nd = entry.getValue();
             if (nd.isRoot())
-                result.add( node ) ;
+                result.add(node);
         }
 
-        return result ;
+        return result;
     }
 
     public Set<Node> getRoots()
     {
-        clearNodeData() ;
-        markNonRoots() ;
-        return collectRootSet() ;
+        clearNodeData();
+        markNonRoots();
+        return collectRootSet();
     }
 }

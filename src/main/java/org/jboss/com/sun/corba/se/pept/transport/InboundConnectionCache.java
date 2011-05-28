@@ -28,8 +28,7 @@ package org.jboss.com.sun.corba.se.pept.transport;
 /**
  * @author Harold Carr
  */
-public interface InboundConnectionCache
-    extends ConnectionCache
+public interface InboundConnectionCache extends ConnectionCache
 {
     public Connection get(Acceptor acceptor); // REVISIT
 

@@ -26,16 +26,14 @@ package org.jboss.com.sun.corba.se.impl.oa.poa;
 
 import java.util.EmptyStackException;
 
+import org.jboss.com.sun.corba.se.impl.logging.POASystemException;
+import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
+import org.jboss.com.sun.corba.se.spi.orb.ORB;
 import org.omg.CORBA.InterfaceDef;
 import org.omg.CORBA.InterfaceDefHelper;
 import org.omg.CORBA.Object;
-import org.omg.PortableServer.*;
-
-import org.jboss.com.sun.corba.se.spi.orb.ORB ;
-
-import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains ;
-
-import org.jboss.com.sun.corba.se.impl.logging.POASystemException ;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.Servant;
 
 public class DelegateImpl implements org.omg.PortableServer.portable.Delegate
 {

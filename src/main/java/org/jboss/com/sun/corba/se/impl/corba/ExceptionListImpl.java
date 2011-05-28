@@ -37,16 +37,18 @@ import org.omg.CORBA.Bounds;
 import org.omg.CORBA.ExceptionList;
 import org.omg.CORBA.TypeCode;
 
+public class ExceptionListImpl extends ExceptionList
+{
 
-public class ExceptionListImpl extends ExceptionList {
+    private final int INITIAL_CAPACITY = 2;
 
-    private final int    INITIAL_CAPACITY       = 2;
-    private final int    CAPACITY_INCREMENT     = 2;
+    private final int CAPACITY_INCREMENT = 2;
 
-    private Vector _exceptions;
+    private Vector<TypeCode> _exceptions;
 
-    public ExceptionListImpl() {
-        _exceptions = new Vector(INITIAL_CAPACITY, CAPACITY_INCREMENT);
+    public ExceptionListImpl()
+    {
+        _exceptions = new Vector<TypeCode>(INITIAL_CAPACITY, CAPACITY_INCREMENT);
     }
 
     public int count()
@@ -59,22 +61,26 @@ public class ExceptionListImpl extends ExceptionList {
         _exceptions.addElement(tc);
     }
 
-    public TypeCode item(int index)
-        throws Bounds
+    public TypeCode item(int index) throws Bounds
     {
-        try {
-            return (TypeCode) _exceptions.elementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        try
+        {
+            return _exceptions.elementAt(index);
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
             throw new Bounds();
         }
     }
 
-    public void remove(int index)
-        throws Bounds
+    public void remove(int index) throws Bounds
     {
-        try {
+        try
+        {
             _exceptions.removeElementAt(index);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
             throw new Bounds();
         }
     }

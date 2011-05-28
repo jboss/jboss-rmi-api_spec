@@ -36,80 +36,92 @@ import java.io.IOException;
 import org.omg.CORBA.TCKind;
 
 /**
- * This class overrides behavior of our current ValueHandlerImpl to
- * provide backwards compatibility with JDK 1.3.0.
+ * This class overrides behavior of our current ValueHandlerImpl to provide backwards compatibility with JDK 1.3.0.
  */
-public class ValueHandlerImpl_1_3 extends org.jboss.com.sun.corba.se.impl.io.ValueHandlerImpl {
+public class ValueHandlerImpl_1_3 extends org.jboss.com.sun.corba.se.impl.io.ValueHandlerImpl
+{
 
-    public ValueHandlerImpl_1_3(){
+    public ValueHandlerImpl_1_3()
+    {
         super();
     }
 
-    public ValueHandlerImpl_1_3(boolean isInputStream) {
+    public ValueHandlerImpl_1_3(boolean isInputStream)
+    {
         super(isInputStream);
     }
 
     /**
      * Writes the value to the stream using java semantics.
-     * @param out The stream to write the value to
-     * @param value The value to be written to the stream
+     * 
+     * @param out
+     *            The stream to write the value to
+     * @param value
+     *            The value to be written to the stream
      **/
-    public void writeValue(org.omg.CORBA.portable.OutputStream _out, java.io.Serializable value) {
+    public void writeValue(org.omg.CORBA.portable.OutputStream _out, java.io.Serializable value)
+    {
         super.writeValue(_out, value);
     }
 
     /**
      * Reads a value from the stream using java semantics.
-     * @param in The stream to read the value from
-     * @param clazz The type of the value to be read in
-     * @param sender The sending context runtime
+     * 
+     * @param in
+     *            The stream to read the value from
+     * @param clazz
+     *            The type of the value to be read in
+     * @param sender
+     *            The sending context runtime
      **/
-    public java.io.Serializable readValue(org.omg.CORBA.portable.InputStream _in,
-                                          int offset,
-                                          Class<?> clazz,
-                                          String repositoryID,
-                                          org.omg.SendingContext.RunTime _sender)
+    public java.io.Serializable readValue(org.omg.CORBA.portable.InputStream _in, int offset, Class<?> clazz,
+            String repositoryID, org.omg.SendingContext.RunTime _sender)
     {
         return super.readValue(_in, offset, clazz, repositoryID, _sender);
     }
 
     /**
      * Returns the repository ID for the given RMI value Class.
-     * @param clz The class to return a repository ID for.
+     * 
+     * @param clz
+     *            The class to return a repository ID for.
      * @return the repository ID of the Class.
      **/
-    public java.lang.String getRMIRepositoryID(Class<?> clz) {
+    public java.lang.String getRMIRepositoryID(Class<?> clz)
+    {
         return RepositoryId_1_3.createForJavaType(clz);
     }
 
     /**
-     * Indicates whether the given Class performs custom or
-     * default marshaling.
-     * @param clz The class to test for custom marshaling.
-     * @return True if the class performs custom marshaling, false
-     * if it does not.
+     * Indicates whether the given Class performs custom or default marshaling.
+     * 
+     * @param clz
+     *            The class to test for custom marshaling.
+     * @return True if the class performs custom marshaling, false if it does not.
      **/
-    public boolean isCustomMarshaled(Class<?> clz) {
+    public boolean isCustomMarshaled(Class<?> clz)
+    {
         return super.isCustomMarshaled(clz);
     }
 
     /**
-     * Returns the CodeBase for this ValueHandler.  This is used by
-     * the ORB runtime.  The server sends the service context containing
-     * the IOR for this CodeBase on the first GIOP reply.  The clients
-     * do the same on the first GIOP request.
+     * Returns the CodeBase for this ValueHandler. This is used by the ORB runtime. The server sends the service context
+     * containing the IOR for this CodeBase on the first GIOP reply. The clients do the same on the first GIOP request.
+     * 
      * @return the SendingContext.CodeBase of this ValueHandler.
      **/
-    public org.omg.SendingContext.RunTime getRunTimeCodeBase() {
+    public org.omg.SendingContext.RunTime getRunTimeCodeBase()
+    {
         return super.getRunTimeCodeBase();
     }
 
     /**
-     * If the value contains a writeReplace method then the result
-     * is returned.  Otherwise, the value itself is returned.
+     * If the value contains a writeReplace method then the result is returned. Otherwise, the value itself is returned.
+     * 
      * @return the true value to marshal on the wire.
      **/
-    public java.io.Serializable writeReplace(java.io.Serializable value) {
+    public java.io.Serializable writeReplace(java.io.Serializable value)
+    {
         return super.writeReplace(value);
     }
 
@@ -117,116 +129,103 @@ public class ValueHandlerImpl_1_3 extends org.jboss.com.sun.corba.se.impl.io.Val
     // Rep-id calculations take place based on the ORB version
 
     /**
-     *  Returns a boolean of whether or not RepositoryId indicates
-     *  FullValueDescriptor.
-     *  used for backward compatability
+     * Returns a boolean of whether or not RepositoryId indicates FullValueDescriptor. used for backward compatability
      */
 
-     public boolean useFullValueDescription(Class<?> clazz, String repositoryID)
-        throws IOException
+    public boolean useFullValueDescription(Class<?> clazz, String repositoryID) throws IOException
 
-     {
+    {
         return RepositoryId_1_3.useFullValueDescription(clazz, repositoryID);
-     }
+    }
 
-     public String getClassName(String id)
-     {
+    public String getClassName(String id)
+    {
         RepositoryId_1_3 repID = RepositoryId_1_3.cache.getId(id);
         return repID.getClassName();
-     }
+    }
 
-     public Class<?> getClassFromType(String id)
-        throws ClassNotFoundException
-     {
+    public Class<?> getClassFromType(String id) throws ClassNotFoundException
+    {
         RepositoryId_1_3 repId = RepositoryId_1_3.cache.getId(id);
         return repId.getClassFromType();
-     }
+    }
 
-     public Class<?> getAnyClassFromType(String id)
-        throws ClassNotFoundException
-     {
+    public Class<?> getAnyClassFromType(String id) throws ClassNotFoundException
+    {
         RepositoryId_1_3 repId = RepositoryId_1_3.cache.getId(id);
         return repId.getAnyClassFromType();
-     }
+    }
 
-     public String createForAnyType(Class<?> cl)
-     {
+    public String createForAnyType(Class<?> cl)
+    {
         return RepositoryId_1_3.createForAnyType(cl);
-     }
+    }
 
-     public String getDefinedInId(String id)
-     {
+    public String getDefinedInId(String id)
+    {
         RepositoryId_1_3 repId = RepositoryId_1_3.cache.getId(id);
         return repId.getDefinedInId();
-     }
+    }
 
-     public String getUnqualifiedName(String id)
-     {
+    public String getUnqualifiedName(String id)
+    {
         RepositoryId_1_3 repId = RepositoryId_1_3.cache.getId(id);
         return repId.getUnqualifiedName();
-     }
+    }
 
-     public String getSerialVersionUID(String id)
-     {
+    public String getSerialVersionUID(String id)
+    {
         RepositoryId_1_3 repId = RepositoryId_1_3.cache.getId(id);
         return repId.getSerialVersionUID();
-     }
+    }
 
-     public boolean isAbstractBase(Class<?> clazz)
-     {
+    public boolean isAbstractBase(Class<?> clazz)
+    {
         return RepositoryId_1_3.isAbstractBase(clazz);
-     }
+    }
 
-     public boolean isSequence(String id)
-     {
+    public boolean isSequence(String id)
+    {
         RepositoryId_1_3 repId = RepositoryId_1_3.cache.getId(id);
         return repId.isSequence();
-     }
+    }
 
     /**
-     * Preserves the incorrect 1.3 behavior which truncates Java chars in
-     * arrays to 8-bit CORBA chars.  Bug 4367783.  This enables us to
-     * continue interoperating with our legacy ORBs.  If this goes into
-     * Ladybird, then Ladybird and Kestrel will interoperate as long as
-     * people don't use chars greater than 8-bits.
+     * Preserves the incorrect 1.3 behavior which truncates Java chars in arrays to 8-bit CORBA chars. Bug 4367783. This
+     * enables us to continue interoperating with our legacy ORBs. If this goes into Ladybird, then Ladybird and Kestrel
+     * will interoperate as long as people don't use chars greater than 8-bits.
      */
-    protected void writeCharArray(org.omg.CORBA_2_3.portable.OutputStream out,
-                                char[] array,
-                                int offset,
-                                int length)
+    protected void writeCharArray(org.omg.CORBA_2_3.portable.OutputStream out, char[] array, int offset, int length)
     {
         out.write_char_array(array, offset, length);
     }
 
     /**
-     * Preserves the incorrect 1.3 behavior which truncates Java chars in
-     * arrays to 8-bit CORBA chars.  Bug 4367783.  This enables us to
-     * continue interoperating with our legacy ORBs.  If this goes into
-     * Ladybird, then Ladybird and Kestrel will interoperate as long as
-     * people don't use chars greater than 8-bits.
+     * Preserves the incorrect 1.3 behavior which truncates Java chars in arrays to 8-bit CORBA chars. Bug 4367783. This
+     * enables us to continue interoperating with our legacy ORBs. If this goes into Ladybird, then Ladybird and Kestrel
+     * will interoperate as long as people don't use chars greater than 8-bits.
      */
-    protected void readCharArray(org.omg.CORBA_2_3.portable.InputStream in,
-                                 char[] array,
-                                 int offset,
-                                 int length)
+    protected void readCharArray(org.omg.CORBA_2_3.portable.InputStream in, char[] array, int offset, int length)
     {
         in.read_char_array(array, offset, length);
     }
 
-    protected final String getOutputStreamClassName() {
+    protected final String getOutputStreamClassName()
+    {
         return "org.jboss.com.sun.corba.se.impl.orbutil.IIOPOutputStream_1_3";
     }
 
-    protected final String getInputStreamClassName() {
+    protected final String getInputStreamClassName()
+    {
         return "org.jboss.com.sun.corba.se.impl.orbutil.IIOPInputStream_1_3";
     }
 
     /**
-     * Our JDK 1.3 and JDK 1.3.1 behavior subclasses override this.
-     * The correct behavior is for a Java char to map to a CORBA wchar,
-     * but our older code mapped it to a CORBA char.
+     * Our JDK 1.3 and JDK 1.3.1 behavior subclasses override this. The correct behavior is for a Java char to map to a
+     * CORBA wchar, but our older code mapped it to a CORBA char.
      */
-    protected TCKind getJavaCharTCKind() {
+    protected TCKind getJavaCharTCKind()
+    {
         return TCKind.tk_char;
     }
 }

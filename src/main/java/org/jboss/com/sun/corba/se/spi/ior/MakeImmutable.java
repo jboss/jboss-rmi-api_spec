@@ -23,8 +23,9 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.ior ;
+package org.jboss.com.sun.corba.se.spi.ior;
 
-public interface MakeImmutable {
-    void makeImmutable() ;
+public interface MakeImmutable
+{
+    void makeImmutable();
 }

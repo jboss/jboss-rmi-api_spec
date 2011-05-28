@@ -29,11 +29,13 @@ import org.jboss.com.sun.corba.se.spi.ior.ObjectKey;
 
 /**
  * This interface captures the LocateRequestMessage contract.
- *
+ * 
  * @author Ram Jeyaraman 05/14/2000
  */
 
-public interface LocateRequestMessage extends Message {
+public interface LocateRequestMessage extends Message
+{
     int getRequestId();
+
     ObjectKey getObjectKey();
 }

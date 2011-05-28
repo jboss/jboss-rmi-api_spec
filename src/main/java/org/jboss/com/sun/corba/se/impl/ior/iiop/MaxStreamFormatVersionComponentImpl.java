@@ -35,33 +35,30 @@ import org.omg.IOP.TAG_RMI_CUSTOM_MAX_STREAM_FORMAT;
 
 // Java to IDL ptc 02-01-12 1.4.11
 // TAG_RMI_CUSTOM_MAX_STREAM_FORMAT
-public class MaxStreamFormatVersionComponentImpl extends TaggedComponentBase
-    implements MaxStreamFormatVersionComponent
+public class MaxStreamFormatVersionComponentImpl extends TaggedComponentBase implements MaxStreamFormatVersionComponent
 {
     private byte version;
 
-    public static final MaxStreamFormatVersionComponentImpl singleton
-        = new MaxStreamFormatVersionComponentImpl();
+    public static final MaxStreamFormatVersionComponentImpl singleton = new MaxStreamFormatVersionComponentImpl();
 
     public boolean equals(Object obj)
     {
         if (!(obj instanceof MaxStreamFormatVersionComponentImpl))
-            return false ;
+            return false;
 
-        MaxStreamFormatVersionComponentImpl other =
-            (MaxStreamFormatVersionComponentImpl)obj ;
+        MaxStreamFormatVersionComponentImpl other = (MaxStreamFormatVersionComponentImpl) obj;
 
-        return version == other.version ;
+        return version == other.version;
     }
 
     public int hashCode()
     {
-        return version ;
+        return version;
     }
 
     public String toString()
     {
-        return "MaxStreamFormatVersionComponentImpl[version=" + version + "]" ;
+        return "MaxStreamFormatVersionComponentImpl[version=" + version + "]";
     }
 
     public MaxStreamFormatVersionComponentImpl()
@@ -69,7 +66,8 @@ public class MaxStreamFormatVersionComponentImpl extends TaggedComponentBase
         version = ORBUtility.getMaxStreamFormatVersion();
     }
 
-    public MaxStreamFormatVersionComponentImpl(byte streamFormatVersion) {
+    public MaxStreamFormatVersionComponentImpl(byte streamFormatVersion)
+    {
         version = streamFormatVersion;
     }
 

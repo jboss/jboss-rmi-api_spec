@@ -31,36 +31,35 @@ import org.jboss.com.sun.corba.se.pept.protocol.ClientRequestDispatcher;
 import org.jboss.com.sun.corba.se.spi.oa.ObjectAdapterFactory;
 
 /**
- * This is a registry of all subcontract ID dependent objects.  This includes:
- * LocalClientRequestDispatcherFactory, ClientRequestDispatcher, ServerRequestDispatcher, and
- * ObjectAdapterFactory.
- * XXX Should the registerXXX methods take an scid or not?  I think we
- * want to do this so that the same instance can be shared across multiple
- * scids (and this is already true for ObjectAdapterFactory and LocalClientRequestDispatcherFactory),
- * but this will require some changes for ClientRequestDispatcher and ServerRequestDispatcher.
+ * This is a registry of all subcontract ID dependent objects. This includes: LocalClientRequestDispatcherFactory,
+ * ClientRequestDispatcher, ServerRequestDispatcher, and ObjectAdapterFactory. XXX Should the registerXXX methods take
+ * an scid or not? I think we want to do this so that the same instance can be shared across multiple scids (and this is
+ * already true for ObjectAdapterFactory and LocalClientRequestDispatcherFactory), but this will require some changes
+ * for ClientRequestDispatcher and ServerRequestDispatcher.
  */
-public interface RequestDispatcherRegistry {
+public interface RequestDispatcherRegistry
+{
     // XXX needs javadocs!
 
-    void registerClientRequestDispatcher( ClientRequestDispatcher csc, int scid) ;
+    void registerClientRequestDispatcher(ClientRequestDispatcher csc, int scid);
 
-    ClientRequestDispatcher getClientRequestDispatcher( int scid ) ;
+    ClientRequestDispatcher getClientRequestDispatcher(int scid);
 
-    void registerLocalClientRequestDispatcherFactory( LocalClientRequestDispatcherFactory csc, int scid) ;
+    void registerLocalClientRequestDispatcherFactory(LocalClientRequestDispatcherFactory csc, int scid);
 
-    LocalClientRequestDispatcherFactory getLocalClientRequestDispatcherFactory( int scid ) ;
+    LocalClientRequestDispatcherFactory getLocalClientRequestDispatcherFactory(int scid);
 
-    void registerServerRequestDispatcher( CorbaServerRequestDispatcher ssc, int scid) ;
+    void registerServerRequestDispatcher(CorbaServerRequestDispatcher ssc, int scid);
 
-    CorbaServerRequestDispatcher getServerRequestDispatcher(int scid) ;
+    CorbaServerRequestDispatcher getServerRequestDispatcher(int scid);
 
-    void registerServerRequestDispatcher( CorbaServerRequestDispatcher ssc, String name ) ;
+    void registerServerRequestDispatcher(CorbaServerRequestDispatcher ssc, String name);
 
-    CorbaServerRequestDispatcher getServerRequestDispatcher( String name ) ;
+    CorbaServerRequestDispatcher getServerRequestDispatcher(String name);
 
-    void registerObjectAdapterFactory( ObjectAdapterFactory oaf, int scid) ;
+    void registerObjectAdapterFactory(ObjectAdapterFactory oaf, int scid);
 
-    ObjectAdapterFactory getObjectAdapterFactory( int scid ) ;
+    ObjectAdapterFactory getObjectAdapterFactory(int scid);
 
-    Set getObjectAdapterFactories() ;
+    Set<Object> getObjectAdapterFactories();
 }

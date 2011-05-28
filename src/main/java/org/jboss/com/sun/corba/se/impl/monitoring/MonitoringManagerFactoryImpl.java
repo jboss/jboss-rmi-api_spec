@@ -29,17 +29,18 @@ import java.util.HashMap;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoringManagerFactory;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoringManager;
 
-public class MonitoringManagerFactoryImpl implements MonitoringManagerFactory {
+public class MonitoringManagerFactoryImpl implements MonitoringManagerFactory
+{
 
-    private HashMap<String,MonitoringManager> monitoringManagerTable = new HashMap<String,MonitoringManager>();
+    private HashMap<String, MonitoringManager> monitoringManagerTable = new HashMap<String, MonitoringManager>();
 
-    public synchronized MonitoringManager createMonitoringManager(
-        String nameOfTheRoot, String description )
+    public synchronized MonitoringManager createMonitoringManager(String nameOfTheRoot, String description)
     {
         MonitoringManagerImpl m = null;
-        m = (MonitoringManagerImpl)monitoringManagerTable.get(nameOfTheRoot);
-        if (m == null) {
-            m = new MonitoringManagerImpl( nameOfTheRoot, description );
+        m = (MonitoringManagerImpl) monitoringManagerTable.get(nameOfTheRoot);
+        if (m == null)
+        {
+            m = new MonitoringManagerImpl(nameOfTheRoot, description);
             monitoringManagerTable.put(nameOfTheRoot, m);
         }
         return m;

@@ -29,28 +29,35 @@ import org.omg.CORBA.Policy;
 import org.omg.PortableServer.ID_ASSIGNMENT_POLICY_ID;
 import org.omg.PortableServer.IdAssignmentPolicyValue;
 
-final class IdAssignmentPolicyImpl
-extends org.omg.CORBA.LocalObject
-implements org.omg.PortableServer.IdAssignmentPolicy {
+final class IdAssignmentPolicyImpl extends org.omg.CORBA.LocalObject
+        implements
+            org.omg.PortableServer.IdAssignmentPolicy
+{
 
-    public IdAssignmentPolicyImpl(IdAssignmentPolicyValue value) {
+    private static final long serialVersionUID = -5589531737105347566L;
+
+    public IdAssignmentPolicyImpl(IdAssignmentPolicyValue value)
+    {
         this.value = value;
     }
 
-    public IdAssignmentPolicyValue value() {
+    public IdAssignmentPolicyValue value()
+    {
         return value;
     }
 
     public int policy_type()
     {
-        return ID_ASSIGNMENT_POLICY_ID.value ;
+        return ID_ASSIGNMENT_POLICY_ID.value;
     }
 
-    public Policy copy() {
+    public Policy copy()
+    {
         return new IdAssignmentPolicyImpl(value);
     }
 
-    public void destroy() {
+    public void destroy()
+    {
         value = null;
     }
 
@@ -58,8 +65,7 @@ implements org.omg.PortableServer.IdAssignmentPolicy {
 
     public String toString()
     {
-        return "IdAssignmentPolicy[" +
-            ((value.value() == IdAssignmentPolicyValue._USER_ID) ?
-                "USER_ID" : "SYSTEM_ID" + "]") ;
+        return "IdAssignmentPolicy["
+                + ((value.value() == IdAssignmentPolicyValue._USER_ID) ? "USER_ID" : "SYSTEM_ID" + "]");
     }
 }

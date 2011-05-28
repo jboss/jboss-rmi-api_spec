@@ -31,7 +31,6 @@
 
 package org.jboss.com.sun.corba.se.impl.corba;
 
-
 import org.jboss.com.sun.corba.se.impl.logging.ORBUtilSystemException;
 import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
@@ -55,57 +54,47 @@ import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.RemarshalException;
 
-public class RequestImpl
-    extends Request
+public class RequestImpl extends Request
 {
-    ///////////////////////////////////////////////////////////////////////////
-    // data members
-
     protected org.omg.CORBA.Object _target;
-    protected String             _opName;
-    protected NVList             _arguments;
-    protected ExceptionList      _exceptions;
-    private NamedValue           _result;
-    protected Environment        _env;
-    private Context              _ctx;
-    private ContextList          _ctxList;
-    protected ORB                _orb;
+
+    protected String _opName;
+
+    protected NVList _arguments;
+
+    protected ExceptionList _exceptions;
+
+    private NamedValue _result;
+
+    protected Environment _env;
+
+    private Context _ctx;
+
+    private ContextList _ctxList;
+
+    protected ORB _orb;
+
     private ORBUtilSystemException _wrapper;
 
     // invocation-specific stuff
-    protected boolean            _isOneWay      = false;
-    private int[]                _paramCodes;
-    private long[]               _paramLongs;
-    private java.lang.Object[]   _paramObjects;
+    protected boolean _isOneWay = false;
 
     // support for deferred invocations.
-    // protected instead of private since it needs to be set by the
-    // thread object doing the asynchronous invocation.
-    protected boolean            gotResponse    = false;
+    // protected instead of private since it needs to be set by the thread object doing the asynchronous invocation.
+    protected boolean gotResponse = false;
 
-    ///////////////////////////////////////////////////////////////////////////
-    // constructor
-
-    // REVISIT - used to be protected.  Now public so it can be
-    // accessed from xgiop.
-    public RequestImpl (ORB orb,
-                        org.omg.CORBA.Object targetObject,
-                        Context ctx,
-                        String operationName,
-                        NVList argumentList,
-                        NamedValue resultContainer,
-                        ExceptionList exceptionList,
-                        ContextList ctxList)
+    // REVISIT - used to be protected. Now public so it can be accessed from xgiop.
+    public RequestImpl(ORB orb, org.omg.CORBA.Object targetObject, Context ctx, String operationName,
+            NVList argumentList, NamedValue resultContainer, ExceptionList exceptionList, ContextList ctxList)
     {
 
         // initialize the orb
-        _orb    = orb;
-        _wrapper = ORBUtilSystemException.get( orb,
-            CORBALogDomains.OA_INVOCATION ) ;
+        _orb = orb;
+        _wrapper = ORBUtilSystemException.get(orb, CORBALogDomains.OA_INVOCATION);
 
         // initialize target, context and operation name
-        _target     = targetObject;
-        _ctx    = ctx;
+        _target = targetObject;
+        _ctx = ctx;
         _opName = operationName;
 
         // initialize argument list if not passed in
@@ -130,7 +119,7 @@ public class RequestImpl
             _ctxList = ctxList;
 
         // initialize environment
-        _env    = new EnvironmentImpl();
+        _env = new EnvironmentImpl();
 
     }
 
@@ -249,114 +238,125 @@ public class RequestImpl
 
     public synchronized boolean poll_response()
     {
-        // this method has to be synchronized even though it seems
-        // "readonly" since the thread object doing the asynchronous
-        // invocation can potentially update this variable in parallel.
-        // updates are currently simply synchronized againt the request
-        // object.
+        // this method has to be synchronized even though it seems "readonly" since the thread object doing the
+        // asynchronous invocation can potentially update this variable in parallel. updates are currently simply
+        // synchronized againt the request object.
         return gotResponse;
     }
 
-    public synchronized void get_response()
-        throws org.omg.CORBA.WrongTransaction
+    public synchronized void get_response() throws org.omg.CORBA.WrongTransaction
     {
-        while (gotResponse == false) {
-            // release the lock. wait to be notified by the thread that is
-            // doing the asynchronous invocation.
-            try {
+        while (gotResponse == false)
+        {
+            // release the lock. wait to be notified by the thread that is doing the asynchronous invocation.
+            try
+            {
                 wait();
             }
-            catch (InterruptedException e) {}
+            catch (InterruptedException e)
+            {
+            }
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // private helper methods
-
     /*
-     * The doInvocation operation is where the real mechanics of
-     * performing the request invocation is done.
+     * The doInvocation operation is where the real mechanics of performing the request invocation is done.
      */
     protected void doInvocation()
     {
-        org.omg.CORBA.portable.Delegate delegate = StubAdapter.getDelegate(
-            _target ) ;
+        org.omg.CORBA.portable.Delegate delegate = StubAdapter.getDelegate(_target);
 
-        // Initiate Client Portable Interceptors.  Inform the PIHandler that
+        // Initiate Client Portable Interceptors. Inform the PIHandler that
         // this is a DII request so that it knows to ignore the second
         // inevitable call to initiateClientPIRequest in createRequest.
         // Also, save the RequestImpl object for later use.
-        _orb.getPIHandler().initiateClientPIRequest( true );
-        _orb.getPIHandler().setClientPIInfo( this );
+        _orb.getPIHandler().initiateClientPIRequest(true);
+        _orb.getPIHandler().setClientPIInfo(this);
 
         InputStream $in = null;
-        try {
+        try
+        {
             OutputStream $out = delegate.request(null, _opName, !_isOneWay);
             // Marshal args
-            try {
-                for (int i=0; i<_arguments.count() ; i++) {
+            try
+            {
+                for (int i = 0; i < _arguments.count(); i++)
+                {
                     NamedValue nv = _arguments.item(i);
-                    switch (nv.flags()) {
-                    case ARG_IN.value:
-                        nv.value().write_value($out);
-                        break;
-                    case ARG_OUT.value:
-                        break;
-                    case ARG_INOUT.value:
-                        nv.value().write_value($out);
-                        break;
+                    switch (nv.flags())
+                    {
+                        case ARG_IN.value :
+                            nv.value().write_value($out);
+                            break;
+                        case ARG_OUT.value :
+                            break;
+                        case ARG_INOUT.value :
+                            nv.value().write_value($out);
+                            break;
                     }
                 }
-            } catch ( org.omg.CORBA.Bounds ex ) {
-                throw _wrapper.boundsErrorInDiiRequest( ex ) ;
+            }
+            catch (org.omg.CORBA.Bounds ex)
+            {
+                throw _wrapper.boundsErrorInDiiRequest(ex);
             }
 
             $in = delegate.invoke(null, $out);
-        } catch (ApplicationException e) {
-            // REVISIT - minor code.
-            // This is already handled in subcontract.
-            // REVISIT - uncomment.
-            //throw new INTERNAL();
-        } catch (RemarshalException e) {
+        }
+        catch (ApplicationException e)
+        {
+            // REVISIT - minor code. This is already handled in subcontract.
+            // REVISIT - uncomment. throw new INTERNAL();
+        }
+        catch (RemarshalException e)
+        {
             doInvocation();
-        } catch( SystemException ex ) {
+        }
+        catch (SystemException ex)
+        {
             _env.exception(ex);
-            // NOTE: The exception should not be thrown.
-            // However, JDK 1.4 and earlier threw the exception,
-            // so we keep the behavior to be compatible.
+            // NOTE: The exception should not be thrown. However, JDK 1.4 and earlier threw the exception, so we keep
+            // the behavior to be compatible.
             throw ex;
-        } finally {
+        }
+        finally
+        {
             delegate.releaseReply(null, $in);
         }
     }
 
-    // REVISIT -  make protected after development - so xgiop can get it.
+    // REVISIT - make protected after development - so xgiop can get it.
     public void unmarshalReply(InputStream is)
     {
         // First unmarshal the return value if it is not void
-        if ( _result != null ) {
+        if (_result != null)
+        {
             Any returnAny = _result.value();
             TypeCode returnType = returnAny.type();
-            if ( returnType.kind().value() != TCKind._tk_void )
+            if (returnType.kind().value() != TCKind._tk_void)
                 returnAny.read_value(is, returnType);
         }
 
         // Now unmarshal the out/inout args
-        try {
-            for ( int i=0; i<_arguments.count() ; i++) {
+        try
+        {
+            for (int i = 0; i < _arguments.count(); i++)
+            {
                 NamedValue nv = _arguments.item(i);
-                switch( nv.flags() ) {
-                case ARG_IN.value:
-                    break;
-                case ARG_OUT.value:
-                case ARG_INOUT.value:
-                    Any any = nv.value();
-                    any.read_value(is, any.type());
-                    break;
+                switch (nv.flags())
+                {
+                    case ARG_IN.value :
+                        break;
+                    case ARG_OUT.value :
+                    case ARG_INOUT.value :
+                        Any any = nv.value();
+                        any.read_value(is, any.type());
+                        break;
                 }
             }
         }
-        catch ( org.omg.CORBA.Bounds ex ) {
+        catch (org.omg.CORBA.Bounds ex)
+        {
             // Cannot happen since we only iterate till _arguments.count()
         }
     }

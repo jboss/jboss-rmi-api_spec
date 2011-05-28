@@ -25,12 +25,13 @@
 
 package org.jboss.com.sun.corba.se.impl.corba;
 
-public interface TypeCodeFactory {
+public interface TypeCodeFactory
+{
     void setTypeCode(String id, TypeCodeImpl code);
 
     TypeCodeImpl getTypeCode(String id);
 
-    void setTypeCodeForClass( Class c, TypeCodeImpl tcimpl ) ;
+    void setTypeCodeForClass(Class<?> c, TypeCodeImpl tcimpl);
 
-    TypeCodeImpl getTypeCodeForClass( Class c ) ;
+    TypeCodeImpl getTypeCodeForClass(Class<?> c);
 }

@@ -23,12 +23,15 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.copyobject ;
+package org.jboss.com.sun.corba.se.spi.copyobject;
 
-/** ObjectCopier factory interface used for registration.
+/**
+ * ObjectCopier factory interface used for registration.
  */
-public interface ObjectCopierFactory {
-    /** Create a new instance of an ObjectCopier.
-    */
-    ObjectCopier make() ;
+public interface ObjectCopierFactory
+{
+    /**
+     * Create a new instance of an ObjectCopier.
+     */
+    ObjectCopier make();
 }

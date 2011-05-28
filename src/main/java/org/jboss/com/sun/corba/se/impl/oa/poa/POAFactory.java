@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.oa.poa ;
+package org.jboss.com.sun.corba.se.impl.oa.poa;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,38 +53,47 @@ public class POAFactory implements ObjectAdapterFactory
 {
     // Maps servants to POAs for deactivating servants when unexportObject is called.
     // Maintained by POAs activate_object and deactivate_object.
-    private Map<Servant,POA> exportedServantsToPOA = new WeakHashMap<Servant,POA>();
+    private Map<Servant, POA> exportedServantsToPOA = new WeakHashMap<Servant, POA>();
 
-    private Set<POAManager> poaManagers ;
-    private int poaManagerId ;
-    private int poaId ;
-    private POAImpl rootPOA ;
+    private Set<POAManager> poaManagers;
+
+    private int poaManagerId;
+
+    private int poaId;
+
+    private POAImpl rootPOA;
+
     private DelegateImpl delegateImpl;
-    private ORB orb ;
-    private POASystemException wrapper ;
-    private OMGSystemException omgWrapper ;
+
+    private ORB orb;
+
+    private POASystemException wrapper;
+
+    private OMGSystemException omgWrapper;
+
     private boolean isShuttingDown = false;
 
     public POASystemException getWrapper()
     {
-        return wrapper ;
+        return wrapper;
     }
 
-    /** All object adapter factories must have a no-arg constructor.
-    */
+    /**
+     * All object adapter factories must have a no-arg constructor.
+     */
     public POAFactory()
     {
         poaManagers = Collections.synchronizedSet(new HashSet<POAManager>(4));
-        poaManagerId = 0 ;
-        poaId = 0 ;
-        rootPOA = null ;
-        delegateImpl = null ;
-        orb = null ;
+        poaManagerId = 0;
+        poaId = 0;
+        rootPOA = null;
+        delegateImpl = null;
+        orb = null;
     }
 
-    public synchronized POA lookupPOA (Servant servant)
+    public synchronized POA lookupPOA(Servant servant)
     {
-        return (POA)exportedServantsToPOA.get(servant);
+        return exportedServantsToPOA.get(servant);
     }
 
     public synchronized void registerPOAForServant(POA poa, Servant servant)
@@ -97,121 +106,139 @@ public class POAFactory implements ObjectAdapterFactory
         exportedServantsToPOA.remove(servant);
     }
 
-// Implementation of ObjectAdapterFactory interface
+    // Implementation of ObjectAdapterFactory interface
 
-    public void init( ORB orb )
+    public void init(ORB orb)
     {
-        this.orb = orb ;
-        wrapper = POASystemException.get( orb,
-            CORBALogDomains.OA_LIFECYCLE ) ;
-        omgWrapper = OMGSystemException.get( orb,
-            CORBALogDomains.OA_LIFECYCLE ) ;
-        delegateImpl = new DelegateImpl( orb, this ) ;
-        registerRootPOA() ;
+        this.orb = orb;
+        wrapper = POASystemException.get(orb, CORBALogDomains.OA_LIFECYCLE);
+        omgWrapper = OMGSystemException.get(orb, CORBALogDomains.OA_LIFECYCLE);
+        delegateImpl = new DelegateImpl(orb, this);
+        registerRootPOA();
 
         POACurrent poaCurrent = new POACurrent(orb);
-        orb.getLocalResolver().register( ORBConstants.POA_CURRENT_NAME,
-            ClosureFactory.makeConstant( poaCurrent ) ) ;
+        orb.getLocalResolver().register(ORBConstants.POA_CURRENT_NAME, ClosureFactory.makeConstant(poaCurrent));
     }
 
-    public ObjectAdapter find( ObjectAdapterId oaid )
+    public ObjectAdapter find(ObjectAdapterId oaid)
     {
-        POA poa=null;
-        try {
-            boolean first = true ;
-            Iterator<String> iter = oaid.iterator() ;
+        POA poa = null;
+        try
+        {
+            boolean first = true;
+            Iterator<String> iter = oaid.iterator();
             poa = getRootPOA();
-            while (iter.hasNext()) {
+            while (iter.hasNext())
+            {
                 String name = iter.next();
 
-                if (first) {
-                    if (!name.equals( ORBConstants.ROOT_POA_NAME ))
-                        throw wrapper.makeFactoryNotPoa( name ) ;
-                    first = false ;
-                } else {
-                    poa = poa.find_POA( name, true ) ;
+                if (first)
+                {
+                    if (!name.equals(ORBConstants.ROOT_POA_NAME))
+                        throw wrapper.makeFactoryNotPoa(name);
+                    first = false;
+                }
+                else
+                {
+                    poa = poa.find_POA(name, true);
                 }
             }
-        } catch ( org.omg.PortableServer.POAPackage.AdapterNonExistent ex ){
-            throw omgWrapper.noObjectAdaptor( ex ) ;
-        } catch ( OBJECT_NOT_EXIST ex ) {
+        }
+        catch (org.omg.PortableServer.POAPackage.AdapterNonExistent ex)
+        {
+            throw omgWrapper.noObjectAdaptor(ex);
+        }
+        catch (OBJECT_NOT_EXIST ex)
+        {
             throw ex;
-        } catch ( TRANSIENT ex ) {
+        }
+        catch (TRANSIENT ex)
+        {
             throw ex;
-        } catch ( Exception ex ) {
-            throw wrapper.poaLookupError( ex ) ;
+        }
+        catch (Exception ex)
+        {
+            throw wrapper.poaLookupError(ex);
         }
 
-        if ( poa == null )
-            throw wrapper.poaLookupError() ;
+        if (poa == null)
+            throw wrapper.poaLookupError();
 
-        return (ObjectAdapter)poa;
+        return (ObjectAdapter) poa;
     }
 
-    public void shutdown( boolean waitForCompletion )
+    public void shutdown(boolean waitForCompletion)
     {
-        // It is important to copy the list of POAManagers first because
-        // pm.deactivate removes itself from poaManagers!
-        Iterator managers = null ;
-        synchronized (this) {
-	    isShuttingDown = true ;
-            managers = (new HashSet(poaManagers)).iterator();
+        // It is important to copy the list of POAManagers first because pm.deactivate removes itself from poaManagers!
+        Iterator<POAManager> managers = null;
+        synchronized (this)
+        {
+            isShuttingDown = true;
+            managers = (new HashSet<POAManager>(poaManagers)).iterator();
         }
 
-        while ( managers.hasNext() ) {
-            try {
-                ((POAManager)managers.next()).deactivate(true, waitForCompletion);
-            } catch ( org.omg.PortableServer.POAManagerPackage.AdapterInactive e ) {}
+        while (managers.hasNext())
+        {
+            try
+            {
+                managers.next().deactivate(true, waitForCompletion);
+            }
+            catch (org.omg.PortableServer.POAManagerPackage.AdapterInactive e)
+            {
+            }
         }
     }
 
-// Special methods used to manipulate global POA related state
+    // Special methods used to manipulate global POA related state
 
-    public synchronized void removePoaManager( POAManager manager )
+    public synchronized void removePoaManager(POAManager manager)
     {
         poaManagers.remove(manager);
     }
 
-    public synchronized void addPoaManager( POAManager manager )
+    public synchronized void addPoaManager(POAManager manager)
     {
         poaManagers.add(manager);
     }
 
     synchronized public int newPOAManagerId()
     {
-        return poaManagerId++ ;
+        return poaManagerId++;
     }
 
     public void registerRootPOA()
     {
-        // We delay the evaluation of makeRootPOA until
-        // a call to resolve_initial_references( "RootPOA" ).
-        // The Future guarantees that makeRootPOA is only called once.
-        Closure rpClosure = new Closure() {
-            public Object evaluate() {
-                return POAImpl.makeRootPOA( orb ) ;
+        // We delay the evaluation of makeRootPOA until a call to resolve_initial_references( "RootPOA" ). The Future
+        // guarantees that makeRootPOA is only called once.
+        Closure rpClosure = new Closure()
+        {
+            public Object evaluate()
+            {
+                return POAImpl.makeRootPOA(orb);
             }
-        } ;
+        };
 
-        orb.getLocalResolver().register( ORBConstants.ROOT_POA_NAME,
-            ClosureFactory.makeFuture( rpClosure ) ) ;
+        orb.getLocalResolver().register(ORBConstants.ROOT_POA_NAME, ClosureFactory.makeFuture(rpClosure));
     }
-
 
     public synchronized POA getRootPOA()
     {
-        if (rootPOA == null) {
-	    // See if we are trying to getRootPOA while shutting down the ORB.
-	    if (isShuttingDown) {
-		throw omgWrapper.noObjectAdaptor( ) ;
-	    }
+        if (rootPOA == null)
+        {
+            // See if we are trying to getRootPOA while shutting down the ORB.
+            if (isShuttingDown)
+            {
+                throw omgWrapper.noObjectAdaptor();
+            }
 
-            try {
-                Object obj = orb.resolve_initial_references(
-                    ORBConstants.ROOT_POA_NAME ) ;
-                rootPOA = (POAImpl)obj ;
-            } catch (InvalidName inv) {
-                throw wrapper.cantResolveRootPoa( inv ) ;
+            try
+            {
+                Object obj = orb.resolve_initial_references(ORBConstants.ROOT_POA_NAME);
+                rootPOA = (POAImpl) obj;
+            }
+            catch (InvalidName inv)
+            {
+                throw wrapper.cantResolveRootPoa(inv);
             }
         }
 
@@ -220,16 +247,16 @@ public class POAFactory implements ObjectAdapterFactory
 
     public org.omg.PortableServer.portable.Delegate getDelegateImpl()
     {
-        return delegateImpl ;
+        return delegateImpl;
     }
 
     synchronized public int newPOAId()
     {
-        return poaId++ ;
+        return poaId++;
     }
 
     public ORB getORB()
     {
-        return orb ;
+        return orb;
     }
 }

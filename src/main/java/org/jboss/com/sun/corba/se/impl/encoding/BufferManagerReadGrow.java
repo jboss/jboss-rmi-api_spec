@@ -32,56 +32,62 @@ import org.jboss.com.sun.corba.se.impl.protocol.giopmsgheaders.FragmentMessage;
 import org.jboss.com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import org.jboss.com.sun.corba.se.impl.logging.ORBUtilSystemException;
 
-public class BufferManagerReadGrow
-    implements BufferManagerRead, MarkAndResetHandler
+public class BufferManagerReadGrow implements BufferManagerRead, MarkAndResetHandler
 {
-    // REVISIT - This should go in an abstract class called
-    //           BufferManagerReadBase which should implement
-    //           BufferManagerRead. Then, this class should extend
-    //           BufferManagerReadBase.
-    private ORBUtilSystemException wrapper ;
+    // REVISIT - This should go in an abstract class called BufferManagerReadBase which should implement
+    // BufferManagerRead. Then, this class should extend BufferManagerReadBase.
+    private ORBUtilSystemException wrapper;
 
-    BufferManagerReadGrow( ORB orb )
+    BufferManagerReadGrow(ORB orb)
     {
-        this.wrapper = ORBUtilSystemException.get( orb,
-            CORBALogDomains.RPC_ENCODING ) ;
+        this.wrapper = ORBUtilSystemException.get(orb, CORBALogDomains.RPC_ENCODING);
     }
 
-    public void processFragment (ByteBuffer byteBuffer, FragmentMessage header)
+    public void processFragment(ByteBuffer byteBuffer, FragmentMessage header)
     {
-        // REVISIT - should we consider throwing an exception similar to what's
-        //           done for underflow()???
+        // REVISIT - should we consider throwing an exception similar to what's done for underflow()???
     }
 
-    public void init(Message msg) {}
-
-    public ByteBufferWithInfo underflow (ByteBufferWithInfo bbwi)
+    public void init(Message msg)
     {
-        throw wrapper.unexpectedEof() ;
     }
 
-    public void cancelProcessing(int requestId) {}
+    public ByteBufferWithInfo underflow(ByteBufferWithInfo bbwi)
+    {
+        throw wrapper.unexpectedEof();
+    }
+
+    public void cancelProcessing(int requestId)
+    {
+    }
 
     // Mark and reset handler -------------------------
 
     private Object streamMemento;
+
     private RestorableInputStream inputStream;
+
     private boolean markEngaged = false;
 
-    public MarkAndResetHandler getMarkAndResetHandler() {
+    public MarkAndResetHandler getMarkAndResetHandler()
+    {
         return this;
     }
 
-    public void mark(RestorableInputStream is) {
+    public void mark(RestorableInputStream is)
+    {
         markEngaged = true;
         inputStream = is;
         streamMemento = inputStream.createStreamMemento();
     }
 
     // This will never happen
-    public void fragmentationOccured(ByteBufferWithInfo newFragment) {}
+    public void fragmentationOccured(ByteBufferWithInfo newFragment)
+    {
+    }
 
-    public void reset() {
+    public void reset()
+    {
 
         if (!markEngaged)
             return;
@@ -92,5 +98,7 @@ public class BufferManagerReadGrow
     }
 
     // Nothing to close and cleanup.
-    public void close(ByteBufferWithInfo bbwi) {}
+    public void close(ByteBufferWithInfo bbwi)
+    {
+    }
 }

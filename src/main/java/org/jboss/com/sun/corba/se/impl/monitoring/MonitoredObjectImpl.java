@@ -33,114 +33,143 @@ import java.util.Map;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoredAttribute;
 import org.jboss.com.sun.corba.se.spi.monitoring.MonitoredObject;
 
-public class MonitoredObjectImpl implements MonitoredObject {
+public class MonitoredObjectImpl implements MonitoredObject
+{
     private final String name;
+
     private final String description;
 
     // List of all child Monitored Objects
-    private Map<String,MonitoredObject> children = new HashMap<String,MonitoredObject>();
+    private Map<String, MonitoredObject> children = new HashMap<String, MonitoredObject>();
 
     // All the Attributes of this Monitored Object instance
-    private Map<String,MonitoredAttribute> monitoredAttributes = new HashMap<String,MonitoredAttribute>();
+    private Map<String, MonitoredAttribute> monitoredAttributes = new HashMap<String, MonitoredAttribute>();
 
     private MonitoredObject parent = null;
 
-
     // Constructor
-    MonitoredObjectImpl( String name, String description ) {
+    MonitoredObjectImpl(String name, String description)
+    {
         this.name = name;
         this.description = description;
     }
 
-    public MonitoredObject getChild( String name ) {
-        synchronized( this ) {
-            return (MonitoredObject) children.get( name );
+    public MonitoredObject getChild(String name)
+    {
+        synchronized (this)
+        {
+            return children.get(name);
         }
     }
 
-    public Collection<MonitoredObject> getChildren( ) {
-        synchronized( this ) {
+    public Collection<MonitoredObject> getChildren()
+    {
+        synchronized (this)
+        {
             return children.values();
         }
     }
 
-    public void addChild( MonitoredObject m ) {
-        if (m != null){
-            synchronized( this ) {
-                children.put( m.getName(), m);
-                m.setParent( this );
+    public void addChild(MonitoredObject m)
+    {
+        if (m != null)
+        {
+            synchronized (this)
+            {
+                children.put(m.getName(), m);
+                m.setParent(this);
             }
         }
     }
 
-    public void removeChild( String name ) {
-        if (name != null){
-            synchronized( this ) {
-                children.remove( name );
+    public void removeChild(String name)
+    {
+        if (name != null)
+        {
+            synchronized (this)
+            {
+                children.remove(name);
             }
         }
     }
 
-    public synchronized MonitoredObject getParent( ) {
-       return parent;
+    public synchronized MonitoredObject getParent()
+    {
+        return parent;
     }
 
-    public synchronized void setParent( MonitoredObject p ) {
+    public synchronized void setParent(MonitoredObject p)
+    {
         parent = p;
     }
 
-    public MonitoredAttribute getAttribute( String name ) {
-        synchronized( this ) {
-            return (MonitoredAttribute) monitoredAttributes.get( name );
+    public MonitoredAttribute getAttribute(String name)
+    {
+        synchronized (this)
+        {
+            return monitoredAttributes.get(name);
         }
     }
 
-    public Collection<MonitoredAttribute> getAttributes( ) {
-        synchronized( this ) {
+    public Collection<MonitoredAttribute> getAttributes()
+    {
+        synchronized (this)
+        {
             return monitoredAttributes.values();
         }
     }
 
-    public void addAttribute( MonitoredAttribute value ) {
-        if (value != null) {
-            synchronized( this ) {
-                monitoredAttributes.put( value.getName(), value );
+    public void addAttribute(MonitoredAttribute value)
+    {
+        if (value != null)
+        {
+            synchronized (this)
+            {
+                monitoredAttributes.put(value.getName(), value);
             }
         }
     }
 
-    public void removeAttribute( String name ) {
-        if (name != null) {
-            synchronized( this ) {
-                monitoredAttributes.remove( name );
+    public void removeAttribute(String name)
+    {
+        if (name != null)
+        {
+            synchronized (this)
+            {
+                monitoredAttributes.remove(name);
             }
         }
     }
 
     /**
-     * calls clearState() on all the registered children MonitoredObjects and
-     * MonitoredAttributes.
+     * calls clearState() on all the registered children MonitoredObjects and MonitoredAttributes.
      */
-    public void clearState( ) {
-        synchronized( this ) {
+    public void clearState()
+    {
+        synchronized (this)
+        {
             Iterator<MonitoredAttribute> i = monitoredAttributes.values().iterator();
             // First call clearState on all the local attributes
-            while( i.hasNext( ) ) {
-                ((MonitoredAttribute)i.next()).clearState();
+            while (i.hasNext())
+            {
+                i.next().clearState();
             }
             Iterator<MonitoredObject> i2 = children.values().iterator();
             // next call clearState on all the children MonitoredObjects
-            while( i2.hasNext() ) {
-                ((MonitoredObject)i.next()).clearState();
-           }
+            while (i2.hasNext())
+            {
+                ((MonitoredObject) i.next()).clearState();
+            }
         }
     }
 
-    public String getName( ) {
+    public String getName()
+    {
         return name;
     }
 
-    public String getDescription( ) {
+    public String getDescription()
+    {
         return description;
     }
 }

@@ -31,18 +31,15 @@ import org.jboss.com.sun.corba.se.impl.io.TypeMismatchException;
 import org.jboss.com.sun.corba.se.impl.orbutil.RepositoryIdInterface;
 
 /**
- * Factory methods for creating various repository ID strings
- * and instances.
+ * Factory methods for creating various repository ID strings and instances.
  */
 public interface RepositoryIdStrings
 {
     String createForAnyType(Class<?> type);
 
-    String createForJavaType(Serializable ser)
-        throws TypeMismatchException;
+    String createForJavaType(Serializable ser) throws TypeMismatchException;
 
-    String createForJavaType(Class<?> clz)
-        throws TypeMismatchException;
+    String createForJavaType(Class<?> clz) throws TypeMismatchException;
 
     String createSequenceRepID(java.lang.Object ser);
 
@@ -51,5 +48,6 @@ public interface RepositoryIdStrings
     RepositoryIdInterface getFromString(String repIdString);
 
     String getClassDescValueRepId();
+
     String getWStringValueRepId();
 }

@@ -38,29 +38,33 @@ import org.omg.CORBA.CompletionStatus;
  * @author Ram Jeyaraman 05/14/2000
  */
 
-public class Message_1_1
-        extends MessageBase {
+public class Message_1_1 extends MessageBase
+{
 
     // Constants
     final static int UPPER_THREE_BYTES_OF_INT_MASK = 0xFF;
 
-    private static ORBUtilSystemException wrapper =
-        ORBUtilSystemException.get( CORBALogDomains.RPC_PROTOCOL ) ;
+    private static ORBUtilSystemException wrapper = ORBUtilSystemException.get(CORBALogDomains.RPC_PROTOCOL);
 
     // Instance variables
-    int magic = (int) 0;
+    int magic = 0;
+
     GIOPVersion GIOP_version = null;
+
     byte flags = (byte) 0;
+
     byte message_type = (byte) 0;
-    int message_size = (int) 0;
+
+    int message_size = 0;
 
     // Constructor
 
-    Message_1_1() {
+    Message_1_1()
+    {
     }
 
-    Message_1_1(int _magic, GIOPVersion _GIOP_version, byte _flags,
-            byte _message_type, int _message_size) {
+    Message_1_1(int _magic, GIOPVersion _GIOP_version, byte _flags, byte _message_type, int _message_size)
+    {
         magic = _magic;
         GIOP_version = _GIOP_version;
         flags = _flags;
@@ -70,24 +74,29 @@ public class Message_1_1
 
     // Accessor methods
 
-    public GIOPVersion getGIOPVersion() {
+    public GIOPVersion getGIOPVersion()
+    {
         return this.GIOP_version;
     }
 
-    public int getType() {
+    public int getType()
+    {
         return this.message_type;
     }
 
-    public int getSize() {
-            return this.message_size;
+    public int getSize()
+    {
+        return this.message_size;
     }
 
-    public boolean isLittleEndian() {
+    public boolean isLittleEndian()
+    {
         return ((this.flags & LITTLE_ENDIAN_BIT) == LITTLE_ENDIAN_BIT);
     }
 
-    public boolean moreFragmentsToFollow() {
-        return ( (this.flags & MORE_FRAGMENTS_BIT) == MORE_FRAGMENTS_BIT );
+    public boolean moreFragmentsToFollow()
+    {
+        return ((this.flags & MORE_FRAGMENTS_BIT) == MORE_FRAGMENTS_BIT);
     }
 
     // Mutator methods
@@ -95,18 +104,18 @@ public class Message_1_1
     // NOTE: This is a SUN PROPRIETARY EXTENSION
     // Add the poolToUse to the upper 6 bits of byte 6 of the GIOP header.
     // this.flags represents byte 6 here.
-    public void setThreadPoolToUse(int poolToUse) {
-        // IMPORTANT: Bitwise operations will promote
-        //            byte types to int before performing
-        //            bitwise operations. And, Java
-        //            types are signed.
+    public void setThreadPoolToUse(int poolToUse)
+    {
+        // IMPORTANT: Bitwise operations will promote byte types to int before performing bitwise operations. And, Java
+        // types are signed.
         int tmpFlags = poolToUse << 2;
         tmpFlags &= UPPER_THREE_BYTES_OF_INT_MASK;
         tmpFlags |= flags;
-        flags = (byte)tmpFlags;
+        flags = (byte) tmpFlags;
     }
 
-    public void setSize(ByteBuffer byteBuffer, int size) {
+    public void setSize(ByteBuffer byteBuffer, int size)
+    {
 
         this.message_size = size;
 
@@ -115,75 +124,77 @@ public class Message_1_1
         //
 
         int patch = size - GIOPMessageHeaderLength;
-        if (!isLittleEndian()) {
-            byteBuffer.put(8,  (byte)((patch >>> 24) & 0xFF));
-            byteBuffer.put(9,  (byte)((patch >>> 16) & 0xFF));
-            byteBuffer.put(10, (byte)((patch >>> 8)  & 0xFF));
-            byteBuffer.put(11, (byte)((patch >>> 0)  & 0xFF));
-        } else {
-            byteBuffer.put(8,  (byte)((patch >>> 0)  & 0xFF));
-            byteBuffer.put(9,  (byte)((patch >>> 8)  & 0xFF));
-            byteBuffer.put(10, (byte)((patch >>> 16) & 0xFF));
-            byteBuffer.put(11, (byte)((patch >>> 24) & 0xFF));
+        if (!isLittleEndian())
+        {
+            byteBuffer.put(8, (byte) ((patch >>> 24) & 0xFF));
+            byteBuffer.put(9, (byte) ((patch >>> 16) & 0xFF));
+            byteBuffer.put(10, (byte) ((patch >>> 8) & 0xFF));
+            byteBuffer.put(11, (byte) ((patch >>> 0) & 0xFF));
+        }
+        else
+        {
+            byteBuffer.put(8, (byte) ((patch >>> 0) & 0xFF));
+            byteBuffer.put(9, (byte) ((patch >>> 8) & 0xFF));
+            byteBuffer.put(10, (byte) ((patch >>> 16) & 0xFF));
+            byteBuffer.put(11, (byte) ((patch >>> 24) & 0xFF));
         }
     }
 
     /**
      * Allows us to create a fragment message from any message type.
      */
-    public FragmentMessage createFragmentMessage() {
+    public FragmentMessage createFragmentMessage()
+    {
 
         // check for message type validity
 
-        switch (this.message_type) {
-        case GIOPCancelRequest :
-        case GIOPCloseConnection :
-        case GIOPMessageError :
-            throw wrapper.fragmentationDisallowed(
-                CompletionStatus.COMPLETED_MAYBE);
-        case GIOPLocateRequest :
-        case GIOPLocateReply :
-            if (this.GIOP_version.equals(GIOPVersion.V1_1)) {
-                throw wrapper.fragmentationDisallowed(
-                    CompletionStatus.COMPLETED_MAYBE);
-            }
-            break;
+        switch (this.message_type)
+        {
+            case GIOPCancelRequest :
+            case GIOPCloseConnection :
+            case GIOPMessageError :
+                throw wrapper.fragmentationDisallowed(CompletionStatus.COMPLETED_MAYBE);
+            case GIOPLocateRequest :
+            case GIOPLocateReply :
+                if (this.GIOP_version.equals(GIOPVersion.V1_1))
+                {
+                    throw wrapper.fragmentationDisallowed(CompletionStatus.COMPLETED_MAYBE);
+                }
+                break;
         }
 
         /*
-        // A fragmented mesg can be created only if the current mesg' fragment
-        // bit is set. Otherwise, raise error
-        // too stringent check
-        if ( (this.flags & MORE_FRAGMENTS_BIT) != MORE_FRAGMENTS_BIT ) {
-                throw wrapper.fragmentationDisallowed( CompletionStatus.COMPLETED_MAYBE);
-        }
-        */
-        if (this.GIOP_version.equals(GIOPVersion.V1_1)) {
+         * A fragmented mesg can be created only if the current mesg' fragment // bit is set. Otherwise, raise error too
+         * stringent check if ( (this.flags & MORE_FRAGMENTS_BIT) != MORE_FRAGMENTS_BIT ) { throw
+         * wrapper.fragmentationDisallowed( CompletionStatus.COMPLETED_MAYBE); }
+         */
+        if (this.GIOP_version.equals(GIOPVersion.V1_1))
+        {
             return new FragmentMessage_1_1(this);
-        } else if (this.GIOP_version.equals(GIOPVersion.V1_2)) {
+        }
+        else if (this.GIOP_version.equals(GIOPVersion.V1_2))
+        {
             return new FragmentMessage_1_2(this);
         }
 
-        throw wrapper.giopVersionError( CompletionStatus.COMPLETED_MAYBE);
+        throw wrapper.giopVersionError(CompletionStatus.COMPLETED_MAYBE);
     }
 
     // IO methods
 
-    // This should do nothing even if it is called. The Message Header is read
-    // off a java.io.InputStream (not a CDRInputStream) by IIOPConnection
-    // in order to choose the correct CDR Version , msg_type, and msg_size.
-    // So, we would never need to read the Message Header off a CDRInputStream.
-    public void read(org.omg.CORBA.portable.InputStream istream) {
+    // This should do nothing even if it is called. The Message Header is read off a java.io.InputStream (not a
+    // CDRInputStream) by IIOPConnection in order to choose the correct CDR Version , msg_type, and msg_size. So, we
+    // would never need to read the Message Header off a CDRInputStream.
+    public void read(org.omg.CORBA.portable.InputStream istream)
+    {
         /*
-        this.magic = istream.read_long();
-        this.GIOP_version = (new GIOPVersion()).read(istream);
-        this.flags = istream.read_octet();
-        this.message_type = istream.read_octet();
-        this.message_size = istream.read_ulong();
-        */
+         * this.magic = istream.read_long(); this.GIOP_version = (new GIOPVersion()).read(istream); this.flags =
+         * istream.read_octet(); this.message_type = istream.read_octet(); this.message_size = istream.read_ulong();
+         */
     }
 
-    public void write(org.omg.CORBA.portable.OutputStream ostream) {
+    public void write(org.omg.CORBA.portable.OutputStream ostream)
+    {
         ostream.write_long(this.magic);
         nullCheck(this.GIOP_version);
         this.GIOP_version.write(ostream);

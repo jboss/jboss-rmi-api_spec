@@ -38,9 +38,12 @@ import org.omg.CORBA.NamedValue;
 public class NamedValueImpl extends NamedValue
 {
     private String _name;
-    private Any    _value;
-    private int    _flags;
-    private ORB    _orb;
+
+    private Any _value;
+
+    private int _flags;
+
+    private ORB _orb;
 
     public NamedValueImpl(ORB orb)
     {
@@ -49,16 +52,13 @@ public class NamedValueImpl extends NamedValue
         _value = new AnyImpl(_orb);
     }
 
-    public NamedValueImpl(ORB orb,
-                          String name,
-                          Any value,
-                          int flags)
+    public NamedValueImpl(ORB orb, String name, Any value, int flags)
     {
         // Note: This orb could be an instanceof ORBSingleton or ORB
-        _orb    = orb;
-        _name   = name;
-        _value  = value;
-        _flags      = flags;
+        _orb = orb;
+        _name = name;
+        _value = value;
+        _flags = flags;
     }
 
     public String name()

@@ -23,10 +23,11 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.logging ;
+package org.jboss.com.sun.corba.se.spi.logging;
 
 import java.util.logging.Logger;
 
-public interface LogWrapperFactory {
-    LogWrapperBase create( Logger logger ) ;
+public interface LogWrapperFactory
+{
+    LogWrapperBase create(Logger logger);
 }

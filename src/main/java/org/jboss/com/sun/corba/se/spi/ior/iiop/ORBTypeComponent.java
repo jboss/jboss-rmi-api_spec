@@ -32,5 +32,5 @@ import org.jboss.com.sun.corba.se.spi.ior.TaggedComponent;
  */
 public interface ORBTypeComponent extends TaggedComponent
 {
-    public int getORBType() ;
+    public int getORBType();
 }

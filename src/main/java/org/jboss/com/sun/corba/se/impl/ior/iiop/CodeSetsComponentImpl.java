@@ -37,41 +37,40 @@ import org.omg.IOP.TAG_CODE_SETS;
 /**
  * @author
  */
-public class CodeSetsComponentImpl extends TaggedComponentBase
-    implements CodeSetsComponent
+public class CodeSetsComponentImpl extends TaggedComponentBase implements CodeSetsComponent
 {
-    CodeSetComponentInfo csci ;
+    CodeSetComponentInfo csci;
 
-    public boolean equals( Object obj )
+    public boolean equals(Object obj)
     {
         if (!(obj instanceof CodeSetsComponentImpl))
-            return false ;
+            return false;
 
-        CodeSetsComponentImpl other = (CodeSetsComponentImpl)obj ;
+        CodeSetsComponentImpl other = (CodeSetsComponentImpl) obj;
 
-        return csci.equals( other.csci ) ;
+        return csci.equals(other.csci);
     }
 
     public int hashCode()
     {
-        return csci.hashCode() ;
+        return csci.hashCode();
     }
 
     public String toString()
     {
-        return "CodeSetsComponentImpl[csci=" + csci + "]" ;
+        return "CodeSetsComponentImpl[csci=" + csci + "]";
     }
 
     public CodeSetsComponentImpl()
     {
         // Uses our default code sets (see CodeSetComponentInfo)
-        csci = new CodeSetComponentInfo() ;
+        csci = new CodeSetComponentInfo();
     }
 
-    public CodeSetsComponentImpl( InputStream is )
+    public CodeSetsComponentImpl(InputStream is)
     {
-        csci = new CodeSetComponentInfo() ;
-        csci.read( (MarshalInputStream)is ) ;
+        csci = new CodeSetComponentInfo();
+        csci.read((MarshalInputStream) is);
     }
 
     public CodeSetsComponentImpl(org.jboss.com.sun.corba.se.spi.orb.ORB orb)
@@ -84,16 +83,16 @@ public class CodeSetsComponentImpl extends TaggedComponentBase
 
     public CodeSetComponentInfo getCodeSetComponentInfo()
     {
-        return csci ;
+        return csci;
     }
 
     public void writeContents(OutputStream os)
     {
-        csci.write( (MarshalOutputStream)os ) ;
+        csci.write((MarshalOutputStream) os);
     }
 
     public int getId()
     {
-        return TAG_CODE_SETS.value ; // 1 in CORBA 2.3.1 13.6.3
+        return TAG_CODE_SETS.value; // 1 in CORBA 2.3.1 13.6.3
     }
 }

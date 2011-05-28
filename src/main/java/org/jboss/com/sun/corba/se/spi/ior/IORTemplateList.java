@@ -23,15 +23,15 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.ior ;
+package org.jboss.com.sun.corba.se.spi.ior;
 
 import java.util.List;
 
-/** An IORTemplateList is a list of IORTemplate instances.  It can be used to create IORs.
- * This is useful for representing IORs made of profiles from different object
- * adapters.
- * Note that any IORFactory can be added to an IORTemplateList, but it is flattened
- * so that the result is just a list of IORTemplate instances.
+/**
+ * An IORTemplateList is a list of IORTemplate instances. It can be used to create IORs. This is useful for representing
+ * IORs made of profiles from different object adapters. Note that any IORFactory can be added to an IORTemplateList,
+ * but it is flattened so that the result is just a list of IORTemplate instances.
  */
-public interface IORTemplateList extends List<Object>, IORFactory, MakeImmutable {
+public interface IORTemplateList extends List<Object>, IORFactory, MakeImmutable
+{
 }

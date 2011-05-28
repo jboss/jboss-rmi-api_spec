@@ -23,30 +23,31 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.presentation.rmi ;
+package org.jboss.com.sun.corba.se.impl.presentation.rmi;
 
 import org.jboss.com.sun.corba.se.spi.presentation.rmi.PresentationManager;
 
 public abstract class StubFactoryDynamicBase extends StubFactoryBase
 {
-    protected final ClassLoader loader ;
+    protected final ClassLoader loader;
 
-    public StubFactoryDynamicBase( PresentationManager.ClassData classData,
-        ClassLoader loader )
+    public StubFactoryDynamicBase(PresentationManager.ClassData classData, ClassLoader loader)
     {
-        super( classData ) ;
+        super(classData);
 
-        // this.loader must not be null, or the newProxyInstance call
-        // will fail.
-        if (loader == null) {
+        // this.loader must not be null, or the newProxyInstance call will fail.
+        if (loader == null)
+        {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if (cl == null)
                 cl = ClassLoader.getSystemClassLoader();
-            this.loader = cl ;
-        } else {
-            this.loader = loader ;
+            this.loader = cl;
+        }
+        else
+        {
+            this.loader = loader;
         }
     }
 
-    public abstract org.omg.CORBA.Object makeStub() ;
+    public abstract org.omg.CORBA.Object makeStub();
 }

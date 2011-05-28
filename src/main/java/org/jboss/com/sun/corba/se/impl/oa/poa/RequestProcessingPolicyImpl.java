@@ -30,28 +30,33 @@ import org.omg.PortableServer.REQUEST_PROCESSING_POLICY_ID;
 import org.omg.PortableServer.RequestProcessingPolicy;
 import org.omg.PortableServer.RequestProcessingPolicyValue;
 
-public class RequestProcessingPolicyImpl
-    extends org.omg.CORBA.LocalObject implements RequestProcessingPolicy {
+public class RequestProcessingPolicyImpl extends org.omg.CORBA.LocalObject implements RequestProcessingPolicy
+{
 
-    public RequestProcessingPolicyImpl(RequestProcessingPolicyValue
-                                       value) {
+    private static final long serialVersionUID = 5900928116128639434L;
+
+    public RequestProcessingPolicyImpl(RequestProcessingPolicyValue value)
+    {
         this.value = value;
     }
 
-    public RequestProcessingPolicyValue value() {
+    public RequestProcessingPolicyValue value()
+    {
         return value;
     }
 
     public int policy_type()
     {
-        return REQUEST_PROCESSING_POLICY_ID.value ;
+        return REQUEST_PROCESSING_POLICY_ID.value;
     }
 
-    public Policy copy() {
+    public Policy copy()
+    {
         return new RequestProcessingPolicyImpl(value);
     }
 
-    public void destroy() {
+    public void destroy()
+    {
         value = null;
     }
 
@@ -59,19 +64,20 @@ public class RequestProcessingPolicyImpl
 
     public String toString()
     {
-        String type = null ;
-        switch (value.value()) {
+        String type = null;
+        switch (value.value())
+        {
             case RequestProcessingPolicyValue._USE_ACTIVE_OBJECT_MAP_ONLY :
-                type = "USE_ACTIVE_OBJECT_MAP_ONLY" ;
-                break ;
+                type = "USE_ACTIVE_OBJECT_MAP_ONLY";
+                break;
             case RequestProcessingPolicyValue._USE_DEFAULT_SERVANT :
-                type = "USE_DEFAULT_SERVANT" ;
-                break ;
+                type = "USE_DEFAULT_SERVANT";
+                break;
             case RequestProcessingPolicyValue._USE_SERVANT_MANAGER :
-                type = "USE_SERVANT_MANAGER" ;
-                break ;
+                type = "USE_SERVANT_MANAGER";
+                break;
         }
 
-        return "RequestProcessingPolicy[" + type + "]" ;
+        return "RequestProcessingPolicy[" + type + "]";
     }
 }

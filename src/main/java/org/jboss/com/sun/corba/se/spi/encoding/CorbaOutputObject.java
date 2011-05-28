@@ -23,31 +23,22 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.encoding ;
+package org.jboss.com.sun.corba.se.spi.encoding;
 
-import org.jboss.com.sun.corba.se.pept.encoding.OutputObject ;
-
+import org.jboss.com.sun.corba.se.impl.encoding.BufferManagerWrite;
+import org.jboss.com.sun.corba.se.impl.encoding.CDROutputStream;
+import org.jboss.com.sun.corba.se.pept.encoding.OutputObject;
 import org.jboss.com.sun.corba.se.spi.ior.iiop.GIOPVersion;
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 import org.jboss.com.sun.corba.se.spi.transport.CorbaConnection;
 
-import org.jboss.com.sun.corba.se.impl.encoding.CDROutputStream ;
-import org.jboss.com.sun.corba.se.impl.encoding.BufferManagerWrite ;
-
-
-public abstract class CorbaOutputObject
-    extends CDROutputStream
-    implements OutputObject
+public abstract class CorbaOutputObject extends CDROutputStream implements OutputObject
 {
-    public CorbaOutputObject(
-        ORB orb, GIOPVersion version, byte encodingVersion,
-        boolean littleEndian, BufferManagerWrite bufferManager,
-        byte streamFormatVersion, boolean usePooledByteBuffers)
+    public CorbaOutputObject(ORB orb, GIOPVersion version, byte encodingVersion, boolean littleEndian,
+            BufferManagerWrite bufferManager, byte streamFormatVersion, boolean usePooledByteBuffers)
     {
-        super(orb, version, encodingVersion, littleEndian, bufferManager,
-              streamFormatVersion, usePooledByteBuffers);
+        super(orb, version, encodingVersion, littleEndian, bufferManager, streamFormatVersion, usePooledByteBuffers);
     }
 
-    public abstract void writeTo(CorbaConnection connection)
-        throws java.io.IOException;
+    public abstract void writeTo(CorbaConnection connection) throws java.io.IOException;
 }

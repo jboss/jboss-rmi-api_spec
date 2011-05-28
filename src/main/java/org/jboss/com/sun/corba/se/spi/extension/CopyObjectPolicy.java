@@ -23,45 +23,45 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.extension ;
+package org.jboss.com.sun.corba.se.spi.extension;
 
 import org.jboss.com.sun.corba.se.impl.orbutil.ORBConstants;
 import org.omg.CORBA.LocalObject;
 import org.omg.CORBA.Policy;
 
-/** Policy used to specify the copyObject implementation to use.
-*/
+/** Policy used to specify the copyObject implementation to use. */
+@SuppressWarnings("serial")
 public class CopyObjectPolicy extends LocalObject implements Policy
 {
-    private final int value ;
+    private final int value;
 
-    public CopyObjectPolicy( int value )
+    public CopyObjectPolicy(int value)
     {
-        this.value = value ;
+        this.value = value;
     }
 
     public int getValue()
     {
-        return value ;
+        return value;
     }
 
-    public int policy_type ()
+    public int policy_type()
     {
-        return ORBConstants.COPY_OBJECT_POLICY ;
+        return ORBConstants.COPY_OBJECT_POLICY;
     }
 
-    public org.omg.CORBA.Policy copy ()
+    public org.omg.CORBA.Policy copy()
     {
-        return this ;
+        return this;
     }
 
-    public void destroy ()
+    public void destroy()
     {
         // NO-OP
     }
 
     public String toString()
     {
-        return "CopyObjectPolicy[" + value + "]" ;
+        return "CopyObjectPolicy[" + value + "]";
     }
 }

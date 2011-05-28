@@ -32,14 +32,14 @@ import org.jboss.com.sun.corba.se.spi.protocol.LocalClientRequestDispatcher;
 /**
  * @author Harold Carr
  */
-public interface CorbaContactInfoList
-    extends
-        ContactInfoList
+public interface CorbaContactInfoList extends ContactInfoList
 {
     public void setTargetIOR(IOR ior);
+
     public IOR getTargetIOR();
 
     public void setEffectiveTargetIOR(IOR locatedIor);
+
     public IOR getEffectiveTargetIOR();
 
     public LocalClientRequestDispatcher getLocalClientRequestDispatcher();

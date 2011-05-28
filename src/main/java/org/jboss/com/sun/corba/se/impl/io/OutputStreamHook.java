@@ -41,8 +41,8 @@ public abstract class OutputStreamHook extends ObjectOutputStream
     private HookPutFields putFields = null;
 
     /**
-     * Since ObjectOutputStream.PutField methods specify no exceptions,
-     * we are not checking for null parameters on put methods.
+     * Since ObjectOutputStream.PutField methods specify no exceptions, we are not checking for null parameters on put
+     * methods.
      */
     private class HookPutFields extends ObjectOutputStream.PutField
     {
@@ -51,79 +51,90 @@ public abstract class OutputStreamHook extends ObjectOutputStream
         /**
          * Put the value of the named boolean field into the persistent field.
          */
-        public void put(String name, boolean value){
+        public void put(String name, boolean value)
+        {
             fields.put(name, new Boolean(value));
         }
 
         /**
          * Put the value of the named char field into the persistent fields.
          */
-        public void put(String name, char value){
+        public void put(String name, char value)
+        {
             fields.put(name, new Character(value));
         }
 
         /**
          * Put the value of the named byte field into the persistent fields.
          */
-        public void put(String name, byte value){
+        public void put(String name, byte value)
+        {
             fields.put(name, new Byte(value));
         }
 
         /**
          * Put the value of the named short field into the persistent fields.
          */
-        public void put(String name, short value){
+        public void put(String name, short value)
+        {
             fields.put(name, new Short(value));
         }
 
         /**
          * Put the value of the named int field into the persistent fields.
          */
-        public void put(String name, int value){
+        public void put(String name, int value)
+        {
             fields.put(name, new Integer(value));
         }
 
         /**
          * Put the value of the named long field into the persistent fields.
          */
-        public void put(String name, long value){
+        public void put(String name, long value)
+        {
             fields.put(name, new Long(value));
         }
 
         /**
          * Put the value of the named float field into the persistent fields.
-         *
+         * 
          */
-        public void put(String name, float value){
+        public void put(String name, float value)
+        {
             fields.put(name, new Float(value));
         }
 
         /**
          * Put the value of the named double field into the persistent field.
          */
-        public void put(String name, double value){
+        public void put(String name, double value)
+        {
             fields.put(name, new Double(value));
         }
 
         /**
          * Put the value of the named Object field into the persistent field.
          */
-        public void put(String name, Object value){
+        public void put(String name, Object value)
+        {
             fields.put(name, value);
         }
 
         /**
          * Write the data and fields to the specified ObjectOutput stream.
          */
-        public void write(ObjectOutput out) throws IOException {
-            OutputStreamHook hook = (OutputStreamHook)out;
+        public void write(ObjectOutput out) throws IOException
+        {
+            OutputStreamHook hook = (OutputStreamHook) out;
 
             ObjectStreamField[] osfields = hook.getFieldsNoCopy();
 
             // Write the fields to the stream in the order
-            // provided by the ObjectStreamClass.  (They should
+            // provided by the ObjectStreamClass. (They should
             // be sorted appropriately already.)
-            for (int i = 0; i < osfields.length; i++) {
+            for (int i = 0; i < osfields.length; i++)
+            {
 
                 Object value = fields.get(osfields[i].getName());
 
@@ -134,13 +145,14 @@ public abstract class OutputStreamHook extends ObjectOutputStream
 
     abstract void writeField(ObjectStreamField field, Object value) throws IOException;
 
-    public OutputStreamHook()
-        throws java.io.IOException {
+    public OutputStreamHook() throws java.io.IOException
+    {
         super();
 
     }
 
-    public void defaultWriteObject() throws IOException {
+    public void defaultWriteObject() throws IOException
+    {
 
         writeObjectState.defaultWriteObject(this);
 
@@ -149,8 +161,8 @@ public abstract class OutputStreamHook extends ObjectOutputStream
 
     public abstract void defaultWriteObjectDelegate();
 
-    public ObjectOutputStream.PutField putFields()
-        throws IOException {
+    public ObjectOutputStream.PutField putFields() throws IOException
+    {
         putFields = new HookPutFields();
         return putFields;
     }
@@ -160,7 +172,8 @@ public abstract class OutputStreamHook extends ObjectOutputStream
 
     // Return the stream format version currently being used
     // to serialize an object
-    public byte getStreamFormatVersion() {
+    public byte getStreamFormatVersion()
+    {
         return streamFormatVersion;
     }
 
@@ -168,8 +181,8 @@ public abstract class OutputStreamHook extends ObjectOutputStream
 
     // User uses PutFields to simulate default data.
     // See java.io.ObjectOutputStream.PutFields
-    public void writeFields()
-        throws IOException {
+    public void writeFields() throws IOException
+    {
 
         writeObjectState.defaultWriteObject(this);
 
@@ -180,46 +193,66 @@ public abstract class OutputStreamHook extends ObjectOutputStream
 
     protected abstract void beginOptionalCustomData();
 
-
     // The following is a State pattern implementation of what
     // should be done when a Serializable has a
-    // writeObject method.  This was especially necessary for
-    // RMI-IIOP stream format version 2.  Please see the
+    // writeObject method. This was especially necessary for
+    // RMI-IIOP stream format version 2. Please see the
     // state diagrams in the docs directory of the workspace.
 
     protected WriteObjectState writeObjectState = NOT_IN_WRITE_OBJECT;
 
-    protected void setState(WriteObjectState newState) {
+    protected void setState(WriteObjectState newState)
+    {
         writeObjectState = newState;
     }
 
     // Description of possible actions
-    protected static class WriteObjectState {
-        public void enterWriteObject(OutputStreamHook stream) throws IOException {}
-        public void exitWriteObject(OutputStreamHook stream) throws IOException {}
-        public void defaultWriteObject(OutputStreamHook stream) throws IOException {}
-        public void writeData(OutputStreamHook stream) throws IOException {}
+    protected static class WriteObjectState
+    {
+        public void enterWriteObject(OutputStreamHook stream) throws IOException
+        {
+        }
+
+        public void exitWriteObject(OutputStreamHook stream) throws IOException
+        {
+        }
+
+        public void defaultWriteObject(OutputStreamHook stream) throws IOException
+        {
+        }
+
+        public void writeData(OutputStreamHook stream) throws IOException
+        {
+        }
     }
 
-    protected static class DefaultState extends WriteObjectState {
-        public void enterWriteObject(OutputStreamHook stream) throws IOException {
+    protected static class DefaultState extends WriteObjectState
+    {
+        public void enterWriteObject(OutputStreamHook stream) throws IOException
+        {
             stream.setState(IN_WRITE_OBJECT);
         }
     }
 
     protected static final WriteObjectState NOT_IN_WRITE_OBJECT = new DefaultState();
+
     protected static final WriteObjectState IN_WRITE_OBJECT = new InWriteObjectState();
+
     protected static final WriteObjectState WROTE_DEFAULT_DATA = new WroteDefaultDataState();
+
     protected static final WriteObjectState WROTE_CUSTOM_DATA = new WroteCustomDataState();
 
-    protected static class InWriteObjectState extends WriteObjectState {
+    protected static class InWriteObjectState extends WriteObjectState
+    {
 
-        public void enterWriteObject(OutputStreamHook stream) throws IOException {
+        public void enterWriteObject(OutputStreamHook stream) throws IOException
+        {
             // XXX I18N, logging needed.
             throw new IOException("Internal state failure: Entered writeObject twice");
         }
 
-        public void exitWriteObject(OutputStreamHook stream) throws IOException {
+        public void exitWriteObject(OutputStreamHook stream) throws IOException
+        {
 
             // We didn't write any data, so write the
             // called defaultWriteObject indicator as false
@@ -234,7 +267,8 @@ public abstract class OutputStreamHook extends ObjectOutputStream
             stream.setState(NOT_IN_WRITE_OBJECT);
         }
 
-        public void defaultWriteObject(OutputStreamHook stream) throws IOException {
+        public void defaultWriteObject(OutputStreamHook stream) throws IOException
+        {
 
             // The writeObject method called defaultWriteObject
             // or writeFields, so put the called defaultWriteObject
@@ -244,10 +278,11 @@ public abstract class OutputStreamHook extends ObjectOutputStream
             stream.setState(WROTE_DEFAULT_DATA);
         }
 
-        public void writeData(OutputStreamHook stream) throws IOException {
+        public void writeData(OutputStreamHook stream) throws IOException
+        {
 
             // The writeObject method first called a direct
-            // write operation.  Write the called defaultWriteObject
+            // write operation. Write the called defaultWriteObject
             // indicator as false, put the special stream format
             // version 2 header (if stream format version 2, of course),
             // and write the data
@@ -257,9 +292,11 @@ public abstract class OutputStreamHook extends ObjectOutputStream
         }
     }
 
-    protected static class WroteDefaultDataState extends InWriteObjectState {
+    protected static class WroteDefaultDataState extends InWriteObjectState
+    {
 
-        public void exitWriteObject(OutputStreamHook stream) throws IOException {
+        public void exitWriteObject(OutputStreamHook stream) throws IOException
+        {
 
             // We only wrote default data, so if in stream format
             // version 2, put the null indicator to say that there
@@ -270,12 +307,14 @@ public abstract class OutputStreamHook extends ObjectOutputStream
             stream.setState(NOT_IN_WRITE_OBJECT);
         }
 
-        public void defaultWriteObject(OutputStreamHook stream) throws IOException {
+        public void defaultWriteObject(OutputStreamHook stream) throws IOException
+        {
             // XXX I18N, logging needed.
             throw new IOException("Called defaultWriteObject/writeFields twice");
         }
 
-        public void writeData(OutputStreamHook stream) throws IOException {
+        public void writeData(OutputStreamHook stream) throws IOException
+        {
 
             // The writeObject method called a direct write operation.
             // If in stream format version 2, put the fake valuetype
@@ -286,24 +325,29 @@ public abstract class OutputStreamHook extends ObjectOutputStream
         }
     }
 
-    protected static class WroteCustomDataState extends InWriteObjectState {
+    protected static class WroteCustomDataState extends InWriteObjectState
+    {
 
-        public void exitWriteObject(OutputStreamHook stream) throws IOException {
+        public void exitWriteObject(OutputStreamHook stream) throws IOException
+        {
             // In stream format version 2, we must tell the ORB
             // stream to close the fake custom valuetype.
             if (stream.getStreamFormatVersion() == 2)
-                ((org.omg.CORBA.portable.ValueOutputStream)stream.getOrbStream()).end_value();
+                ((org.omg.CORBA.portable.ValueOutputStream) stream.getOrbStream()).end_value();
 
             stream.setState(NOT_IN_WRITE_OBJECT);
         }
 
-        public void defaultWriteObject(OutputStreamHook stream) throws IOException {
+        public void defaultWriteObject(OutputStreamHook stream) throws IOException
+        {
             // XXX I18N, logging needed.
             throw new IOException("Cannot call defaultWriteObject/writeFields after writing custom data in RMI-IIOP");
         }
 
         // We don't have to do anything special here, just let
         // the stream write the data.
-        public void writeData(OutputStreamHook stream) throws IOException {}
+        public void writeData(OutputStreamHook stream) throws IOException
+        {
+        }
     }
 }

@@ -23,22 +23,27 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.orb ;
+package org.jboss.com.sun.corba.se.spi.orb;
 
-import org.omg.CORBA.portable.OutputStream ;
+import org.omg.CORBA.portable.OutputStream;
 
 public interface ORBVersion extends Comparable<ORBVersion>
 {
-    byte FOREIGN = 0 ;          // ORB from another vendor
-    byte OLD = 1 ;              // JDK 1.3.0 or earlier
-    byte NEW = 2 ;              // JDK 1.3.1 FCS
-    byte JDK1_3_1_01 = 3;       // JDK1_3_1_01 patch
-    byte NEWER = 10 ;           // JDK 1.4.x
-    byte PEORB = 20 ;           // PEORB in JDK 1.5, S1AS 8, J2EE 1.4
+    byte FOREIGN = 0; // ORB from another vendor
 
-    byte getORBType() ;
+    byte OLD = 1; // JDK 1.3.0 or earlier
 
-    void write( OutputStream os ) ;
+    byte NEW = 2; // JDK 1.3.1 FCS
 
-    public boolean lessThan( ORBVersion version ) ;
+    byte JDK1_3_1_01 = 3; // JDK1_3_1_01 patch
+
+    byte NEWER = 10; // JDK 1.4.x
+
+    byte PEORB = 20; // PEORB in JDK 1.5, S1AS 8, J2EE 1.4
+
+    byte getORBType();
+
+    void write(OutputStream os);
+
+    public boolean lessThan(ORBVersion version);
 }

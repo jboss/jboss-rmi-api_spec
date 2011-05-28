@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
 /**
  * Simple unsynchronized queue implementation for ByteBufferWithInfos.
  */
-// XREVISIT - Should be in orbutil or package private
+// REVISIT - Should be in orbutil or package private
 public class BufferQueue
 {
     private LinkedList<ByteBufferWithInfo> list = new LinkedList<ByteBufferWithInfo>();
@@ -50,8 +50,7 @@ public class BufferQueue
         return list.size();
     }
 
-    // Adds the given ByteBufferWithInfo to the front
-    // of the queue.
+    // Adds the given ByteBufferWithInfo to the front of the queue.
     public void push(ByteBufferWithInfo item)
     {
         list.addFirst(item);

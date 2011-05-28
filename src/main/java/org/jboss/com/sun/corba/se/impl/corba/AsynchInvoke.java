@@ -33,39 +33,31 @@ package org.jboss.com.sun.corba.se.impl.corba;
 
 import org.jboss.com.sun.corba.se.spi.orb.ORB;
 
-///////////////////////////////////////////////////////////////////////////
-// helper class for deferred invocations
-
-/*
- * The AsynchInvoke class allows for the support of asynchronous
- * invocations. Instances of these are created with a request object,
- * and when run, perform an invocation. The instance is also
- * responsible for waking up a client that might be waiting on the
- * 'get_response' method.
+/**
+ * The AsynchInvoke class allows for the support of asynchronous invocations. Instances of these are created with a
+ * request object, and when run, perform an invocation. The instance is also responsible for waking up a client that
+ * might be waiting on the 'get_response' method.
  */
-
-public class AsynchInvoke implements Runnable {
+public class AsynchInvoke implements Runnable
+{
 
     private RequestImpl _req;
-    private ORB         _orb;
-    private boolean     _notifyORB;
 
-    public AsynchInvoke (ORB o, RequestImpl reqToInvokeOn, boolean n)
+    private ORB _orb;
+
+    private boolean _notifyORB;
+
+    public AsynchInvoke(ORB o, RequestImpl reqToInvokeOn, boolean n)
     {
         _orb = o;
         _req = reqToInvokeOn;
         _notifyORB = n;
     };
 
-
     /*
-     * The run operation calls the invocation on the request object,
-     * updates the RequestImpl state to indicate that the asynchronous
-     * invocation is complete, and wakes up any client that might be
-     * waiting on a 'get_response' call.
-     *
+     * The run operation calls the invocation on the request object, updates the RequestImpl state to indicate that the
+     * asynchronous invocation is complete, and wakes up any client that might be waiting on a 'get_response' call.
      */
-
     public void run()
     {
         // do the actual invocation
@@ -74,19 +66,18 @@ public class AsynchInvoke implements Runnable {
         // for the asynchronous case, note that the response has been
         // received.
         synchronized (_req)
-            {
-                // update local boolean indicator
-                _req.gotResponse = true;
+        {
+            // update local boolean indicator
+            _req.gotResponse = true;
 
-                // notify any client waiting on a 'get_response'
-                _req.notify();
-            }
+            // notify any client waiting on a 'get_response'
+            _req.notify();
+        }
 
-        if (_notifyORB == true) {
-            _orb.notifyORB() ;
+        if (_notifyORB == true)
+        {
+            _orb.notifyORB();
         }
     }
 
 };
-
-///////////////////////////////////////////////////////////////////////////

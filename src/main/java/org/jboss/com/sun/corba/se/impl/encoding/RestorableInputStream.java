@@ -25,9 +25,8 @@
 package org.jboss.com.sun.corba.se.impl.encoding;
 
 /**
- * Defines the methods on an input stream which provide
- * a way to get and restore its internal state without
- * violating encapsulation.
+ * Defines the methods on an input stream which provide a way to get and restore its internal state without violating
+ * encapsulation.
  */
 interface RestorableInputStream
 {

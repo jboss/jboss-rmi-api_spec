@@ -25,21 +25,18 @@
 
 package org.jboss.com.sun.corba.se.pept.protocol;
 
-
 /**
- * <code>ServerRequestDispatcher</code> coordinates the request (and possible
- * response) processing for a specific <em>protocol</em>.
-
+ * <code>ServerRequestDispatcher</code> coordinates the request (and possible response) processing for a specific
+ * <em>protocol</em>.
+ * 
  * @author Harold Carr
  */
 public interface ServerRequestDispatcher
 {
     /**
-     * This method coordinates the processing of a message received
-     * on the server side.
-     *
-     * For example, this may involve finding an "object adapter" which
-     * would return Ties/Servants to handle the request.
+     * This method coordinates the processing of a message received on the server side.
+     * 
+     * For example, this may involve finding an "object adapter" which would return Ties/Servants to handle the request.
      */
     public void dispatch(MessageMediator messageMediator);
 }

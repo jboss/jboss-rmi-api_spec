@@ -31,6 +31,7 @@
 
 package org.jboss.com.sun.corba.se.impl.corba;
 
+@SuppressWarnings("deprecation")
 public class PrincipalImpl extends org.omg.CORBA.Principal
 {
     private byte[] value;

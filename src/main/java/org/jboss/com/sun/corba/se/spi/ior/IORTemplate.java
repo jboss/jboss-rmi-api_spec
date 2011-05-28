@@ -23,19 +23,21 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.ior ;
+package org.jboss.com.sun.corba.se.spi.ior;
 
 import java.util.Iterator;
 import java.util.List;
 
-/** An IORTemplate provides all of the data necessary to create an IOR except
- * for the typeId and ObjectId.  It is a list of TaggedProfileTemplates.
+/**
+ * An IORTemplate provides all of the data necessary to create an IOR except for the typeId and ObjectId. It is a list
+ * of TaggedProfileTemplates.
  */
-public interface IORTemplate extends List<Object>, IORFactory, MakeImmutable {
-    /** Iterate over all TaggedProfileTemplates in this IORTemplate
-     * with the given id.
+public interface IORTemplate extends List<Object>, IORFactory, MakeImmutable
+{
+    /**
+     * Iterate over all TaggedProfileTemplates in this IORTemplate with the given id.
      */
-    Iterator<Object> iteratorById( int id ) ;
+    Iterator<Object> iteratorById(int id);
 
-    ObjectKeyTemplate getObjectKeyTemplate() ;
+    ObjectKeyTemplate getObjectKeyTemplate();
 }

@@ -44,14 +44,19 @@ import java.util.Enumeration;
 /**
  * IdentityHashtable collision list.
  */
-class IdentityHashtableEntry {
-        int hash;
-        Object key;
-        Object value;
-        IdentityHashtableEntry next;
+class IdentityHashtableEntry
+{
+    int hash;
+
+    Object key;
+
+    Object value;
+
+    IdentityHashtableEntry next;
 }
 
-public final class IdentityHashtable extends Dictionary {
+public final class IdentityHashtable extends Dictionary<Object,Object>
+{
     /**
      * The hash table data.
      */
@@ -73,115 +78,126 @@ public final class IdentityHashtable extends Dictionary {
     private float loadFactor;
 
     /**
-     * Constructs a new, empty hashtable with the specified initial
-     * capacity and the specified load factor.
-     *
-     * @param      initialCapacity   the initial capacity of the hashtable.
-     * @param      loadFactor        a number between 0.0 and 1.0.
-     * @exception  IllegalArgumentException  if the initial capacity is less
-     *               than or equal to zero, or if the load factor is less than
-     *               or equal to zero.
-     * @since      JDK1.0
+     * Constructs a new, empty hashtable with the specified initial capacity and the specified load factor.
+     * 
+     * @param initialCapacity
+     *            the initial capacity of the hashtable.
+     * @param loadFactor
+     *            a number between 0.0 and 1.0.
+     * @exception IllegalArgumentException
+     *                if the initial capacity is less than or equal to zero, or if the load factor is less than or equal
+     *                to zero.
+     * @since JDK1.0
      */
-    public IdentityHashtable(int initialCapacity, float loadFactor) {
-        if ((initialCapacity <= 0) || (loadFactor <= 0.0)) {
+    public IdentityHashtable(int initialCapacity, float loadFactor)
+    {
+        if ((initialCapacity <= 0) || (loadFactor <= 0.0))
+        {
             throw new IllegalArgumentException();
         }
         this.loadFactor = loadFactor;
         table = new IdentityHashtableEntry[initialCapacity];
-        threshold = (int)(initialCapacity * loadFactor);
+        threshold = (int) (initialCapacity * loadFactor);
     }
 
     /**
-     * Constructs a new, empty hashtable with the specified initial capacity
-     * and default load factor.
-     *
-     * @param   initialCapacity   the initial capacity of the hashtable.
-     * @since   JDK1.0
+     * Constructs a new, empty hashtable with the specified initial capacity and default load factor.
+     * 
+     * @param initialCapacity
+     *            the initial capacity of the hashtable.
+     * @since JDK1.0
      */
-    public IdentityHashtable(int initialCapacity) {
+    public IdentityHashtable(int initialCapacity)
+    {
         this(initialCapacity, 0.75f);
     }
 
     /**
-     * Constructs a new, empty hashtable with a default capacity and load
-     * factor.
-     *
-     * @since   JDK1.0
+     * Constructs a new, empty hashtable with a default capacity and load factor.
+     * 
+     * @since JDK1.0
      */
-    public IdentityHashtable() {
+    public IdentityHashtable()
+    {
         this(101, 0.75f);
     }
 
     /**
      * Returns the number of keys in this hashtable.
-     *
-     * @return  the number of keys in this hashtable.
-     * @since   JDK1.0
+     * 
+     * @return the number of keys in this hashtable.
+     * @since JDK1.0
      */
-    public int size() {
+    public int size()
+    {
         return count;
     }
 
     /**
      * Tests if this hashtable maps no keys to values.
-     *
-     * @return  <code>true</code> if this hashtable maps no keys to values;
-     *          <code>false</code> otherwise.
-     * @since   JDK1.0
+     * 
+     * @return <code>true</code> if this hashtable maps no keys to values; <code>false</code> otherwise.
+     * @since JDK1.0
      */
-    public boolean isEmpty() {
+    public boolean isEmpty()
+    {
         return count == 0;
     }
 
     /**
      * Returns an enumeration of the keys in this hashtable.
-     *
-     * @return  an enumeration of the keys in this hashtable.
-     * @see     java.util.Enumeration
-     * @see     java.util.Hashtable#elements()
-     * @since   JDK1.0
+     * 
+     * @return an enumeration of the keys in this hashtable.
+     * @see java.util.Enumeration
+     * @see java.util.Hashtable#elements()
+     * @since JDK1.0
      */
-    public Enumeration keys() {
+    public Enumeration<Object> keys()
+    {
         return new IdentityHashtableEnumerator(table, true);
     }
 
     /**
-     * Returns an enumeration of the values in this hashtable.
-     * Use the Enumeration methods on the returned object to fetch the elements
-     * sequentially.
-     *
-     * @return  an enumeration of the values in this hashtable.
-     * @see     java.util.Enumeration
-     * @see     java.util.Hashtable#keys()
-     * @since   JDK1.0
+     * Returns an enumeration of the values in this hashtable. Use the Enumeration methods on the returned object to
+     * fetch the elements sequentially.
+     * 
+     * @return an enumeration of the values in this hashtable.
+     * @see java.util.Enumeration
+     * @see java.util.Hashtable#keys()
+     * @since JDK1.0
      */
-    public Enumeration elements() {
+    public Enumeration<Object> elements()
+    {
         return new IdentityHashtableEnumerator(table, false);
     }
 
     /**
-     * Tests if some key maps into the specified value in this hashtable.
-     * This operation is more expensive than the <code>containsKey</code>
-     * method.
-     *
-     * @param      value   a value to search for.
-     * @return     <code>true</code> if some key maps to the
-     *             <code>value</code> argument in this hashtable;
-     *             <code>false</code> otherwise.
-     * @exception  NullPointerException  if the value is <code>null</code>.
-     * @see        java.util.Hashtable#containsKey(java.lang.Object)
-     * @since      JDK1.0
+     * Tests if some key maps into the specified value in this hashtable. This operation is more expensive than the
+     * <code>containsKey</code> method.
+     * 
+     * @param value
+     *            a value to search for.
+     * @return <code>true</code> if some key maps to the <code>value</code> argument in this hashtable;
+     *         <code>false</code> otherwise.
+     * @exception NullPointerException
+     *                if the value is <code>null</code>.
+     * @see java.util.Hashtable#containsKey(java.lang.Object)
+     * @since JDK1.0
      */
-    public boolean contains(Object value) {
-        if (value == null) {
+    public boolean contains(Object value)
+    {
+        if (value == null)
+        {
             throw new NullPointerException();
         }
 
         IdentityHashtableEntry tab[] = table;
-        for (int i = tab.length ; i-- > 0 ;) {
-            for (IdentityHashtableEntry e = tab[i] ; e != null ; e = e.next) {
-                if (e.value == value) {
+        for (int i = tab.length; i-- > 0;)
+        {
+            for (IdentityHashtableEntry e = tab[i]; e != null; e = e.next)
+            {
+                if (e.value == value)
+                {
                     return true;
                 }
             }
@@ -191,19 +207,22 @@ public final class IdentityHashtable extends Dictionary {
 
     /**
      * Tests if the specified object is a key in this hashtable.
-     *
-     * @param   key   possible key.
-     * @return  <code>true</code> if the specified object is a key in this
-     *          hashtable; <code>false</code> otherwise.
-     * @see     java.util.Hashtable#contains(java.lang.Object)
-     * @since   JDK1.0
+     * 
+     * @param key
+     *            possible key.
+     * @return <code>true</code> if the specified object is a key in this hashtable; <code>false</code> otherwise.
+     * @see java.util.Hashtable#contains(java.lang.Object)
+     * @since JDK1.0
      */
-    public boolean containsKey(Object key) {
+    public boolean containsKey(Object key)
+    {
         IdentityHashtableEntry tab[] = table;
         int hash = System.identityHashCode(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
-        for (IdentityHashtableEntry e = tab[index] ; e != null ; e = e.next) {
-            if ((e.hash == hash) && e.key == key) {
+        for (IdentityHashtableEntry e = tab[index]; e != null; e = e.next)
+        {
+            if ((e.hash == hash) && e.key == key)
+            {
                 return true;
             }
         }
@@ -212,20 +231,23 @@ public final class IdentityHashtable extends Dictionary {
 
     /**
      * Returns the value to which the specified key is mapped in this hashtable.
-     *
-     * @param   key   a key in the hashtable.
-     * @return  the value to which the key is mapped in this hashtable;
-     *          <code>null</code> if the key is not mapped to any value in
-     *          this hashtable.
-     * @see     java.util.Hashtable#put(java.lang.Object, java.lang.Object)
-     * @since   JDK1.0
+     * 
+     * @param key
+     *            a key in the hashtable.
+     * @return the value to which the key is mapped in this hashtable; <code>null</code> if the key is not mapped to any
+     *         value in this hashtable.
+     * @see java.util.Hashtable#put(java.lang.Object, java.lang.Object)
+     * @since JDK1.0
      */
-    public Object get(Object key) {
+    public Object get(Object key)
+    {
         IdentityHashtableEntry tab[] = table;
         int hash = System.identityHashCode(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
-        for (IdentityHashtableEntry e = tab[index] ; e != null ; e = e.next) {
-            if ((e.hash == hash) && e.key == key) {
+        for (IdentityHashtableEntry e = tab[index]; e != null; e = e.next)
+        {
+            if ((e.hash == hash) && e.key == key)
+            {
                 return e.value;
             }
         }
@@ -233,27 +255,29 @@ public final class IdentityHashtable extends Dictionary {
     }
 
     /**
-     * Rehashes the contents of the hashtable into a hashtable with a
-     * larger capacity. This method is called automatically when the
-     * number of keys in the hashtable exceeds this hashtable's capacity
-     * and load factor.
-     *
-     * @since   JDK1.0
+     * Rehashes the contents of the hashtable into a hashtable with a larger capacity. This method is called
+     * automatically when the number of keys in the hashtable exceeds this hashtable's capacity and load factor.
+     * 
+     * @since JDK1.0
      */
-    protected void rehash() {
+    protected void rehash()
+    {
         int oldCapacity = table.length;
         IdentityHashtableEntry oldTable[] = table;
 
         int newCapacity = oldCapacity * 2 + 1;
         IdentityHashtableEntry newTable[] = new IdentityHashtableEntry[newCapacity];
 
-        threshold = (int)(newCapacity * loadFactor);
+        threshold = (int) (newCapacity * loadFactor);
         table = newTable;
 
-        //System.out.println("rehash old=" + oldCapacity + ", new=" + newCapacity + ", thresh=" + threshold + ", count=" + count);
+        // System.out.println("rehash old=" + oldCapacity + ", new=" + newCapacity + ", thresh=" + threshold +
+        // ", count=" + count);
 
-        for (int i = oldCapacity ; i-- > 0 ;) {
-            for (IdentityHashtableEntry old = oldTable[i] ; old != null ; ) {
+        for (int i = oldCapacity; i-- > 0;)
+        {
+            for (IdentityHashtableEntry old = oldTable[i]; old != null;)
+            {
                 IdentityHashtableEntry e = old;
                 old = old.next;
 
@@ -265,25 +289,26 @@ public final class IdentityHashtable extends Dictionary {
     }
 
     /**
-     * Maps the specified <code>key</code> to the specified
-     * <code>value</code> in this hashtable. Neither the key nor the
-     * value can be <code>null</code>.
+     * Maps the specified <code>key</code> to the specified <code>value</code> in this hashtable. Neither the key nor
+     * the value can be <code>null</code>.
      * <p>
-     * The value can be retrieved by calling the <code>get</code> method
-     * with a key that is equal to the original key.
-     *
-     * @param      key     the hashtable key.
-     * @param      value   the value.
-     * @return     the previous value of the specified key in this hashtable,
-     *             or <code>null</code> if it did not have one.
-     * @exception  NullPointerException  if the key or value is
-     *               <code>null</code>.
-     * @see     java.util.Hashtable#get(java.lang.Object)
-     * @since   JDK1.0
+     * The value can be retrieved by calling the <code>get</code> method with a key that is equal to the original key.
+     * 
+     * @param key
+     *            the hashtable key.
+     * @param value
+     *            the value.
+     * @return the previous value of the specified key in this hashtable, or <code>null</code> if it did not have one.
+     * @exception NullPointerException
+     *                if the key or value is <code>null</code>.
+     * @see java.util.Hashtable#get(java.lang.Object)
+     * @since JDK1.0
      */
-    public Object put(Object key, Object value) {
+    public Object put(Object key, Object value)
+    {
         // Make sure the value is not null
-        if (value == null) {
+        if (value == null)
+        {
             throw new NullPointerException();
         }
 
@@ -291,15 +316,18 @@ public final class IdentityHashtable extends Dictionary {
         IdentityHashtableEntry tab[] = table;
         int hash = System.identityHashCode(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
-        for (IdentityHashtableEntry e = tab[index] ; e != null ; e = e.next) {
-            if ((e.hash == hash) && e.key == key) {
+        for (IdentityHashtableEntry e = tab[index]; e != null; e = e.next)
+        {
+            if ((e.hash == hash) && e.key == key)
+            {
                 Object old = e.value;
                 e.value = value;
                 return old;
             }
         }
 
-        if (count >= threshold) {
+        if (count >= threshold)
+        {
             // Rehash the table if the threshold is exceeded
             rehash();
             return put(key, value);
@@ -316,24 +344,31 @@ public final class IdentityHashtable extends Dictionary {
         return null;
     }
 
-        /**
-     * Removes the key (and its corresponding value) from this
-     * hashtable. This method does nothing if the key is not in the hashtable.
-     *
-     * @param   key   the key that needs to be removed.
-     * @return  the value to which the key had been mapped in this hashtable,
-     *          or <code>null</code> if the key did not have a mapping.
-     * @since   JDK1.0
+    /**
+     * Removes the key (and its corresponding value) from this hashtable. This method does nothing if the key is not in
+     * the hashtable.
+     * 
+     * @param key
+     *            the key that needs to be removed.
+     * @return the value to which the key had been mapped in this hashtable, or <code>null</code> if the key did not
+     *         have a mapping.
+     * @since JDK1.0
      */
-    public Object remove(Object key) {
+    public Object remove(Object key)
+    {
         IdentityHashtableEntry tab[] = table;
         int hash = System.identityHashCode(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
-        for (IdentityHashtableEntry e = tab[index], prev = null ; e != null ; prev = e, e = e.next) {
-            if ((e.hash == hash) && e.key == key) {
-                if (prev != null) {
+        for (IdentityHashtableEntry e = tab[index], prev = null; e != null; prev = e, e = e.next)
+        {
+            if ((e.hash == hash) && e.key == key)
+            {
+                if (prev != null)
+                {
                     prev.next = e.next;
-                } else {
+                }
+                else
+                {
                     tab[index] = e.next;
                 }
                 count--;
@@ -345,34 +380,38 @@ public final class IdentityHashtable extends Dictionary {
 
     /**
      * Clears this hashtable so that it contains no keys.
-     *
-     * @since   JDK1.0
+     * 
+     * @since JDK1.0
      */
-    public void clear() {
+    public void clear()
+    {
         IdentityHashtableEntry tab[] = table;
-        for (int index = tab.length; --index >= 0; )
+        for (int index = tab.length; --index >= 0;)
             tab[index] = null;
         count = 0;
     }
 
     /**
      * Returns a rather long string representation of this hashtable.
-     *
-     * @return  a string representation of this hashtable.
-     * @since   JDK1.0
+     * 
+     * @return a string representation of this hashtable.
+     * @since JDK1.0
      */
-    public String toString() {
+    public String toString()
+    {
         int max = size() - 1;
         StringBuffer buf = new StringBuffer();
-        Enumeration k = keys();
-        Enumeration e = elements();
+        Enumeration<Object> k = keys();
+        Enumeration<Object> e = elements();
         buf.append("{");
 
-        for (int i = 0; i <= max; i++) {
+        for (int i = 0; i <= max; i++)
+        {
             String s1 = k.nextElement().toString();
             String s2 = e.nextElement().toString();
             buf.append(s1 + "=" + s2);
-            if (i < max) {
+            if (i < max)
+            {
                 buf.append(", ");
             }
         }

@@ -28,15 +28,20 @@ package org.jboss.com.sun.corba.se.impl.protocol;
 /**
  * If this exception is caught explicitly, this need to be rethrown.
  */
-public class RequestCanceledException extends RuntimeException {
+public class RequestCanceledException extends RuntimeException
+{
+
+    private static final long serialVersionUID = 3280453653794663325L;
 
     private int requestId = 0;
 
-    public RequestCanceledException(int requestId) {
+    public RequestCanceledException(int requestId)
+    {
         this.requestId = requestId;
     }
 
-    public int getRequestId() {
+    public int getRequestId()
+    {
         return this.requestId;
     }
 }

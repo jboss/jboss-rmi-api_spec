@@ -26,18 +26,15 @@ package org.jboss.com.sun.corba.se.spi.monitoring;
 
 /**
  * <p>
- *
- * @author Hemanth Puttaswamy
- * </p>
- * <p>
- *
  * MonitoredObject Factory to create Monitored Object.
  * </p>
+ * 
+ * @author Hemanth Puttaswamy
  */
-public interface MonitoredObjectFactory {
+public interface MonitoredObjectFactory
+{
     /**
-     *  A Simple Factory Method to create the Monitored Object. The name
-     *  should be the leaf level name.
+     * A Simple Factory Method to create the Monitored Object. The name should be the leaf level name.
      */
-    MonitoredObject createMonitoredObject( String name, String description );
+    MonitoredObject createMonitoredObject(String name, String description);
 }

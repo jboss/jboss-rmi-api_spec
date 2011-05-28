@@ -31,24 +31,31 @@ import org.omg.CORBA.Principal;
 
 /**
  * This interface captures the RequestMessage contract.
- *
+ * 
  * @author Ram Jeyaraman 05/14/2000
  */
 
-public interface RequestMessage extends Message {
+@SuppressWarnings("deprecation")
+public interface RequestMessage extends Message
+{
 
     byte RESPONSE_EXPECTED_BIT = 0x01;
 
     ServiceContexts getServiceContexts();
+
     int getRequestId();
+
     boolean isResponseExpected();
+
     byte[] getReserved();
+
     ObjectKey getObjectKey();
+
     String getOperation();
+
     Principal getPrincipal();
 
     // NOTE: This is a SUN PROPRIETARY EXTENSION
     void setThreadPoolToUse(int poolToUse);
-
 
 } // interface RequestMessage

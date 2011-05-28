@@ -23,29 +23,33 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.orbutil.closure ;
+package org.jboss.com.sun.corba.se.impl.orbutil.closure;
 
-import org.jboss.com.sun.corba.se.spi.orbutil.closure.Closure ;
+import org.jboss.com.sun.corba.se.spi.orbutil.closure.Closure;
 
-public class Future implements Closure {
-    private boolean evaluated ;
-    private Closure closure ;
-    private Object value ;
+public class Future implements Closure
+{
+    private boolean evaluated;
 
-    public Future( Closure value )
+    private Closure closure;
+
+    private Object value;
+
+    public Future(Closure value)
     {
-        this.evaluated = false ;
-        this.closure = (Closure)value ;
-        this.value = null ;
+        this.evaluated = false;
+        this.closure = value;
+        this.value = null;
     }
 
     public synchronized Object evaluate()
     {
-        if (!evaluated) {
-            evaluated = true ;
-            value = closure.evaluate() ;
+        if (!evaluated)
+        {
+            evaluated = true;
+            value = closure.evaluate();
         }
 
-        return value ;
+        return value;
     }
 }

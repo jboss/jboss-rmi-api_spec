@@ -23,15 +23,15 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.orbutil.graph ;
+package org.jboss.com.sun.corba.se.impl.orbutil.graph;
 
-import java.util.Set ;
+import java.util.Set;
 
-/** Node in a graph.
-*/
+/** Node in a graph. */
 public interface Node
 {
-    /** Get all the children of this node.
+    /**
+     * Get all the children of this node.
      */
-    Set<Node> getChildren() ;
+    Set<Node> getChildren();
 }

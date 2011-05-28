@@ -30,55 +30,63 @@ import org.jboss.com.sun.corba.se.spi.ior.TaggedComponentBase;
 import org.omg.CORBA_2_3.portable.OutputStream;
 
 /**
- * Tagged component that contains a value that indicates the Java
- * serialization version supported by the ORB.
- *
- * ORB Java serialization uses IIOP as the transport protocol, but uses
- * Java serialization mechanism and its accompanying encodings, instead
- * of IIOP CDR serialization mechanism. Java serialization is generally
- * observed to be faster than CDR.
+ * Tagged component that contains a value that indicates the Java serialization version supported by the ORB.
+ * 
+ * ORB Java serialization uses IIOP as the transport protocol, but uses Java serialization mechanism and its
+ * accompanying encodings, instead of IIOP CDR serialization mechanism. Java serialization is generally observed to be
+ * faster than CDR.
  */
-public class JavaSerializationComponent extends TaggedComponentBase {
+public class JavaSerializationComponent extends TaggedComponentBase
+{
 
     private byte version;
 
     private static JavaSerializationComponent singleton;
 
-    public static JavaSerializationComponent singleton() {
-        if (singleton == null) {
-            synchronized (JavaSerializationComponent.class) {
-                singleton =
-                    new JavaSerializationComponent(Message.JAVA_ENC_VERSION);
+    public static JavaSerializationComponent singleton()
+    {
+        if (singleton == null)
+        {
+            synchronized (JavaSerializationComponent.class)
+            {
+                singleton = new JavaSerializationComponent(Message.JAVA_ENC_VERSION);
             }
         }
         return singleton;
     }
 
-    public JavaSerializationComponent(byte version) {
+    public JavaSerializationComponent(byte version)
+    {
         this.version = version;
     }
 
-    public byte javaSerializationVersion() {
+    public byte javaSerializationVersion()
+    {
         return this.version;
     }
 
-    public void writeContents(OutputStream os) {
+    public void writeContents(OutputStream os)
+    {
         os.write_octet(version);
     }
 
-    public int getId() {
+    public int getId()
+    {
         return ORBConstants.TAG_JAVA_SERIALIZATION_ID;
     }
 
-    public boolean equals(Object obj) {
-        if (!(obj instanceof JavaSerializationComponent)) {
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof JavaSerializationComponent))
+        {
             return false;
         }
         JavaSerializationComponent other = (JavaSerializationComponent) obj;
         return this.version == other.version;
     }
 
-    public int hashCode() {
+    public int hashCode()
+    {
         return this.version;
     }
 }

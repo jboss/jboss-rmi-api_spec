@@ -23,17 +23,22 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.presentation.rmi ;
+package org.jboss.com.sun.corba.se.impl.presentation.rmi;
 
 /**
- * Checked exception containing information about an
- * an IDL type validation.
+ * Checked exception containing information about an an IDL type validation.
  */
-public class IDLTypeException extends Exception {
+public class IDLTypeException extends Exception
+{
 
-    public IDLTypeException() {}
+    private static final long serialVersionUID = 8643398673895308457L;
 
-    public IDLTypeException(String message) {
+    public IDLTypeException()
+    {
+    }
+
+    public IDLTypeException(String message)
+    {
         super(message);
     }
 

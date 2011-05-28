@@ -23,23 +23,23 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.impl.oa ;
+package org.jboss.com.sun.corba.se.impl.oa;
 
-import org.omg.CORBA.SystemException ;
+import org.omg.CORBA.SystemException;
 
-import org.jboss.com.sun.corba.se.spi.oa.NullServant ;
+import org.jboss.com.sun.corba.se.spi.oa.NullServant;
 
 public class NullServantImpl implements NullServant
 {
-    private SystemException sysex ;
+    private SystemException sysex;
 
-    public NullServantImpl( SystemException ex )
+    public NullServantImpl(SystemException ex)
     {
-        this.sysex = ex ;
+        this.sysex = ex;
     }
 
     public SystemException getException()
     {
-        return sysex ;
+        return sysex;
     }
 }

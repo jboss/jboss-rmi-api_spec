@@ -30,29 +30,33 @@ import org.omg.PortableServer.IMPLICIT_ACTIVATION_POLICY_ID;
 import org.omg.PortableServer.ImplicitActivationPolicy;
 import org.omg.PortableServer.ImplicitActivationPolicyValue;
 
-final class ImplicitActivationPolicyImpl
-    extends org.omg.CORBA.LocalObject implements ImplicitActivationPolicy {
+final class ImplicitActivationPolicyImpl extends org.omg.CORBA.LocalObject implements ImplicitActivationPolicy
+{
 
-    public
-        ImplicitActivationPolicyImpl(ImplicitActivationPolicyValue
-                                     value) {
+    private static final long serialVersionUID = 3189145753312485561L;
+
+    public ImplicitActivationPolicyImpl(ImplicitActivationPolicyValue value)
+    {
         this.value = value;
     }
 
-    public ImplicitActivationPolicyValue value() {
+    public ImplicitActivationPolicyValue value()
+    {
         return value;
     }
 
     public int policy_type()
     {
-        return IMPLICIT_ACTIVATION_POLICY_ID.value ;
+        return IMPLICIT_ACTIVATION_POLICY_ID.value;
     }
 
-    public Policy copy() {
+    public Policy copy()
+    {
         return new ImplicitActivationPolicyImpl(value);
     }
 
-    public void destroy() {
+    public void destroy()
+    {
         value = null;
     }
 
@@ -60,8 +64,9 @@ final class ImplicitActivationPolicyImpl
 
     public String toString()
     {
-        return "ImplicitActivationPolicy[" +
-            ((value.value() == ImplicitActivationPolicyValue._IMPLICIT_ACTIVATION) ?
-                "IMPLICIT_ACTIVATION" : "NO_IMPLICIT_ACTIVATION" + "]") ;
+        return "ImplicitActivationPolicy["
+                + ((value.value() == ImplicitActivationPolicyValue._IMPLICIT_ACTIVATION)
+                        ? "IMPLICIT_ACTIVATION"
+                        : "NO_IMPLICIT_ACTIVATION" + "]");
     }
 }

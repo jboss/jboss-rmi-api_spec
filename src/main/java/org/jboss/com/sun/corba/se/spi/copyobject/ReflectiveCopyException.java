@@ -22,21 +22,24 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package org.jboss.com.sun.corba.se.spi.copyobject ;
+package org.jboss.com.sun.corba.se.spi.copyobject;
 
-public class ReflectiveCopyException extends Exception {
+public class ReflectiveCopyException extends Exception
+{
+    private static final long serialVersionUID = 5674305390503429316L;
+
     public ReflectiveCopyException()
     {
-        super() ;
+        super();
     }
 
-    public ReflectiveCopyException( String msg )
+    public ReflectiveCopyException(String msg)
     {
-        super( msg ) ;
+        super(msg);
     }
 
-    public ReflectiveCopyException( String msg, Throwable t )
+    public ReflectiveCopyException(String msg, Throwable t)
     {
-        super( msg, t ) ;
+        super(msg, t);
     }
 }

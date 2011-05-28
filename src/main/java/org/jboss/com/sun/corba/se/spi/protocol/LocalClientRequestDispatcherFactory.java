@@ -27,6 +27,7 @@ package org.jboss.com.sun.corba.se.spi.protocol;
 
 import org.jboss.com.sun.corba.se.spi.ior.IOR;
 
-public interface LocalClientRequestDispatcherFactory {
-    public LocalClientRequestDispatcher create( int id, IOR ior )  ;
+public interface LocalClientRequestDispatcherFactory
+{
+    public LocalClientRequestDispatcher create(int id, IOR ior);
 }

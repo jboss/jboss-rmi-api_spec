@@ -40,37 +40,42 @@ import org.omg.CORBA.SystemException;
 
 /**
  * This implements the GIOP 1.2 Reply header.
- *
+ * 
  * @author Ram Jeyaraman 05/14/2000
  */
 
-public final class ReplyMessage_1_2 extends Message_1_2
-        implements ReplyMessage {
+public final class ReplyMessage_1_2 extends Message_1_2 implements ReplyMessage
+{
 
     // Instance variables
 
-    private ORBUtilSystemException wrapper = null ;
-    private int reply_status = (int) 0;
+    private ORBUtilSystemException wrapper = null;
+
+    private int reply_status = 0;
+
     private ServiceContexts service_contexts = null;
+
     private IOR ior = null;
+
     private String exClassName = null;
-    private int minorCode = (int) 0;
+
+    private int minorCode = 0;
+
     private CompletionStatus completionStatus = null;
+
     private short addrDisposition = KeyAddr.value; // default;
 
     // Constructors
 
-    ReplyMessage_1_2(ORB orb) {
-        this.wrapper = ORBUtilSystemException.get( orb,
-            CORBALogDomains.RPC_PROTOCOL ) ;
+    ReplyMessage_1_2(ORB orb)
+    {
+        this.wrapper = ORBUtilSystemException.get(orb, CORBALogDomains.RPC_PROTOCOL);
     }
 
-    ReplyMessage_1_2(ORB orb, int _request_id, int _reply_status,
-            ServiceContexts _service_contexts, IOR _ior) {
-        super(Message.GIOPBigMagic, GIOPVersion.V1_2, FLAG_NO_FRAG_BIG_ENDIAN,
-            Message.GIOPReply, 0);
-        this.wrapper = ORBUtilSystemException.get( orb,
-            CORBALogDomains.RPC_PROTOCOL ) ;
+    ReplyMessage_1_2(ORB orb, int _request_id, int _reply_status, ServiceContexts _service_contexts, IOR _ior)
+    {
+        super(Message.GIOPBigMagic, GIOPVersion.V1_2, FLAG_NO_FRAG_BIG_ENDIAN, Message.GIOPReply, 0);
+        this.wrapper = ORBUtilSystemException.get(orb, CORBALogDomains.RPC_PROTOCOL);
         request_id = _request_id;
         reply_status = _reply_status;
         service_contexts = _service_contexts;
@@ -79,140 +84,147 @@ public final class ReplyMessage_1_2 extends Message_1_2
 
     // Accessor methods
 
-    public int getRequestId() {
+    public int getRequestId()
+    {
         return this.request_id;
     }
 
-    public int getReplyStatus() {
+    public int getReplyStatus()
+    {
         return this.reply_status;
     }
 
-    public short getAddrDisposition() {
+    public short getAddrDisposition()
+    {
         return this.addrDisposition;
     }
 
-    public ServiceContexts getServiceContexts() {
+    public ServiceContexts getServiceContexts()
+    {
         return this.service_contexts;
     }
 
-    public void setServiceContexts( ServiceContexts sc ) {
+    public void setServiceContexts(ServiceContexts sc)
+    {
         this.service_contexts = sc;
     }
 
-    public SystemException getSystemException(String message) {
-        return MessageBase.getSystemException(
-            exClassName, minorCode, completionStatus, message, wrapper);
+    public SystemException getSystemException(String message)
+    {
+        return MessageBase.getSystemException(exClassName, minorCode, completionStatus, message, wrapper);
     }
 
-    public IOR getIOR() {
+    public IOR getIOR()
+    {
         return this.ior;
     }
 
-    public void setIOR( IOR ior ) {
+    public void setIOR(IOR ior)
+    {
         this.ior = ior;
     }
 
     // IO methods
 
-    public void read(org.omg.CORBA.portable.InputStream istream) {
+    public void read(org.omg.CORBA.portable.InputStream istream)
+    {
         super.read(istream);
         this.request_id = istream.read_ulong();
         this.reply_status = istream.read_long();
         isValidReplyStatus(this.reply_status); // raises exception on error
-        this.service_contexts
-            = new ServiceContexts((org.omg.CORBA_2_3.portable.InputStream) istream);
+        this.service_contexts = new ServiceContexts((org.omg.CORBA_2_3.portable.InputStream) istream);
 
-        // CORBA formal 00-11-0 15.4.2.2 GIOP 1.2 body must be
-        // aligned on an 8 octet boundary.
-        // Ensures that the first read operation called from the stub code,
-        // during body deconstruction, would skip the header padding, that was
+        // CORBA formal 00-11-0 15.4.2.2 GIOP 1.2 body must be aligned on an 8 octet boundary. Ensures that the first
+        // read operation called from the stub code, during body deconstruction, would skip the header padding, that was
         // inserted to ensure that the body was aligned on an 8-octet boundary.
-        ((CDRInputStream)istream).setHeaderPadding(true);
+        ((CDRInputStream) istream).setHeaderPadding(true);
 
-        // The code below reads the reply body in some cases
-        // SYSTEM_EXCEPTION & LOCATION_FORWARD & LOCATION_FORWARD_PERM &
-        // NEEDS_ADDRESSING_MODE
-        if (this.reply_status == SYSTEM_EXCEPTION) {
+        // The code below reads the reply body in some cases SYSTEM_EXCEPTION & LOCATION_FORWARD & LOCATION_FORWARD_PERM
+        // & NEEDS_ADDRESSING_MODE
+        if (this.reply_status == SYSTEM_EXCEPTION)
+        {
 
             String reposId = istream.read_string();
             this.exClassName = ORBUtility.classNameOf(reposId);
             this.minorCode = istream.read_long();
             int status = istream.read_long();
 
-            switch (status) {
-            case CompletionStatus._COMPLETED_YES:
-                this.completionStatus = CompletionStatus.COMPLETED_YES;
-                break;
-            case CompletionStatus._COMPLETED_NO:
-                this.completionStatus = CompletionStatus.COMPLETED_NO;
-                break;
-            case CompletionStatus._COMPLETED_MAYBE:
-                this.completionStatus = CompletionStatus.COMPLETED_MAYBE;
-                break;
-            default:
-                throw wrapper.badCompletionStatusInReply(
-                    CompletionStatus.COMPLETED_MAYBE, new Integer(status) );
+            switch (status)
+            {
+                case CompletionStatus._COMPLETED_YES :
+                    this.completionStatus = CompletionStatus.COMPLETED_YES;
+                    break;
+                case CompletionStatus._COMPLETED_NO :
+                    this.completionStatus = CompletionStatus.COMPLETED_NO;
+                    break;
+                case CompletionStatus._COMPLETED_MAYBE :
+                    this.completionStatus = CompletionStatus.COMPLETED_MAYBE;
+                    break;
+                default :
+                    throw wrapper.badCompletionStatusInReply(CompletionStatus.COMPLETED_MAYBE, new Integer(status));
             }
 
-        } else if (this.reply_status == USER_EXCEPTION) {
+        }
+        else if (this.reply_status == USER_EXCEPTION)
+        {
             // do nothing. The client stub will read the exception from body.
-        } else if ( (this.reply_status == LOCATION_FORWARD) ||
-                (this.reply_status == LOCATION_FORWARD_PERM) ){
+        }
+        else if ((this.reply_status == LOCATION_FORWARD) || (this.reply_status == LOCATION_FORWARD_PERM))
+        {
             CDRInputStream cdr = (CDRInputStream) istream;
-            this.ior = IORFactories.makeIOR( cdr ) ;
-        }  else if (this.reply_status == NEEDS_ADDRESSING_MODE) {
-            // read GIOP::AddressingDisposition from body and resend the
-            // original request using the requested addressing mode. The
-            // resending is transparent to the client program.
+            this.ior = IORFactories.makeIOR(cdr);
+        }
+        else if (this.reply_status == NEEDS_ADDRESSING_MODE)
+        {
+            // read GIOP::AddressingDisposition from body and resend the original request using the requested addressing
+            // mode. The resending is transparent to the client program.
             this.addrDisposition = AddressingDispositionHelper.read(istream);
         }
     }
 
-    // Note, this writes only the header information. SystemException or
-    // IOR or GIOP::AddressingDisposition may be written afterwards into the
-    // reply mesg body.
-    public void write(org.omg.CORBA.portable.OutputStream ostream) {
+    // Note, this writes only the header information. SystemException or IOR or GIOP::AddressingDisposition may be
+    // written afterwards into the reply mesg body.
+    public void write(org.omg.CORBA.portable.OutputStream ostream)
+    {
         super.write(ostream);
         ostream.write_ulong(this.request_id);
         ostream.write_long(this.reply_status);
-        if (this.service_contexts != null) {
-                service_contexts.write(
-                (org.omg.CORBA_2_3.portable.OutputStream) ostream,
-                GIOPVersion.V1_2);
-            } else {
-                ServiceContexts.writeNullServiceContext(
-                (org.omg.CORBA_2_3.portable.OutputStream) ostream);
+        if (this.service_contexts != null)
+        {
+            service_contexts.write((org.omg.CORBA_2_3.portable.OutputStream) ostream, GIOPVersion.V1_2);
+        }
+        else
+        {
+            ServiceContexts.writeNullServiceContext((org.omg.CORBA_2_3.portable.OutputStream) ostream);
         }
 
-        // CORBA formal 00-11-0 15.4.2.2 GIOP 1.2 body must be
-        // aligned on an 8 octet boundary.
-        // Ensures that the first write operation called from the stub code,
-        // during body construction, would insert a header padding, such that
+        // CORBA formal 00-11-0 15.4.2.2 GIOP 1.2 body must be aligned on an 8 octet boundary. Ensures that the first
+        // write operation called from the stub code, during body construction, would insert a header padding, such that
         // the body is aligned on an 8-octet boundary.
-        ((CDROutputStream)ostream).setHeaderPadding(true);
+        ((CDROutputStream) ostream).setHeaderPadding(true);
 
     }
 
     // Static methods
 
-    public static void isValidReplyStatus(int replyStatus) {
-        switch (replyStatus) {
-        case NO_EXCEPTION :
-        case USER_EXCEPTION :
-        case SYSTEM_EXCEPTION :
-        case LOCATION_FORWARD :
-        case LOCATION_FORWARD_PERM :
-        case NEEDS_ADDRESSING_MODE :
-            break;
-        default :
-            ORBUtilSystemException localWrapper = ORBUtilSystemException.get(
-                CORBALogDomains.RPC_PROTOCOL ) ;
-            throw localWrapper.illegalReplyStatus( CompletionStatus.COMPLETED_MAYBE);
+    public static void isValidReplyStatus(int replyStatus)
+    {
+        switch (replyStatus)
+        {
+            case NO_EXCEPTION :
+            case USER_EXCEPTION :
+            case SYSTEM_EXCEPTION :
+            case LOCATION_FORWARD :
+            case LOCATION_FORWARD_PERM :
+            case NEEDS_ADDRESSING_MODE :
+                break;
+            default :
+                ORBUtilSystemException localWrapper = ORBUtilSystemException.get(CORBALogDomains.RPC_PROTOCOL);
+                throw localWrapper.illegalReplyStatus(CompletionStatus.COMPLETED_MAYBE);
         }
     }
 
-    public void callback(MessageHandler handler)
-        throws java.io.IOException
+    public void callback(MessageHandler handler) throws java.io.IOException
     {
         handler.handleInput(this);
     }

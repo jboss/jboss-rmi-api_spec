@@ -27,49 +27,45 @@ package org.jboss.com.sun.corba.se.impl.io;
 
 import java.lang.reflect.Method;
 
-
-// This file contains some utility methods that
-// originally were in the OSC in the RMI-IIOP
-// code delivered by IBM.  They don't make
-// sense there, and hence have been put
-// here so that they can be factored out in
-// an attempt to eliminate redundant code from
-// ObjectStreamClass.  Eventually the goal is
-// to move to java.io.ObjectStreamClass, and
-// java.io.ObjectStreamField.
-
-// class is package private for security reasons
-
-class ObjectStreamClassCorbaExt {
+/**
+ * This file contains some utility methods that originally were in the OSC in the RMI-IIOP delivered by IBM. They don't
+ * make there, and hence have been put so that they can be factored out in attempt to eliminate redundant code from
+ * ObjectStreamClass. Eventually the goal is to move to java.io.ObjectStreamClass, and java.io.ObjectStreamField.
+ * 
+ * class is package private for security reasons
+ */
+class ObjectStreamClassCorbaExt
+{
 
     /**
      * Return true, iff,
-     *
-     * 1. 'cl' is an interface, and
-     * 2. 'cl' and all its ancestors do not implement java.rmi.Remote, and
-     * 3. if 'cl' has no methods (including those of its ancestors), or,
-     *    if all the methods (including those of its ancestors) throw an
-     *    exception that is atleast java.rmi.RemoteException or one of
-     *    java.rmi.RemoteException's super classes.
+     * 
+     * 1. 'cl' is an interface, and 2. 'cl' and all its ancestors do not implement java.rmi.Remote, and 3. if 'cl' has
+     * no methods (including those of its ancestors), or, if all the methods (including those of its ancestors) throw an
+     * exception that is atleast java.rmi.RemoteException or one of java.rmi.RemoteException's super classes.
      */
-    static final boolean isAbstractInterface(Class<?> cl) {
+    static final boolean isAbstractInterface(Class<?> cl)
+    {
         if (!cl.isInterface() || // #1
-                java.rmi.Remote.class.isAssignableFrom(cl)) { // #2
+                java.rmi.Remote.class.isAssignableFrom(cl))
+        { // #2
             return false;
         }
         Method[] methods = cl.getMethods();
-        for (int i = 0; i < methods.length; i++) {
+        for (int i = 0; i < methods.length; i++)
+        {
             Class<?> exceptions[] = methods[i].getExceptionTypes();
             boolean exceptionMatch = false;
-            for (int j = 0; (j < exceptions.length) && !exceptionMatch; j++) {
-                if ((java.rmi.RemoteException.class == exceptions[j]) ||
-                    (java.lang.Throwable.class == exceptions[j]) ||
-                    (java.lang.Exception.class == exceptions[j]) ||
-                    (java.io.IOException.class == exceptions[j])) {
+            for (int j = 0; (j < exceptions.length) && !exceptionMatch; j++)
+            {
+                if ((java.rmi.RemoteException.class == exceptions[j]) || (Throwable.class == exceptions[j])
+                        || (Exception.class == exceptions[j]) || (java.io.IOException.class == exceptions[j]))
+                {
                     exceptionMatch = true;
                 }
             }
-            if (!exceptionMatch) {
+            if (!exceptionMatch)
+            {
                 return false;
             }
         }
@@ -77,19 +73,19 @@ class ObjectStreamClassCorbaExt {
     }
 
     /*
-     *  Returns TRUE if type is 'any'.
+     * Returns TRUE if type is 'any'.
      */
-    static final boolean isAny(String typeString) {
+    static final boolean isAny(String typeString)
+    {
 
         int isAny = 0;
 
-        if ( (typeString != null) &&
-            (typeString.equals("Ljava/lang/Object;") ||
-             typeString.equals("Ljava/io/Serializable;") ||
-             typeString.equals("Ljava/io/Externalizable;")) )
-                isAny = 1;
+        if ((typeString != null)
+                && (typeString.equals("Ljava/lang/Object;") || typeString.equals("Ljava/io/Serializable;") || typeString
+                        .equals("Ljava/io/Externalizable;")))
+            isAny = 1;
 
-        return (isAny==1);
+        return (isAny == 1);
     }
 
 }

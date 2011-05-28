@@ -23,18 +23,19 @@
  * questions.
  */
 
-package org.jboss.com.sun.corba.se.spi.orbutil.proxy ;
+package org.jboss.com.sun.corba.se.spi.orbutil.proxy;
 
 import java.lang.reflect.InvocationHandler;
 
 public interface InvocationHandlerFactory
 {
-    /** Get an InvocationHandler.
+    /**
+     * Get an InvocationHandler.
      */
-    InvocationHandler getInvocationHandler() ;
+    InvocationHandler getInvocationHandler();
 
-    /** Get the interfaces that InvocationHandler instances
-     * produced by this InvocationHandlerFactory support.
+    /**
+     * Get the interfaces that InvocationHandler instances produced by this InvocationHandlerFactory support.
      */
-    Class<?>[] getProxyInterfaces() ;
+    Class<?>[] getProxyInterfaces();
 }

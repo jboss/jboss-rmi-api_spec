@@ -32,90 +32,76 @@ import java.util.Map;
 
 import org.jboss.com.sun.corba.se.impl.corba.TypeCodeImpl;
 import org.jboss.com.sun.corba.se.spi.ior.iiop.GIOPVersion;
-import org.jboss.com.sun.corba.se.spi.orb.ORB;
 import org.omg.CORBA_2_3.portable.InputStream;
 
 public class TypeCodeInputStream extends EncapsInputStream implements TypeCodeReader
 {
     private Map<Integer, TypeCodeImpl> typeMap = null;
+
     private InputStream enclosure = null;
 
-    public TypeCodeInputStream(org.omg.CORBA.ORB orb, byte[] data, int size) {
+    public TypeCodeInputStream(org.omg.CORBA.ORB orb, byte[] data, int size)
+    {
         super(orb, data, size);
     }
 
-    public TypeCodeInputStream(org.omg.CORBA.ORB orb,
-                               byte[] data,
-                               int size,
-                               boolean littleEndian,
-                               GIOPVersion version) {
+    public TypeCodeInputStream(org.omg.CORBA.ORB orb, byte[] data, int size, boolean littleEndian, GIOPVersion version)
+    {
         super(orb, data, size, littleEndian, version);
     }
 
-    public TypeCodeInputStream(org.omg.CORBA.ORB orb,
-                               ByteBuffer byteBuffer,
-                               int size,
-                               boolean littleEndian,
-                               GIOPVersion version) {
+    public TypeCodeInputStream(org.omg.CORBA.ORB orb, ByteBuffer byteBuffer, int size, boolean littleEndian,
+            GIOPVersion version)
+    {
         super(orb, byteBuffer, size, littleEndian, version);
     }
 
-    public void addTypeCodeAtPosition(TypeCodeImpl tc, int position) {
-        if (typeMap == null) {
-            //if (TypeCodeImpl.debug) System.out.println("Creating typeMap");
+    public void addTypeCodeAtPosition(TypeCodeImpl tc, int position)
+    {
+        if (typeMap == null)
+        {
             typeMap = new HashMap<Integer, TypeCodeImpl>(16);
         }
-        //if (TypeCodeImpl.debug) System.out.println(this + " adding tc " + tc + " at position " + position);
         typeMap.put(position, tc);
     }
 
-    public TypeCodeImpl getTypeCodeAtPosition(int position) {
+    public TypeCodeImpl getTypeCodeAtPosition(int position)
+    {
         if (typeMap == null)
             return null;
-        //if (TypeCodeImpl.debug) {
-            //System.out.println("Getting tc " + (TypeCode)typeMap.get(new Integer(position)) +
-                               //" at position " + position);
-        //}
         return typeMap.get(position);
     }
 
-    public void setEnclosingInputStream(InputStream enclosure) {
+    public void setEnclosingInputStream(InputStream enclosure)
+    {
         this.enclosure = enclosure;
     }
 
-    public TypeCodeReader getTopLevelStream() {
+    public TypeCodeReader getTopLevelStream()
+    {
         if (enclosure == null)
             return this;
         if (enclosure instanceof TypeCodeReader)
-            return ((TypeCodeReader)enclosure).getTopLevelStream();
+            return ((TypeCodeReader) enclosure).getTopLevelStream();
         return this;
     }
 
-    public int getTopLevelPosition() {
-        if (enclosure != null && enclosure instanceof TypeCodeReader) {
-            // The enclosed stream has to consider if the enclosing stream
-            // had to read the enclosed stream completely when creating it.
-            // This is why the size of the enclosed stream needs to be substracted.
-            int topPos = ((TypeCodeReader)enclosure).getTopLevelPosition();
-            // Substract getBufferLength from the parents pos because it read this stream
-            // from its own when creating it
+    public int getTopLevelPosition()
+    {
+        if (enclosure != null && enclosure instanceof TypeCodeReader)
+        {
+            // The enclosed stream has to consider if the enclosing stream had to read the enclosed stream completely
+            // when creating it. This is why the size of the enclosed stream needs to be substracted.
+            int topPos = ((TypeCodeReader) enclosure).getTopLevelPosition();
+            // Substract getBufferLength from the parents pos because it read this stream from its own when creating it
             int pos = topPos - getBufferLength() + getPosition();
-            //if (TypeCodeImpl.debug) {
-                //System.out.println("TypeCodeInputStream.getTopLevelPosition using getTopLevelPosition " + topPos +
-                    //(isEncapsulation ? " - encaps length 4" : "") +
-                    //" - getBufferLength() " + getBufferLength() +
-                    //" + getPosition() " + getPosition() + " = " + pos);
-            //}
             return pos;
         }
-        //if (TypeCodeImpl.debug) {
-            //System.out.println("TypeCodeInputStream.getTopLevelPosition returning getPosition() = " +
-                               //getPosition() + " because enclosure is " + enclosure);
-        //}
         return getPosition();
     }
 
-    public static TypeCodeInputStream readEncapsulation(InputStream is, org.omg.CORBA.ORB _orb) {
+    public static TypeCodeInputStream readEncapsulation(InputStream is, org.omg.CORBA.ORB _orb)
+    {
         // _REVISIT_ Would be nice if we didn't have to copy the buffer!
         TypeCodeInputStream encap;
 
@@ -126,31 +112,32 @@ public class TypeCodeInputStream extends EncapsInputStream implements TypeCodeRe
         is.read_octet_array(encapBuffer, 0, encapBuffer.length);
 
         // create an encapsulation using the marshal buffer
-        if (is instanceof CDRInputStream) {
-            encap = new TypeCodeInputStream((ORB)_orb, encapBuffer, encapBuffer.length,
-                                            ((CDRInputStream)is).isLittleEndian(),
-                                            ((CDRInputStream)is).getGIOPVersion());
-        } else {
-            encap = new TypeCodeInputStream((ORB)_orb, encapBuffer, encapBuffer.length);
+        if (is instanceof CDRInputStream)
+        {
+            encap = new TypeCodeInputStream(_orb, encapBuffer, encapBuffer.length,
+                    ((CDRInputStream) is).isLittleEndian(), ((CDRInputStream) is).getGIOPVersion());
+        }
+        else
+        {
+            encap = new TypeCodeInputStream(_orb, encapBuffer, encapBuffer.length);
         }
         encap.setEnclosingInputStream(is);
         encap.makeEncapsulation();
-        //if (TypeCodeImpl.debug) {
-            //System.out.println("Created TypeCodeInputStream " + encap + " with parent " + is);
-            //encap.printBuffer();
-        //}
         return encap;
     }
 
-    protected void makeEncapsulation() {
+    protected void makeEncapsulation()
+    {
         // first entry in an encapsulation is the endianess
         consumeEndian();
     }
 
-    public void printTypeMap() {
+    public void printTypeMap()
+    {
         System.out.println("typeMap = {");
         Iterator<Integer> i = typeMap.keySet().iterator();
-        while (i.hasNext()) {
+        while (i.hasNext())
+        {
             Integer pos = i.next();
             TypeCodeImpl tci = typeMap.get(pos);
             System.out.println("  key = " + pos.intValue() + ", value = " + tci.description());
