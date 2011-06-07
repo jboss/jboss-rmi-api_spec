@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.spec.javax.rmi</groupId>
   <artifactId>jboss-rmi-api_1.0_spec</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1.Final</version>
   <packaging>jar</packaging>
   <name>JAVAX RMI API</name>
   <description>The javax.rmi and javax.rmi.CORBA classes</description>
