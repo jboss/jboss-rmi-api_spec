@@ -30,6 +30,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.rmi.PortableRemoteObject;
+
 import org.jboss.com.sun.corba.se.impl.logging.ORBUtilSystemException;
 import org.jboss.com.sun.corba.se.spi.logging.CORBALogDomains;
 
@@ -70,6 +72,14 @@ public class CompositeInvocationHandlerImpl implements CompositeInvocationHandle
 
         // handler should never be null here.
 
-        return handler.invoke(proxy, method, args);
+        Object result = handler.invoke(proxy, method, args);
+        final Class<?> returnType = method.getReturnType();
+        if(result == null) {
+            return result;
+        } else if(returnType.isPrimitive() || returnType.isAssignableFrom(result.getClass())) {
+            return result;
+        } else {
+            return PortableRemoteObject.narrow(result, returnType);
+        }
     }
 }
