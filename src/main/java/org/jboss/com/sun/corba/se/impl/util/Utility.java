@@ -676,7 +676,7 @@ public final class Utility
                         String className = rid.getClassName();
                         boolean isIDLInterface = rid.isIDLType();
                         stubFactory = stubFactoryFactory.createStubFactory(className, isIDLInterface, remoteCodebase,
-                                null, tie.getClass().getClassLoader());
+                                null, tie.getTarget().getClass().getClassLoader());
                         stub = stubFactory.makeStub();
                         break;
                     }
