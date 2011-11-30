@@ -54,6 +54,7 @@ import javax.transaction.TransactionRequiredException;
 import javax.transaction.TransactionRolledbackException;
 
 import org.jboss.com.sun.corba.se.impl.io.ValueHandlerImpl;
+import org.jboss.com.sun.corba.se.impl.javax.rmi.RemoteObjectSubstitutionManager;
 import org.jboss.com.sun.corba.se.impl.logging.OMGSystemException;
 import org.jboss.com.sun.corba.se.impl.logging.UtilSystemException;
 import org.jboss.com.sun.corba.se.impl.orbutil.ORBClassLoader;
@@ -458,8 +459,10 @@ public class Util implements javax.rmi.CORBA.UtilDelegate
      */
     public void writeRemoteObject(OutputStream out, java.lang.Object obj)
     {
+        //allow the object to be replaced
+        Object replacedObj = RemoteObjectSubstitutionManager.writeReplaceRemote(obj);
         // Make sure we have a connected object, then write it out...
-        Object newObj = Utility.autoConnect(obj, out.orb(), false);
+        Object newObj = Utility.autoConnect(replacedObj, out.orb(), false);
         out.write_Object((org.omg.CORBA.Object) newObj);
     }
 
