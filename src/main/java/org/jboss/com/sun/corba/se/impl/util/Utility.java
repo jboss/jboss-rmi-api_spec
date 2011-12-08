@@ -834,7 +834,7 @@ public final class Utility
             }
             catch (ClassCastException e)
             {
-                wrapper.classCastExceptionInLoadStub(e);
+                throw wrapper.classCastExceptionInLoadStub(e);
             }
 
             PresentationManager.StubFactoryFactory sff = org.jboss.com.sun.corba.se.spi.orb.ORB.getStubFactoryFactory();
@@ -845,7 +845,7 @@ public final class Utility
         }
         catch (Exception err)
         {
-            wrapper.exceptionInLoadStub(err);
+            throw wrapper.exceptionInLoadStub(err);
         }
 
         return result;
