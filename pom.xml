@@ -11,7 +11,7 @@
 
   <groupId>org.jboss.spec.javax.rmi</groupId>
   <artifactId>jboss-rmi-api_1.0_spec</artifactId>
-  <version>1.0.4.Final-SNAPSHOT</version>
+  <version>1.0.4.Final</version>
   <packaging>jar</packaging>
 
   <name>Java RMI API</name>
