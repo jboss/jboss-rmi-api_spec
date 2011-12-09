@@ -479,10 +479,12 @@ public class Util implements javax.rmi.CORBA.UtilDelegate
      */
     public void writeAbstractObject(OutputStream out, java.lang.Object obj)
     {
+        //allow the object to be replaced
+        Object replacedObj = RemoteObjectSubstitutionManager.writeReplaceRemote(obj);
         // Make sure we have a connected object, then
         // write it out...
 
-        Object newObj = Utility.autoConnect(obj, out.orb(), false);
+        Object newObj = Utility.autoConnect(replacedObj, out.orb(), false);
         ((org.omg.CORBA_2_3.portable.OutputStream) out).write_abstract_interface(newObj);
     }
 
