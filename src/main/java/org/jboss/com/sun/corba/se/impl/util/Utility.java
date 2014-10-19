@@ -35,6 +35,8 @@ package org.jboss.com.sun.corba.se.impl.util;
 import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import javax.rmi.PortableRemoteObject;
 import javax.rmi.CORBA.Tie;
@@ -816,7 +818,7 @@ public final class Utility
     /*
      * Load an RMI-IIOP Stub. This is used in PortableRemoteObject.narrow.
      */
-    public static Object loadStub(org.omg.CORBA.Object narrowFrom, Class<?> narrowTo)
+    public static Object loadStub(org.omg.CORBA.Object narrowFrom, final Class<?> narrowTo)
     {
         Object result = null;
 
@@ -837,9 +839,15 @@ public final class Utility
                 throw wrapper.classCastExceptionInLoadStub(e);
             }
 
+            ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                public ClassLoader run() {
+                return narrowTo.getClassLoader();
+                }
+            });
+
             PresentationManager.StubFactoryFactory sff = org.jboss.com.sun.corba.se.spi.orb.ORB.getStubFactoryFactory();
             PresentationManager.StubFactory sf = sff.createStubFactory(narrowTo.getName(), false, codebase, narrowTo,
-                    narrowTo.getClassLoader());
+                    classLoader);
             result = sf.makeStub();
             StubAdapter.setDelegate(result, StubAdapter.getDelegate(narrowFrom));
         }
