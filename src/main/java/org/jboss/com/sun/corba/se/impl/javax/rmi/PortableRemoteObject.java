@@ -241,6 +241,9 @@ public class PortableRemoteObject implements javax.rmi.CORBA.PortableRemoteObjec
                 throw new ClassCastException("Class " + narrowTo.getName() + " is not a valid remote interface");
             }
         }
+        catch(RuntimeException exception){
+            throw exception;
+        }
         catch (Exception error)
         {
             ClassCastException cce = new ClassCastException();
