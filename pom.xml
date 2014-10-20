@@ -109,7 +109,7 @@
     <dependency>
       <groupId>org.jacorb</groupId>
       <artifactId>jacorb</artifactId>
-      <version>2.3.2-jbossorg-6</version>
+      <version>2.3.2-jbossorg-5</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
