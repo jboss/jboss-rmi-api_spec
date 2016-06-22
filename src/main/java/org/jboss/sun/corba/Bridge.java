@@ -37,7 +37,7 @@ import java.security.Permission;
 import java.security.PrivilegedAction;
 
 import sun.misc.Unsafe;
-import sun.reflect.ReflectionFactory;
+import jdk.internal.reflect.ReflectionFactory;
 
 /**
  * This class provides the methods for fundamental JVM operations needed in the ORB that are not part of the public Java
