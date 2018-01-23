@@ -11,7 +11,7 @@
 
   <groupId>org.jboss.spec.javax.rmi</groupId>
   <artifactId>jboss-rmi-api_1.0_spec</artifactId>
-  <version>1.0.6.Final</version>
+  <version>1.0.7.Final-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Java RMI API</name>
@@ -29,7 +29,7 @@
     <connection>scm:git:git@github.com:jboss/jboss-rmi-api_spec.git</connection>
     <developerConnection>scm:git:git@github.com:jboss/jboss-rmi-api_spec.git</developerConnection>
     <url>https://github.com/jboss/jboss-rmi-api_spec</url>
-    <tag>jboss-rmi-api_1.0_spec-1.0.6.Final</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
